@@ -1,13 +1,13 @@
 /*
- * Light Slave
+ * Source file for the light slave teensy for LJ STAND 2017
  */
 
- #include <Arduino.h>
+#include <Arduino.h>
 
- void setup(){
-     // empty
- }
+void setup(){
+    // empty
+}
 
- void loop(){
-     // empty
- }
+void loop(){
+    // empty
+}

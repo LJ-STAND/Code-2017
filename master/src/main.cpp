@@ -1,15 +1,16 @@
 /*
- * Master
+ * Source file for the master teensy for LJ STAND 2017
  */
 
- #include <Arduino.h>
+#include <Arduino.h>
 
- #include <Pins.h>
+#include <Pins.h>
+#include <Config.h>
 
- void setup(){
-     // empty
- }
+void setup(){
+    // empty
+}
 
- void loop(){
-     // empty
- }
+void loop(){
+    // empty
+}

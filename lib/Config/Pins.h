@@ -7,6 +7,8 @@
 #define PINS_H
 
 // Light Sensors
+// TODO: Update from schematic
+
 #define LS_0 A0
 #define LS_1 A1
 #define LS_2 A2
@@ -31,5 +33,23 @@
 #define LS_21 A21
 #define LS_22 A22
 #define LS_23 A23
+
+// Motors
+// TODO: update from schematic
+
+#define MOTOR_RIGHT_PWM 2
+#define MOTOR_RIGHT_IN1 22
+#define MOTOR_RIGHT_IN2 24
+#define MOTOR_RIGHT_SB 26
+
+#define MOTOR_LEFT_PWM 3
+#define MOTOR_LEFT_IN1 28
+#define MOTOR_LEFT_IN2 30
+#define MOTOR_LEFT_SB 32
+
+#define MOTOR_BACK_PWM 4
+#define MOTOR_BACK_IN1 34
+#define MOTOR_BACK_IN2 36
+#define MOTOR_BACK_SB 38
 
 #endif // PINS_H

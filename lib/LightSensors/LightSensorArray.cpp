@@ -1,7 +1,7 @@
 #include "LightSensorArray.h"
 
 LightSensorArray::LightSensorArray() {
-
+    ls1 = 
 }
 
 void LightSensorArray::read() {

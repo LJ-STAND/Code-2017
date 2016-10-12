@@ -1,6 +1,7 @@
 #ifndef MOTOR_ARRAY_H
 #define MOTOR_ARRAY_H
 
+#include <Arduino.h>
 #include "Motor.h"
 
 class MotorArray {

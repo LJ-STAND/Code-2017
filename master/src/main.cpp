@@ -6,6 +6,11 @@
 
 #include <Pins.h>
 #include <Config.h>
+#include <LightSensor.h>
+#include <LightSensorArray.h>
+#include <LinePosition.h>
+#include <Motor.h>
+#include <MotorArray.h>
 
 void setup(){
     // empty

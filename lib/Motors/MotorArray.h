@@ -10,7 +10,7 @@ public:
     Motor motorBack;
 
     MotorArray();
-    void move(int direction, int rotation, int power);
+    void move(int direction, int rotation, int speed);
     void brake();
 };
 

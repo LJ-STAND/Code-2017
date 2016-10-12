@@ -6,20 +6,20 @@ MotorArray::MotorArray() {
     motorBack = Motor(MOTOR_BACK_PWM, MOTOR_BACK_IN1, MOTOR_BACK_IN2, MOTOR_BACK_SB, 180, true);
 }
 
-MotorArray::move(int direction, int rotation, int power) {
+MotorArray::move(int direction, int rotation, int speed) {
     double directionAngleRadians = degreesToRadians(360 - direction);
 
     double motorLeftValue = cos(degreesToRadians(motorLeft.motorAngle + 90) - directionAngleRadians);
     double motorRightValue = cos(degreesToRadians(motorRight.motorAngle + 90) - directionAngleRadians);
     double motorBackValue = cos(degreesToRadians(motorBack.motorAngle + 90) - directionAngleRadians);
 
-    double updatedPower = (double) power / doubleAbs(fmax(fmax(doubleAbs(motorLeftValue), doubleAbs(motorRightValue)), doubleAbs(motorBackValue)));
+    double updatedSpeed = (double) speed / doubleAbs(fmax(fmax(doubleAbs(motorLeftValue), doubleAbs(motorRightValue)), doubleAbs(motorBackValue)));
 
-    int motorLeftPower = (int) round(motorLeftValue * updatedPower) + rotation;
-    int motorRightPower = (int) round(motorRightValue * updatedPower) + rotation;
-    int motorBackPower = (int) round(motorBackValue * updatedPower) + rotation;
+    int motorLeftSpeed = (int) round(motorLeftValue * updatedSpeed) + rotation;
+    int motorRightSpeed = (int) round(motorRightValue * updatedSpeed) + rotation;
+    int motorBackSpeed = (int) round(motorBackValue * updatedSpeed) + rotation;
 
-    motorLeft.set(motorLeftPower);
-    motorRight.set(motorRightPower);
-    motorBack.set(motorBackPower);
+    motorLeft.set(motorLeftSpeed);
+    motorRight.set(motorRightSpeed);
+    motorBack.set(motorBackSpeed);
 }

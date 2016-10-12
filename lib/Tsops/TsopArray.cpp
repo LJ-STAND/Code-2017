@@ -60,9 +60,9 @@ void TsopArray::unlock() {
 }
 
 void TsopArray::finishRead() {
-    // complete a reading of the tsops after a certain amount of individual readings, TSOP values are now stored in the values array until the next complete read
+    // Complete a reading of the tsops after a certain amount of individual readings, TSOP values are now stored in the values array until the next complete read
     tsopCounter = 0;
-    for(int i = 0; i < TSOP_NUM; i++) {
+    for (int i = 0; i < TSOP_NUM; i++) {
         values[i] = tempValues[i];
         tempValues[i] = 0;
         filteredValues[i] = 0;
@@ -79,9 +79,9 @@ void TsopArray::finishRead() {
 
 void TsopArray::sortFilterValues() {
     // Remove noise
-    for(int i = 0; i < TSOP_NUM; i++) {
+    for (int i = 0; i < TSOP_NUM; i++) {
         #if TSOP_FILTER_NOISE
-            if(values[i] < TSOP_MIN_IGNORE || values[i] > TSOP_MAX_IGNORE) {
+            if (values[i] < TSOP_MIN_IGNORE || values[i] > TSOP_MAX_IGNORE) {
                 tempFilteredValues[i] = 0;
             } else {
                 tempFilteredValues[i] = values[i];
@@ -94,10 +94,11 @@ void TsopArray::sortFilterValues() {
     // A rather efficient way to filter data by scoring each data by the tsop by it's adjacent tsops
     for (int i = 0; i < TSOP_NUM; i++) {
         #if TSOP_FILTER_SURROUNDING
-            int temp = TSOP_K1 *  tempFilteredValues[i] + TSOP_K2 *             (tempFilteredValues[mod(i + 1, TSOP_NUM)] + tempFilteredValues[mod(i - 1, TSOP_NUM)]) + TSOP_K3 * (tempFilteredValues[mod(i + 2, TSOP_NUM)] + tempFilteredValues[mod(i - 2, TSOP_NUM)]);
+            int temp = TSOP_K1 * tempFilteredValues[i] + TSOP_K2 * (tempFilteredValues[mod(i + 1, TSOP_NUM)] + tempFilteredValues[mod(i - 1, TSOP_NUM)]) + TSOP_K3 * (tempFilteredValues[mod(i + 2, TSOP_NUM)] + tempFilteredValues[mod(i - 2, TSOP_NUM)]);
         #else
             int temp = tempFilteredValues[i] << 4;
         #endif
+
         // TSOP_K1 + 2 * TSOP_K2 + 2 * TSOP_K3 = 16 so we must divide the value by 16
         filteredValues[i] = temp >> 4;
     }
@@ -115,6 +116,7 @@ void TsopArray::sortFilterValues() {
                     ARRAYSHIFTDOWN(sortedFilteredValues, j, i);
                     ARRAYSHIFTDOWN(indexes, j, i);
                 }
+
                 sortedFilteredValues[j] = filteredValues[i];
                 indexes[j] = i;
                 break;
@@ -171,6 +173,7 @@ void TsopArray::calculateAngle(int n) {
         if (relIndexes[i] < -(TSOP_NUM / 2 - 1)) {
             relIndexes[i] += TSOP_NUM;
         }
+        
         if (relIndexes[i] > (TSOP_NUM / 2)) {
             relIndexes[i] -= TSOP_NUM;
         }
@@ -183,17 +186,17 @@ void TsopArray::calculateAngle(int n) {
 
     double relIndexAverage;
 
-    relIndexAverage = (double)relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
+    relIndexAverage = (double) relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
 
     double index = best + relIndexAv;
 
-    index = doubleMod(index, (double)TSOP_NUM);
+    index = doubleMod(index, (double) TSOP_NUM);
 
 
     if (sortedFilteredValues[0] <= MIN_IGNORE_TSOPS) {
         angle = -1;
     } else {
-        angle = index * 360.0 / (double)TSOP_NUM;
+        angle = index * 360.0 / (double) TSOP_NUM;
     }
 
 }
@@ -206,7 +209,5 @@ void TsopArray::calculateStrength(int n) {
         strengthTotal += sortedFilteredValues[i];
     }
 
-
-
-    strength = (double)strengthTotal / n;
+    strength = (double) strengthTotal / n;
 }

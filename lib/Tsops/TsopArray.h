@@ -1,8 +1,8 @@
 /* Library for interfacing with tsop array
  */
 
-#ifndef LIB_TSOPARRAY_H
-#define LIB_TSOPARRAY_H
+#ifndef TSOP_ARRAY_H
+#define TSOP_ARRAY_H
 
 #include <Arduino.h>
 
@@ -34,6 +34,7 @@ class TsopArray {
         int simpleAngle = 0;
         int strength = 0;
         int simpleStrength = 0;
+        
     private:
         int tempValues[TSOP_NUM] = {0};
         int tempFilteredValues[TSOP_NUM] = {0};
@@ -42,4 +43,4 @@ class TsopArray {
         // int scaledCos[TSOP_NUM] = {0};
 };
 
-#endif  // LIB_TSOPARRAY_TSOPARRAY_H_
+#endif // TSOP_ARRAY_H

@@ -4,10 +4,10 @@
 
 #include <Arduino.h>
 
-void setup(){
+void setup() {
     // empty
 }
 
-void loop(){
+void loop() {
     // empty
 }

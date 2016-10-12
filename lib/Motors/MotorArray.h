@@ -9,10 +9,9 @@ public:
     Motor motorRight;
     Motor motorBack;
 
-    void MotorController();
+    MotorArray();
     void move(int direction, int rotation, int power);
-private:
-    
+    void brake();
 };
 
 #endif // MOTOR_ARRAY_H

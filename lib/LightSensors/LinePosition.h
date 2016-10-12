@@ -10,7 +10,7 @@ enum LinePosition {
     cornerFrontLeft,
     cornerBackRight,
     cornerBackLeft,
-    field
+    none
 };
 
 #endif // LINE_POSITION_H

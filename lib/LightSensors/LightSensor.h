@@ -7,10 +7,11 @@ public:
     LightSensor(int in);
     void calibrate();
 
-    int read();
+    void read();
     bool isOnWhite();
 
 private:
+    int value;
     int inPin;
     int thresholdValue;
 };

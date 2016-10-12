@@ -6,4 +6,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// Light Sensors
+
+#define LIGHT_SENSOR_CALIBRATION 15
+
 #endif // CONFIG_H

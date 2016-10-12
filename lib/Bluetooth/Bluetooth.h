@@ -7,17 +7,17 @@
 class Bluetooth {
 public:
     static void init() {
-        Serial1.begin(9600);
-        Serial1.setTimeout(50);
+        Serial5.begin(9600);
+        Serial5.setTimeout(50);
     }
 
     static void send(String data, int dataCode = BluetoothDataType::info) {
         String msg = String(dataCode) + ";" + data;
-        Serial.println(msg);
+        Seria5.println(msg);
     }
 
     static BluetoothData receive() {
-        if (Serial1.available()) {
+        if (Serial5.available()) {
             String data = Serial1.readString();
 
             int splitIndex = data.indexOf(';');

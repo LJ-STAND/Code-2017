@@ -9,6 +9,7 @@ class LightSensorArray {
 public:
     LightSensorArray();
 
+    void read();
     void calculatePostion();
     LinePosition getLinePosition();
     int getUrgency();
@@ -45,7 +46,6 @@ private:
     LightSensor ls21;
     LightSensor ls22;
     LightSensor ls23;
-
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

@@ -6,7 +6,7 @@ MotorArray::MotorArray() {
     motorBack = Motor(MOTOR_BACK_PWM, MOTOR_BACK_IN1, MOTOR_BACK_IN2, MOTOR_BACK_SB, 180, true);
 }
 
-MotorArray::move(int direction, int rotation, int speed) {
+void MotorArray::move(int direction, int rotation, int speed) {
     double directionAngleRadians = degreesToRadians(360 - direction);
 
     double motorLeftValue = cos(degreesToRadians(motorLeft.motorAngle + 90) - directionAngleRadians);
@@ -22,4 +22,10 @@ MotorArray::move(int direction, int rotation, int speed) {
     motorLeft.set(motorLeftSpeed);
     motorRight.set(motorRightSpeed);
     motorBack.set(motorBackSpeed);
+}
+
+void MotorArray::brake() {
+    motorLeft.brake();
+    motorLeft.brake();
+    motorRight.brake();
 }

@@ -6,21 +6,22 @@ LightSensor::LightSensor(int in) {
 }
 
 void LightSensor::calibrate() {
-    int defaultValue;
+    int defaultValue = 0;
 
-    for (int i = 0; i < 10; i++) {
-        defaultValue += read();
+    for (int i = 0; i < LS_CALIBRATION_COUNT; i++) {
+        read();
+        defaultValue += value;
     }
 
-    thresholdValue = (defaultValue / 10) + LIGHT_SENSOR_CALIBRATION;
+    thresholdValue = (defaultValue / LS_CALIBRATION_COUNT) + LS_CALIBRATION_BUFFER;
 }
 
-int LightSensor::read() {
-    return analogRead(inPin);
+void LightSensor::read() {
+    value = analogRead(inPin);
 }
 
 bool LightSensor::isOnWhite() {
-    if (read() > thresholdValue) {
+    if (value > thresholdValue) {
         return true;
     } else {
         return false;

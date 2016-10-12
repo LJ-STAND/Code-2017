@@ -8,6 +8,7 @@
 
 // Light Sensors
 
-#define LIGHT_SENSOR_CALIBRATION 15
+#define LS_CALIBRATION_COUNT 15
+#define LS_CALIBRATION_BUFFER 30
 
 #endif // CONFIG_H

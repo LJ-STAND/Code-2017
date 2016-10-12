@@ -1,8 +1,9 @@
 /*
- * Source file for the master teensy for LJ STAND 2017
+ * Source file for the master teensy for LJ STAND
  */
 
 #include <Arduino.h>
+#include <SPI.h>
 
 void setup() {
     // empty

@@ -6,7 +6,7 @@
 enum BluetoothDataType: int {
     none,
     info,
-    TSOP,
+    tsop,
     lightSensor
 };
 

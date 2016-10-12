@@ -9,8 +9,10 @@ public:
     Motor motorRight;
     Motor motorBack;
 
+    void MotorController();
+    void move(int direction, int rotation, int power);
 private:
-
+    
 };
 
 #endif // MOTOR_ARRAY_H

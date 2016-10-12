@@ -10,19 +10,6 @@
 #include <Config.h>
 #include <Pins.h>
 
-// class Tsop {
-//  public:
-//     Tsop(int pinVal);
-//     Tsop(){}
-//     void tsopSetup();
-//     void readOnce();
-//     void setValueZero();
-//     int getValue();
-//     int getPin();
-//  private:
-//     int pin,value;
-// };
-
 class TsopArray {
     public:
         TsopArray();
@@ -50,7 +37,7 @@ class TsopArray {
         int strength = 0;
         int simpleStrength = 0;
     public:
-        int tsopPins[TSOP_NUM] = {TSOP_0, TSOP_1, TSOP_2, TSOP_3, TSOP_4, TSOP_5, TSOP_6, TSOP_7, TSOP_8, TSOP_9, TSOP_10, TSOP_11};
+        int tsopPins[TSOP_NUM] = {TSOP_0, TSOP_1, TSOP_2, TSOP_3, TSOP_4, TSOP_5, TSOP_6, TSOP_7, TSOP_8, TSOP_9, TSOP_10, TSOP_11, TSOP_12, TSOP_13, TSOP_14, TSOP_15, TSOP_16, TSOP_17, TSOP_18, TSOP_19, TSOP_20, TSOP_21, TSOP_22, TSOP_23};
         int scaledSin[TSOP_NUM] = {0};
         int scaledCos[TSOP_NUM] = {0};
 };

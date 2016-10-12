@@ -6,9 +6,9 @@ TsopArray::TsopArray(){
     // empty
 }
 
-void TsopArray::tsopArraySetup(){
+void TsopArray::init(){
     // set the correct pinmodes for all the tsop pins
-    pinMode(UNLOCK_PIN, OUTPUT);
+    pinMode(TSOP_UNLOCK_PIN, OUTPUT);
 
     for (int i = 0; i < TSOP_NUM; i++){
         pinMode(tsopPins[i], INPUT);
@@ -43,18 +43,18 @@ void TsopArray::updateOnce(){
 }
 void TsopArray::on(){
     // turn the TSOPs on
-    digitalWrite(UNLOCK_PIN, HIGH);
+    digitalWrite(TSOP_UNLOCK_PIN, HIGH);
 }
 
 void TsopArray::off(){
     // turn the TSOPs off
-    digitalWrite(UNLOCK_PIN, LOW);
+    digitalWrite(TSOP_UNLOCK_PIN, LOW);
 }
 
 void TsopArray::unlockTsops(){
     // TSOPs become overly sensitive ("locked") if not turned off and on often
     off();
-    delay(UNLOCK_DELAY);
+    delay(TSOP_UNLOCK_DELAY);
     on();
 }
 
@@ -71,16 +71,16 @@ void TsopArray::finishRead(){
 
     sortFilterValues();
     getAngleSimple();
-    getAngle(BEST_TSOP_NO_ANGLE);
+    getAngle(TSOP_BEST_TSOP_NO_ANGLE);
     getStrengthSimple();
-    getStrength(BEST_TSOP_NO_STRENGTH);
+    getStrength(TSOP_BEST_TSOP_NO_STRENGTH);
 }
 
 void TsopArray::sortFilterValues(){
     // remove noise
     for(int i = 0; i < TSOP_NUM; i++){
         #if TSOP_FILTER_NOISE
-            if(values[i] < MIN_IGNORE_TSOPS || values[i] > MAX_IGNORE_TSOPS){
+            if(values[i] < TSOP_MIN_IGNORE || values[i] > TSOP_MAX_IGNORE){
                 tempFilteredValues[i] = 0;
             } else {
                 tempFilteredValues[i] = values[i];
@@ -173,14 +173,14 @@ void TsopArray::getAngle(int n){
         }
     }
 
-    int relIndexTotal = SECOND_TSOP_WEIGHT * relIndexes[1];
+    int relIndexTotal = TSOP_SECOND_TSOP_WEIGHT * relIndexes[1];
     for (int i = 2; i < n; i++){
         relIndexTotal += relIndexes[i];
     }
 
     double relIndexAv;
 
-    relIndexAv = (double)relIndexTotal / (double)(n + FIRST_TSOP_WEIGHT + SECOND_TSOP_WEIGHT - 2);
+    relIndexAv = (double)relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
 
     double index = best + relIndexAv;
 

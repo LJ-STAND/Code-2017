@@ -59,7 +59,29 @@ void LightSensorArray::read() {
 }
 
 void LightSensorArray::calculatePostion() {
+    oldPositon = position;
+    if (data.lsTotal == 0) {
+        position = LinePosition::none;
+        urgency = 0;
+    } else if (data.lsHalfFront + data.lsLeft + data.lsRight == data.lsTotal) {
+        position = LinePosition::front;
+        urgency = data.lsTotal;
+    } else if (data.lsHalfRight + data.lsFront + data.lsBack == data.lsTotal) {
+        position = LinePositon::right;
+        urgency = data.lsTotal;
+    } else if (data.lsHalfBack + data.lsRight + data.lsLeft == data.lsTotal) {
+        position = LinePosition::back;
+        urgency = data.lsTotal;
+    } else if (data.lsHalfLeft + data.lsBack + data.lsFront == data.lsTotal) {
+        position = LinePosition::left;
+        urgency = data.lsTotal;
+    } else {
+        // TODO
+    }
 
+    if (position != oldPosition){
+        previousPosition = oldPosition;
+    }
 }
 
 LinePosition LightSensorArray::getLinePosition() {

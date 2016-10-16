@@ -170,10 +170,10 @@ void TsopArray::calculateAngle(int n) {
 
     for (int i = 0; i < TSOP_NUM; i++) {
         relIndexes[i] = indexes[i] - best;
-        if (relIndexes[i] < -(TSOP_NUM / 2 - 1)) {
+        if (relIndexes[i] < (1 - TSOP_NUM / 2)) {
             relIndexes[i] += TSOP_NUM;
         }
-        
+
         if (relIndexes[i] > (TSOP_NUM / 2)) {
             relIndexes[i] -= TSOP_NUM;
         }

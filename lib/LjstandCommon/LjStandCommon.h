@@ -1,4 +1,4 @@
-/* Library of common functions re-written in c++.
+/* Library of common functions and macros.
  */
 
 #include <Arduino.h>

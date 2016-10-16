@@ -7,7 +7,7 @@ class LightSensor {
 public:
     LightSensor() {}
     LightSensor(int in);
-    void calibrate();
+    void init();
 
     void read();
     bool isOnWhite();

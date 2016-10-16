@@ -2,10 +2,12 @@
 
 LightSensor::LightSensor(int in) {
     inPin = in;
-    pinMode(in, INPUT);
 }
 
-void LightSensor::calibrate() {
+void LightSensor::init() {
+    pinMode(in, INPUT);
+
+    // Auto calibrate
     int defaultValue = 0;
 
     for (int i = 0; i < LS_CALIBRATION_COUNT; i++) {
@@ -13,7 +15,7 @@ void LightSensor::calibrate() {
         defaultValue += value;
     }
 
-    thresholdValue = (defaultValue / LS_CALIBRATION_COUNT) + LS_CALIBRATION_BUFFER;
+    thresholdValue = round((int)((double)defaultValue / LS_CALIBRATION_COUNT) + LS_CALIBRATION_BUFFER);
 }
 
 void LightSensor::read() {
@@ -21,9 +23,6 @@ void LightSensor::read() {
 }
 
 bool LightSensor::isOnWhite() {
-    if (value > thresholdValue) {
-        return true;
-    } else {
-        return false;
-    }
+    read();
+    return (readValue > thresholdValue);
 }

@@ -8,10 +8,14 @@ enum LinePosition {
     right,
     back,
     left,
-    cornerFrontRight,
-    cornerFrontLeft,
-    cornerBackRight,
-    cornerBackLeft,
+    cornerBigFrontRight,
+    cornerBigFrontLeft,
+    cornerBigBackRight,
+    cornerBigBackLeft,
+    cornerSmallFrontRight,
+    cornerSmallFrontLeft,
+    cornerSmallBackRight,
+    cornerSmallBackLeft,
     none
 };
 

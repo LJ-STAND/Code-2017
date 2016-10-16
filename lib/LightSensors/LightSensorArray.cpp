@@ -27,6 +27,33 @@ LightSensorArray::LightSensorArray() {
     ls23 = LightSensor(LS_23);
 }
 
+LightSensorArray::init() {
+    ls0.init();
+    ls1.init();
+    ls2.init();
+    ls3.init();
+    ls4.init();
+    ls5.init();
+    ls6.init();
+    ls7.init();
+    ls8.init();
+    ls9.init();
+    ls10.init();
+    ls11.init();
+    ls12.init();
+    ls13.init();
+    ls14.init();
+    ls15.init();
+    ls16.init();
+    ls17.init();
+    ls18.init();
+    ls19.init();
+    ls20.init();
+    ls21.init();
+    ls22.init();
+    ls23.init();
+}
+
 void LightSensorArray::read() {
     data = (LightSensorData) {ls0.isOnWhite(), ls1.isOnWhite(), ls2.isOnWhite(), ls3.isOnWhite(), ls4.isOnWhite(), ls5.isOnWhite(), ls6.isOnWhite(), ls7.isOnWhite(), ls8.isOnWhite(), ls9.isOnWhite(), ls10.isOnWhite(), ls11.isOnWhite(), ls12.isOnWhite(), ls13.isOnWhite(), ls14.isOnWhite(), ls15.isOnWhite(), ls16.isOnWhite(), ls17.isOnWhite, ls18.isOnWhite(), ls19.isOnWhite(), ls20.isOnWhite(), ls21.isOnWhite(), ls22.isOnWhite(), ls23.isOnWhite()};
 }

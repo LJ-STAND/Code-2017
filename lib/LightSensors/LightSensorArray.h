@@ -13,15 +13,14 @@ public:
     void read();
     void calculatePostion();
     LinePosition getLinePosition();
-    int getUrgency();
+    // int getUrgency();
 
 private:
     LightSensorData data;
 
     LinePosition position;
-    LinePosition previousPosition;
 
-    int urgency;
+    // int urgency; // We don't really need this
 
     LightSensor ls0;
     LightSensor ls1;

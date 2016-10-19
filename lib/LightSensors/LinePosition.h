@@ -16,7 +16,10 @@ enum LinePosition {
     bigCornerBackRight,
     bigCornerBackLeft,
     bigCornerFrontLeft,
-    none
+    centreVertical,
+    centreHorizontal,
+    none,
+    unknown
 };
 
 #endif // LINE_POSITION_H

@@ -55,7 +55,7 @@ LightSensorArray::init() {
 }
 
 void LightSensorArray::read() {
-    LightSensorData data = LightSensorData(ls0.isOnWhite(), ls1.isOnWhite(), ls2.isOnWhite(), ls3.isOnWhite(), ls4.isOnWhite(), ls5.isOnWhite(), ls6.isOnWhite(), ls7.isOnWhite(), ls8.isOnWhite(), ls9.isOnWhite(), ls10.isOnWhite(), ls11.isOnWhite(), ls12.isOnWhite(), ls13.isOnWhite(), ls14.isOnWhite(), ls15.isOnWhite(), ls16.isOnWhite(), ls17.isOnWhite, ls18.isOnWhite(), ls19.isOnWhite(), ls20.isOnWhite(), ls21.isOnWhite(), ls22.isOnWhite(), ls23.isOnWhite());
+    LightSensorData data = LightSensorData(ls0.isOnWhite(), ls1.isOnWhite(), ls2.isOnWhite(), ls3.isOnWhite(), ls4.isOnWhite(), ls5.isOnWhite(), ls6.isOnWhite(), ls7.isOnWhite(), ls8.isOnWhite(), ls9.isOnWhite(), ls10.isOnWhite(), ls11.isOnWhite(), ls12.isOnWhite(), ls13.isOnWhite(), ls14.isOnWhite(), ls15.isOnWhite(), ls16.isOnWhite(), ls17.isOnWhite(), ls18.isOnWhite(), ls19.isOnWhite(), ls20.isOnWhite(), ls21.isOnWhite(), ls22.isOnWhite(), ls23.isOnWhite());
 }
 
 void LightSensorArray::calculatePostion() {
@@ -66,7 +66,7 @@ void LightSensorArray::calculatePostion() {
     } else if (data.lsQuadFrontRight + data.lsFront + data.lsRight == data.lsTotal) {
         position = LinePosition::smallCornerFrontRight;
     } else if (data.lsQuadBackRight + data.lsRight + data.lsBack == data.lsTotal) {
-        position = LinePositon::smallCornerBackRight;
+        position = LinePosition::smallCornerBackRight;
     } else if (data.lsQuadBackLeft + data.lsBack + data.lsLeft == data.lsTotal) {
         position = LinePosition::smallCornerBackLeft;
     } else if (data.lsQuadFrontLeft + data.lsLeft + data.lsFront == data.lsTotal) {
@@ -76,7 +76,7 @@ void LightSensorArray::calculatePostion() {
         if (data.lsHalfFront + data.lsLeft + data.lsRight == data.lsTotal) {
             position = LinePosition::front;
         } else if (data.lsHalfRight + data.lsFront + data.lsBack == data.lsTotal) {
-            position = LinePositon::right;
+            position = LinePosition::right;
         } else if (data.lsHalfBack + data.lsRight + data.lsLeft == data.lsTotal) {
             position = LinePosition::back;
         } else if (data.lsHalfLeft + data.lsBack + data.lsFront == data.lsTotal) {
@@ -84,6 +84,9 @@ void LightSensorArray::calculatePostion() {
         } else {
             // Two Quadrants diagonal
             if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                if (data.lsLeftFrontRight + data.lsFront + data.RightBackLeft + data.lsBack) {
+                    position = LinePosition::centreVertical;
+                }
                 // TODO
             } else if (data.lsQuadBackRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                 // TODO
@@ -113,6 +116,6 @@ LinePosition LightSensorArray::getLinePosition() {
     return position;
 }
 
-int LightSensorArray::getUrgency() {
+/* int LightSensorArray::getUrgency() {
     return urgency;
-}
+} */

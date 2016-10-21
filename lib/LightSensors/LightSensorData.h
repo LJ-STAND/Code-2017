@@ -56,7 +56,7 @@ typedef struct LightSensorData {
     int lsTotal;
 
 
-
+    LightSensorData() {}
     LightSensorData(bool on0, bool on1, bool on2, bool on3, bool on4, bool on5, bool on6, bool on7, bool on8, bool on9, bool on10, bool on11, bool on12, bool on13, bool on14, bool on15, bool on16, bool on17, bool on18, bool on19, bool on20, bool on21, bool on22, bool on23) {
         ls0 = on0;
         ls1 = on1;

@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#include <Config.h>
+
 class LightSensor {
 public:
     LightSensor() {}

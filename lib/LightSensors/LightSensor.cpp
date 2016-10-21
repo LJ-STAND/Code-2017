@@ -5,7 +5,7 @@ LightSensor::LightSensor(int in) {
 }
 
 void LightSensor::init() {
-    pinMode(in, INPUT);
+    pinMode(inPin, INPUT);
 
     // Auto calibrate
     int defaultValue = 0;
@@ -24,5 +24,5 @@ void LightSensor::read() {
 
 bool LightSensor::isOnWhite() {
     read();
-    return (readValue > thresholdValue);
+    return (value > thresholdValue);
 }

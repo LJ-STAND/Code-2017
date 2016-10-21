@@ -27,7 +27,7 @@ LightSensorArray::LightSensorArray() {
     ls23 = LightSensor(LS_23);
 }
 
-LightSensorArray::init() {
+void LightSensorArray::init() {
     ls0.init();
     ls1.init();
     ls2.init();
@@ -94,7 +94,7 @@ void LightSensorArray::calculatePostion() {
             } else {
                 // Two Quadrants diagonal
                 if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    if (data.lsLeftFrontRight + data.lsFront + data.RightBackLeft + data.lsBack) {
+                    if (data.lsLeftFrontRight + data.lsFront + data.lsRightBackLeft + data.lsBack) {
                         position = LinePosition::centreVertical;
                     } else if (data.lsLeftFrontRight + data.lsFront + data.lsCentreFrontRight + data.lsLeftBackLeft + data.lsCentreBackLeft + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontLeft;
@@ -106,7 +106,7 @@ void LightSensorArray::calculatePostion() {
                         position = LinePosition::unknown;
                     }
                 } else if (data.lsQuadBackRight + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.front == data.lsTotal) {
+                    if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.lsFront == data.lsTotal) {
                         position = LinePosition::centreVertical;
                     } else if (data.lsLeftBackRight + data.lsBack + data.lsCentreBackRight + data.lsLeftFrontLeft + data.lsLeft + data.lsCentreFrontLeft) {
                         position = LinePosition::bigCornerBackLeft;
@@ -125,7 +125,7 @@ void LightSensorArray::calculatePostion() {
                         position = LinePosition::bigCornerBackLeft;
                     } else if (data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontLeft;
-                    } else if (ddata.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                    } else if (data.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontRight;
                     } else {
                         /* We have exhausted all reasonable possibilities.

@@ -5,6 +5,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#include <LightSensorArray.h>
+
 void setup() {
     // empty
     Serial.begin(9600);

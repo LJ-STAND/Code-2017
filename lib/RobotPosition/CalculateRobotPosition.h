@@ -4,13 +4,13 @@
 #include "RobotPosition.h"
 
 RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPosition) {
+    if (line == LinePosition::unknown) {
+        return previousPosition;
+    }
+
     switch (previousPosition) {
         case RobotPosition::field: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::field;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field;
                     break;
@@ -75,10 +75,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnFrontLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnFrontLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -143,10 +139,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnFrontLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnFrontLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -211,10 +203,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overFrontLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overFrontLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -279,10 +267,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnRightLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnRightLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -347,10 +331,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnRightLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnRightLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -415,10 +395,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overRightLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overRightLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -483,10 +459,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnBackLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnBackLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -551,10 +523,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnBackLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnBackLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -619,10 +587,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overBackLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overBackLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -687,10 +651,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnLeftLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnLeftLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -755,10 +715,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnLeftLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnLeftLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -823,10 +779,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overLeftLine: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overLeftLine;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -891,10 +843,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnCornerFrontRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnCornerFrontRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -959,10 +907,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnCornerFrontRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnCornerFrontRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1027,10 +971,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overCornerFrontRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overCornerFrontRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1095,10 +1035,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnCornerBackRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnCornerBackRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1163,10 +1099,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnCornerBackRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnCornerBackRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1231,10 +1163,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overCornerBackRight: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overCornerBackRight;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1299,10 +1227,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnCornerBackLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnCornerBackLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1367,10 +1291,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnCornerBackLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnCornerBackLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1435,10 +1355,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overCornerBackLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overCornerBackLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1503,10 +1419,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::smallOnCornerFrontLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::smallOnCornerFrontLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1571,10 +1483,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::bigOnCornerFrontLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::bigOnCornerFrontLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;
@@ -1639,10 +1547,6 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         }
         case RobotPosition::overCornerFrontLeft: {
             switch (line) {
-                case LinePosition::unknown: {
-                    return RobotPosition::overCornerFrontLeft;
-                    break;
-                }
                 case LinePosition::none: {
                     return RobotPosition::field; // TODO
                     break;

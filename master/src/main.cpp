@@ -6,6 +6,8 @@
 #include <SPI.h>
 
 #include <LightSensorArray.h>
+#include <RobotPosition.h>
+#include <CalculateRobotPosition.h>
 
 void setup() {
     // empty

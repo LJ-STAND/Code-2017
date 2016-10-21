@@ -8,7 +8,7 @@ enum RobotPosition {
     bigOnFrontLine,
     overFrontLine,
     smallOnRightLine,
-    bigOnRigtLine,
+    bigOnRightLine,
     overRightLine,
     smallOnBackLine,
     bigOnBackLine,

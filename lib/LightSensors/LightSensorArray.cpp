@@ -62,62 +62,78 @@ void LightSensorArray::calculatePostion() {
     if (data.lsTotal == 0) {
         // No line
         position = LinePosition::none;
-    // One Quadrant
-    } else if (data.lsQuadFrontRight + data.lsFront + data.lsRight == data.lsTotal) {
-        position = LinePosition::smallCornerFrontRight;
-    } else if (data.lsQuadBackRight + data.lsRight + data.lsBack == data.lsTotal) {
-        position = LinePosition::smallCornerBackRight;
-    } else if (data.lsQuadBackLeft + data.lsBack + data.lsLeft == data.lsTotal) {
-        position = LinePosition::smallCornerBackLeft;
-    } else if (data.lsQuadFrontLeft + data.lsLeft + data.lsFront == data.lsTotal) {
-        position = LinePosition::smallCornerFrontLeft;
+    // One side section
+    } else if (data.lsRightFrontLeft + data.lsFront + data.lsLeftFrontRight == data.lsTotal) {
+        position = LinePosition::front;
+    } else if (data.lsRightFrontRight + data.lsRight + data.lsRightBackRight == data.lsTotal) {
+        position = LinePosition::right;
+    } else if (data.lsLeftBackRight + data.lsBack + data.lsRightBackLeft == data.lsTotal) {
+        position = LinePosition::back;
+    } else if (data.lsLeftBackLeft + data.lsLeft + data.lsLeftFrontLeft == data.lsTotal) {
+        position = LinePosition::left;
     } else {
-        // Two Quadrants adjacent
-        if (data.lsHalfFront + data.lsLeft + data.lsRight == data.lsTotal) {
-            position = LinePosition::front;
-        } else if (data.lsHalfRight + data.lsFront + data.lsBack == data.lsTotal) {
-            position = LinePosition::right;
-        } else if (data.lsHalfBack + data.lsRight + data.lsLeft == data.lsTotal) {
-            position = LinePosition::back;
-        } else if (data.lsHalfLeft + data.lsBack + data.lsFront == data.lsTotal) {
-            position = LinePosition::left;
+        // One Quadrant
+        if (data.lsQuadFrontRight + data.lsFront + data.lsRight == data.lsTotal) {
+            position = LinePosition::smallCornerFrontRight;
+        } else if (data.lsQuadBackRight + data.lsRight + data.lsBack == data.lsTotal) {
+            position = LinePosition::smallCornerBackRight;
+        } else if (data.lsQuadBackLeft + data.lsBack + data.lsLeft == data.lsTotal) {
+            position = LinePosition::smallCornerBackLeft;
+        } else if (data.lsQuadFrontLeft + data.lsLeft + data.lsFront == data.lsTotal) {
+            position = LinePosition::smallCornerFrontLeft;
         } else {
-            // Two Quadrants diagonal
-            if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                if (data.lsLeftFrontRight + data.lsFront + data.RightBackLeft + data.lsBack) {
-                    position = LinePosition::centreVertical;
-                } else if (data.lsLeftFrontRight + data.lsFront + data.lsCentreFrontRight + data.lsLeftBackLeft + data.lsCentreBackLeft + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerFrontLeft;
-                } else if (data.lsRightFrontRight + data.lsRight + data.lsLeftBackLeft + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::centreHorizontal;
-                } else if (data.lsRightFrontRight + data.lsCentreFrontRight + data.lsRight + data.lsRightBackLeft + data.lsBack + data.lsCentreBackLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerBackRight;
-                } else {
-                    position = LinePosition::unknown;
-                }
-            } else if (data.lsQuadBackRight + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.front == data.lsTotal) {
-                    position = LinePosition::centreVertical;
-                } else if (data.lsLeftBackRight + data.lsBack + data.lsCentreBackRight + data.lsLeftFrontLeft + data.lsLeft + data.lsCentreFrontLeft) {
-                    position = LinePosition::bigCornerBackLeft;
-                }
-                // TODO
+            // Two Quadrants adjacent
+            if (data.lsHalfFront + data.lsLeft + data.lsRight == data.lsTotal) {
+                position = LinePosition::front;
+            } else if (data.lsHalfRight + data.lsFront + data.lsBack == data.lsTotal) {
+                position = LinePosition::right;
+            } else if (data.lsHalfBack + data.lsRight + data.lsLeft == data.lsTotal) {
+                position = LinePosition::back;
+            } else if (data.lsHalfLeft + data.lsBack + data.lsFront == data.lsTotal) {
+                position = LinePosition::left;
             } else {
-                // Three Quadrants
-                if (data.lsQuadFrontRight + data.lsQuadBackRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerBackRight;
-                } else if (data.lsQuadBackRight + data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerBackLeft;
-                } else if (data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerFrontLeft;
-                } else if (ddata.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    position = LinePosition::bigCornerFrontRight;
+                // Two Quadrants diagonal
+                if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                    if (data.lsLeftFrontRight + data.lsFront + data.RightBackLeft + data.lsBack) {
+                        position = LinePosition::centreVertical;
+                    } else if (data.lsLeftFrontRight + data.lsFront + data.lsCentreFrontRight + data.lsLeftBackLeft + data.lsCentreBackLeft + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerFrontLeft;
+                    } else if (data.lsRightFrontRight + data.lsRight + data.lsLeftBackLeft + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::centreHorizontal;
+                    } else if (data.lsRightFrontRight + data.lsCentreFrontRight + data.lsRight + data.lsRightBackLeft + data.lsBack + data.lsCentreBackLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerBackRight;
+                    } else {
+                        position = LinePosition::unknown;
+                    }
+                } else if (data.lsQuadBackRight + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                    if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.front == data.lsTotal) {
+                        position = LinePosition::centreVertical;
+                    } else if (data.lsLeftBackRight + data.lsBack + data.lsCentreBackRight + data.lsLeftFrontLeft + data.lsLeft + data.lsCentreFrontLeft) {
+                        position = LinePosition::bigCornerBackLeft;
+                    } else if (data.lsRightBackRight + data.lsRight + data.lsLeftFrontLeft + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::centreHorizontal;
+                    } else if (data.lsRightBackRight + data.lsRight + data.lsCentreBackRight + data.lsRightFrontLeft + data.lsCentreFrontLeft + data.lsFront == data.lsTotal) {
+                        position = LinePosition::bigCornerFrontRight;
+                    } else {
+                        position = LinePosition::unknown;
+                    }
                 } else {
-                    /* We have exhausted all reasonable possibilities.
-                     * If the light sensors see white in all four quadrants,
-                     * we have no idea where we are.
-                     */
-                    position = LinePosition::unknown;
+                    // Three Quadrants
+                    if (data.lsQuadFrontRight + data.lsQuadBackRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerBackRight;
+                    } else if (data.lsQuadBackRight + data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerBackLeft;
+                    } else if (data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerFrontLeft;
+                    } else if (ddata.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                        position = LinePosition::bigCornerFrontRight;
+                    } else {
+                        /* We have exhausted all reasonable possibilities.
+                         * If the light sensors see white in all four quadrants,
+                         * we have no idea where we are.
+                         */
+                        position = LinePosition::unknown;
+                    }
                 }
             }
         }

@@ -96,6 +96,11 @@ void LightSensorArray::calculatePostion() {
                     position = LinePosition::unknown;
                 }
             } else if (data.lsQuadBackRight + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.front == data.lsTotal) {
+                    position = LinePosition::centreVertical;
+                } else if (data.lsLeftBackRight + data.lsBack + data.lsCentreBackRight + data.lsLeftFrontLeft + data.lsLeft + data.lsCentreFrontLeft) {
+                    position = LinePosition::bigCornerBackLeft;
+                }
                 // TODO
             } else {
                 // Three Quadrants

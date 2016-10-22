@@ -2,6 +2,7 @@
 #define CALCULATEROBOTPOSITION_H
 
 #include "RobotPosition.h"
+#include <LinePosition.h>
 
 RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPosition) {
     if (line == LinePosition::unknown) {
@@ -16,19 +17,19 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::front: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
                 case LinePosition::right: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnRightLine;
                     break;
                 }
                 case LinePosition::back: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnBackLine;
                     break;
                 }
                 case LinePosition::left: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnLeftLine;
                     break;
                 }
                 case LinePosition::smallCornerFrontRight: {

@@ -10,16 +10,17 @@
 #include <CalculateRobotPosition.h>
 
 void setup() {
-    // empty
-    Serial.begin(9600);
-    pinMode(13, OUTPUT);
+    pinMode(14, OUTPUT);
 }
 
 void loop() {
-    // empty
-    digitalWrite(13, HIGH);
-    delay(100);
-    digitalWrite(13, LOW);
-    delay(100);
-    Serial.println("test");
+    for (int i = 0; i <= 255; i++) {
+        analogWrite(14, i);
+        delay(5);
+    }
+
+    for (int i = 255; i >= 0; i--) {
+        analogWrite(14, i);
+        delay(5);
+    }
 }

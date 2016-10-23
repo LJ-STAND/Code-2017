@@ -77,23 +77,23 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         case RobotPosition::smallOnFrontLine: {
             switch (line) {
                 case LinePosition::none: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::field;
                     break;
                 }
                 case LinePosition::front: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
                 case LinePosition::right: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnRightLine;
                     break;
                 }
                 case LinePosition::back: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnBackLine;
                     break;
                 }
                 case LinePosition::left: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnLeftLine;
                     break;
                 }
                 case LinePosition::smallCornerFrontRight: {

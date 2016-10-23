@@ -3,11 +3,18 @@
  */
 
 #include <Arduino.h>
+#include <LightSensorArray.h>
+#include <LinePosition.h>
+
+LightSensorArray lightSensorArray;
+LinePosition linePosition;
 
 void setup() {
-    // empty
+    lightSensorArray.init();
 }
 
 void loop() {
-    // empty
+    lightSensorArray.read();
+    lightSensorArray.calculatePostion();
+    linePosition = lightSensorArray.getLinePosition();
 }

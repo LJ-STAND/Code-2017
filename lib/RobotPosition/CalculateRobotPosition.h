@@ -205,63 +205,63 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         case RobotPosition::overFrontLine: {
             switch (line) {
                 case LinePosition::none: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::overFrontLine;
                     break;
                 }
                 case LinePosition::front: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
                 case LinePosition::right: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnRightLine;
                     break;
                 }
                 case LinePosition::back: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::bigOnFrontLine;
                     break;
                 }
                 case LinePosition::left: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnLeftLine;
                     break;
                 }
                 case LinePosition::smallCornerFrontRight: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
                 case LinePosition::smallCornerBackRight: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::bigOnCornerFrontLeft;
                     break;
                 }
                 case LinePosition::smallCornerBackLeft: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::bigOnCornerFrontRight;
                     break;
                 }
                 case LinePosition::smallCornerFrontLeft: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
                 case LinePosition::bigCornerFrontRight: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnCornerFrontRight;
                     break;
                 }
                 case LinePosition::bigCornerBackRight: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::bigOnFrontLine;
                     break;
                 }
                 case LinePosition::bigCornerBackLeft: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::bigOnFrontLine;
                     break;
                 }
                 case LinePosition::bigCornerFrontLeft: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnCornerFrontLeft;
                     break;
                 }
                 case LinePosition::centreVertical: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnLeftLine;
                     break;
                 }
                 case LinePosition::centreHorizontal: {
-                    return RobotPosition::field; // TODO
+                    return RobotPosition::smallOnFrontLine;
                     break;
                 }
             }

@@ -3,24 +3,25 @@
  */
 
 #include <Arduino.h>
-#include <SPI.h>
+#include <t3spi.h>
 
-#include <LightSensorArray.h>
-#include <RobotPosition.h>
-#include <CalculateRobotPosition.h>
+T3SPI spi;
+
+#define DATA_LENGTH 1
+
+volatile uint16_t dataIn[DATA_LENGTH];
+volatile uint16_t dataOut[DATA_LENGTH];
 
 void setup() {
-    pinMode(14, OUTPUT);
+    pinMode(13, OUTPUT);
 }
 
 void loop() {
-    for (int i = 0; i <= 255; i++) {
-        analogWrite(14, i);
-        delay(5);
-    }
+    //SPI teensy
+    // spi.rxtx16(dataIn, dataOut, datalength, false, CS0); //Send data to teensy on CS0
 
-    for (int i = 255; i >= 0; i--) {
-        analogWrite(14, i);
-        delay(5);
-    }
+    digitalWrite(13, HIGH);
+    delay(1000);
+    digitalWrite(13, LOW);
+    delay(1000);
 }

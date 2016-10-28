@@ -37,6 +37,11 @@
 #define LS_22 A23
 #define LS_23 A24
 
+#define TSOP_PWR_1 29
+#define TSOP_PWR_2 30
+#define TSOP_PWR_3 31
+#define TSOP_PWR_4 32
+
 // Motors
 // TODO: update from schematic
 

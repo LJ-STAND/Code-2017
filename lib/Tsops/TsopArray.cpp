@@ -2,13 +2,12 @@
  */
 #include "TsopArray.h"
 
-TsopArray::TsopArray() {
-    // empty
-}
-
 void TsopArray::init() {
     // Set the correct pinmodes for all the tsop pins
-    pinMode(TSOP_UNLOCK_PIN, OUTPUT);
+    pinMode(TSOP_PWR_1, OUTPUT);
+    pinMode(TSOP_PWR_2, OUTPUT);
+    pinMode(TSOP_PWR_3, OUTPUT);
+    pinMode(TSOP_PWR_4, OUTPUT);
 
     for (int i = 0; i < TSOP_NUM; i++) {
         pinMode(tsopPins[i], INPUT);
@@ -44,12 +43,18 @@ void TsopArray::readOnce() {
 }
 void TsopArray::on() {
     // Turn the TSOPs on
-    digitalWrite(TSOP_UNLOCK_PIN, HIGH);
+    digitalWrite(TSOP_PWR_1, HIGH);
+    digitalWrite(TSOP_PWR_2, HIGH);
+    digitalWrite(TSOP_PWR_3, HIGH);
+    digitalWrite(TSOP_PWR_4, HIGH);
 }
 
 void TsopArray::off() {
     // Turn the TSOPs off
-    digitalWrite(TSOP_UNLOCK_PIN, LOW);
+    digitalWrite(TSOP_PWR_1, LOW);
+    digitalWrite(TSOP_PWR_2, LOW);
+    digitalWrite(TSOP_PWR_3, LOW);
+    digitalWrite(TSOP_PWR_4, LOW);
 }
 
 void TsopArray::unlock() {

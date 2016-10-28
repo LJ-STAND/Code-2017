@@ -7,13 +7,12 @@
 #include <LightSensorArray.h>
 #include <LinePosition.h>
 
-volatile uint16_t *dataIn;
-volatile uint16_t dataOut;
-
 T3SPI spi;
 
+volatile uint16_t dataIn[DATA_LENGTH_LIGHT];
+volatile uint16_t dataOut[DATA_LENGTH_LIGHT];
+
 LightSensorArray lightSensorArray;
-LinePosition linePosition;
 
 void setup() {
     Serial.begin(9600);
@@ -23,23 +22,16 @@ void setup() {
 
     NVIC_ENABLE_IRQ(IRQ_SPI0);
 
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
-    dataOut[0] = 1;
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop() {
-    // lightSensorArray.read();
-    // lightSensorArray.calculatePostion();
-    // linePosition = lightSensorArray.getLinePosition();
-
-    dataOut[0] = dataOut[0] + 1;
-    if (dataOut[0] >= 65535) {
-        dataOut[0] = 0;
-    }
+    lightSensorArray.read();
+    lightSensorArray.calculatePostion();
 }
 
 void spi0_isr() {
-    spi.rxtx16(dataIn, dataOut, DATA_LENGTH);
-    Serial.println(dataIn[0]);
+    dataOut[0] = (uint16_t) lightSensorArray.getLinePosition();
+    spi.rxtx16(dataIn, dataOut, DATA_LENGTH_LIGHT);
 }

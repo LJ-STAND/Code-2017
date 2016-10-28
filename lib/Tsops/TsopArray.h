@@ -12,7 +12,7 @@
 
 class TsopArray {
     public:
-        TsopArray();
+        TsopArray() {}
         void init();
         void updateOnce();
         void on();
@@ -34,7 +34,7 @@ class TsopArray {
         int simpleAngle = 0;
         int strength = 0;
         int simpleStrength = 0;
-        
+
     private:
         int tempValues[TSOP_NUM] = {0};
         int tempFilteredValues[TSOP_NUM] = {0};

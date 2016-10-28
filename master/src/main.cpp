@@ -19,7 +19,9 @@ void setup() {
     spi.setCTAR(CTAR_0, 16, SPI_MODE0, LSB_FIRST, SPI_CLOCK_DIV8);
     dataOut[0] = 911;
 
+    pinMode(13, OUTPUT);
     delay(500);
+    digitalWrite(13, HIGH);
 }
 
 void loop() {

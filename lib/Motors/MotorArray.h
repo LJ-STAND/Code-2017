@@ -6,9 +6,10 @@
 
 class MotorArray {
 public:
-    Motor motorLeft;
     Motor motorRight;
-    Motor motorBack;
+    Motor motorLeft;
+    Motor motorBackRight;
+    Motor motorBackLeft;
 
     MotorArray();
     void move(int direction, int rotation, int speed);

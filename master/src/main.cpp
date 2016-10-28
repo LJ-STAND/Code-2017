@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <t3spi.h>
+#include <i2c_t3.h>
 
 T3SPI spi;
 
@@ -11,6 +12,7 @@ volatile uint16_t *dataIn;
 volatile uint16_t *dataOut;
 
 void setup() {
+    Wire.begin();
     Serial.begin(9600);
     Bluetooth::init();
 

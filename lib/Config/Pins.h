@@ -3,6 +3,10 @@
  * (e.g. TSOP_6)
  */
 
+#include <Arduino.h>
+#include <t3spi.h>
+#include <i2c_t3.h>
+
 #ifndef PINS_H
 #define PINS_H
 
@@ -51,5 +55,32 @@
 #define MOTOR_BACK_IN1 34
 #define MOTOR_BACK_IN2 36
 #define MOTOR_BACK_SB 38
+
+#define MOTOR_BACK_PWM 4
+#define MOTOR_BACK_IN1 34
+#define MOTOR_BACK_IN2 36
+#define MOTOR_BACK_SB 38
+
+// Communication
+// TODO: update from schematic
+
+#define MASTER_MOSI MOSI
+#define MASTER_MISO MISO
+#define MASTER_SCK ALT_SCK
+#define MASTER_CS_TSOP CS4
+#define MASTER_CS_LIGHT_SENSOR CS3
+#define MASTER_CS_PIXY CS2
+
+#define SLAVE_TSOP_MOSI MOSI
+#define SLAVE_TSOP_MISO MISO
+#define SLAVE_TSOP_SCK ALT_SCK
+#define SLAVE_TSOP_CS CS2
+
+#define SLAVE_LIGHT_MOSI MOSI
+#define SLAVE_LIGHT_MISO MISO
+#define SLAVE_LIGHT_SCK ALT_SCK
+#define SLAVE_LIGHT_CS CS0
+
+#define
 
 #endif // PINS_H

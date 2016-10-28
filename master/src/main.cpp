@@ -33,7 +33,7 @@ void setup() {
 void getData() {
     spi.txrx16(dataOutTsop, dataInTsop, 1, false, MASTER_CS_TSOP);
     spi.txrx16(dataOutLight, dataInLight, 1, false, MASTER_CS_LIGHT);
-    
+
     sensorData = SensorData(static_cast<LinePosition>(dataInLight[0]), (int) dataInTsop[0], (int) dataInTsop[1]);
 }
 

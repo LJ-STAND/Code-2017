@@ -12,7 +12,7 @@ T3SPI spi;
 volatile uint16_t dataIn[DATA_LENGTH_TSOP];
 volatile uint16_t dataOut[DATA_LENGTH_TSOP];
 
-TsopArray tsopArray;
+TSOPArray tsopArray;
 
 void setup() {
     Serial.begin(9600);

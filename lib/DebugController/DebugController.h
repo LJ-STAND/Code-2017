@@ -11,9 +11,9 @@ public:
     void init();
 
     void setLEDBrightness(int green, int orange, int pink, int red, int white, int yellow);
-    void toggleLeds(bool green, bool orange, bool pink, bool red, bool white, bool yellow);
+    void toggleLEDs(bool green, bool orange, bool pink, bool red, bool white, bool yellow);
     void setAllLEDBrightness(int brightness);
-    void toggleAllLeds(bool on);
+    void toggleAllLEDs(bool on);
 
     void setGreenBrightness(int brightness);
     void toggleGreen(bool on);
@@ -27,6 +27,9 @@ public:
     void toggleWhite(bool on);
     void setYellowBrightness(int brightness);
     void toggleYellow(bool on);
+
+    void appSendTsops(int tsop, int strength);
+    void appSendImu(double angle);
 };
 
 #endif

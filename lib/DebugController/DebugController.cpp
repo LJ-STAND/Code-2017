@@ -18,7 +18,7 @@ void DebugController::setLEDBrightness(int green, int orange, int pink, int red,
     setYellowBrightness(yellow);
 }
 
-void DebugController::toggleLeds(bool green, bool orange, bool pink, bool red, bool white, bool yellow) {
+void DebugController::toggleLEDs(bool green, bool orange, bool pink, bool red, bool white, bool yellow) {
     toggleGreen(green);
     toggleOrange(orange);
     togglePink(pink);
@@ -36,7 +36,7 @@ void DebugController::setAllLEDBrightness(int brightness) {
     setYellowBrightness(brightness);
 }
 
-void DebugController::toggleAllLeds(bool on) {
+void DebugController::toggleAllLEDs(bool on) {
     toggleGreen(on);
     toggleOrange(on);
     togglePink(on);

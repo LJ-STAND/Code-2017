@@ -1,4 +1,4 @@
-/* Library for interfacing with tsop array
+/* Library for interfacing with TSOP array
  */
 
 #ifndef TSOP_ARRAY_H
@@ -10,9 +10,9 @@
 #include <Config.h>
 #include <Pins.h>
 
-class TsopArray {
+class TSOPArray {
     public:
-        TsopArray() {}
+        TSOPArray() {}
         void init();
         void updateOnce();
         void on();
@@ -29,7 +29,7 @@ class TsopArray {
         int filteredValues[TSOP_NUM] = {0};
         int sortedFilteredValues[TSOP_NUM] = {0};
         int indexes[TSOP_NUM] = {0};
-        int tsopCounter = 0;
+        int TSOPCounter = 0;
         int angle = 0;
         int simpleAngle = 0;
         int strength = 0;
@@ -38,7 +38,7 @@ class TsopArray {
     private:
         int tempValues[TSOP_NUM] = {0};
         int tempFilteredValues[TSOP_NUM] = {0};
-        int tsopPins[TSOP_NUM] = {TSOP_0, TSOP_1, TSOP_2, TSOP_3, TSOP_4, TSOP_5, TSOP_6, TSOP_7, TSOP_8, TSOP_9, TSOP_10, TSOP_11, TSOP_12, TSOP_13, TSOP_14, TSOP_15, TSOP_16, TSOP_17, TSOP_18, TSOP_19, TSOP_20, TSOP_21, TSOP_22, TSOP_23};
+        int TSOPPins[TSOP_NUM] = {TSOP_0, TSOP_1, TSOP_2, TSOP_3, TSOP_4, TSOP_5, TSOP_6, TSOP_7, TSOP_8, TSOP_9, TSOP_10, TSOP_11, TSOP_12, TSOP_13, TSOP_14, TSOP_15, TSOP_16, TSOP_17, TSOP_18, TSOP_19, TSOP_20, TSOP_21, TSOP_22, TSOP_23};
         // int scaledSin[TSOP_NUM] = {0};
         // int scaledCos[TSOP_NUM] = {0};
 };

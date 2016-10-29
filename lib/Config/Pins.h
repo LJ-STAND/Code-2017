@@ -85,4 +85,13 @@
 #define SLAVE_LIGHT_SCK ALT_SCK
 #define SLAVE_LIGHT_CS CS0
 
+// LEDs
+
+#define LED_1_GREEN 38
+#define LED_2_ORANGE 37
+#define LED_3_PINK 36
+#define LED_4_RED 35
+#define LED_5_WHITE 29
+#define LED_6_YELLOW 30
+
 #endif // PINS_H

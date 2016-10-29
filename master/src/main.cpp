@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <t3spi.h>
 #include <i2c_t3.h>
+#include <Bluetooth.h>
 
 #include <LinePosition.h>
 #include <RobotPosition.h>
@@ -22,6 +23,7 @@ SensorData sensorData;
 void setup() {
     Wire.begin();
     Serial.begin(9600);
+    Bluetooth::init();
 
     spi.begin_MASTER(MASTER_SCK, MASTER_MOSI, MASTER_MISO, CS0, CS_ActiveLOW);
     spi.setCTAR(CTAR_0, 16, SPI_MODE0, LSB_FIRST, SPI_CLOCK_DIV16);

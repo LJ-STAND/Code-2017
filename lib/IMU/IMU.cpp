@@ -1,6 +1,6 @@
-#include "Compass.h"
+#include "IMU.h"
 
-void Compass::init() {
+void IMU::init() {
     I2CwriteByte(MPU9250_ADDRESS, 29, 0x06);
     I2CwriteByte(MPU9250_ADDRESS, 26, 0x06);
     I2CwriteByte(MPU9250_ADDRESS, 27, GYRO_FULL_SCALE_500_DPS);
@@ -11,7 +11,7 @@ void Compass::init() {
     previousTime = micros();
 };
 
-Vector3D Compass::readAccelerometer() {
+Vector3D IMU::readAccelerometer() {
     uint8_t buffer[14];
     I2Cread(MPU9250_ADDRESS, 0x3B, 14, buffer);
 
@@ -23,7 +23,7 @@ Vector3D Compass::readAccelerometer() {
     return returnVector;
 }
 
-Vector3D Compass::readGyroscope() {
+Vector3D IMU::readGyroscope() {
     uint8_t buffer[14];
     I2Cread(MPU9250_ADDRESS, 0x3B, 14, buffer);
 
@@ -35,7 +35,7 @@ Vector3D Compass::readGyroscope() {
     return returnVector;
 }
 
-Vector3D Compass::readMagnetometer() {
+Vector3D IMU::readMagnetometer() {
     uint8_t status1;
     do {
         I2Cread(MAG_ADDRESS, 0x02, 1, &status1);
@@ -52,7 +52,7 @@ Vector3D Compass::readMagnetometer() {
     return returnVector;
 }
 
-void Compass::updateGyro() {
+void IMU::updateGyro() {
     double reading = (double) readGyroscope().z;
 
 	long currentTime = micros();
@@ -62,12 +62,12 @@ void Compass::updateGyro() {
 	previousTime = currentTime;
 }
 
-double Compass::calibrate() {
+double IMU::calibrate() {
     motorController.brake();
 
     readGyroscope();
 
-    delay(COMPASS_CALIBRATION_TIME);
+    delay(IMU_CALIBRATION_TIME);
 
     double reading = (double) readGyroscope().z;
     calibration = reading;
@@ -75,6 +75,6 @@ double Compass::calibrate() {
     return reading;
 }
 
-double Compass::relativeHeading() {
+double IMU::relativeHeading() {
     return 180.0 - (doubleMod((heading + facingDirection) + 180, 360));
 }

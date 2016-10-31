@@ -28,8 +28,8 @@ public:
     void setYellowBrightness(int brightness);
     void toggleYellow(bool on);
 
-    void appSendTsops(int tsop, int strength);
-    void appSendImu(double angle);
+    void appSendTSOPs(int tsop, int strength);
+    void appSendIMU(double angle);
 };
 
 #endif

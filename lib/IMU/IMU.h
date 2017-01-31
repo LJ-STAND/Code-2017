@@ -34,6 +34,7 @@ public:
     void updateGyro();
     double calibrate();
     double relativeHeading();
+    int correctionRotation();
 
 private:
     long previousTime;

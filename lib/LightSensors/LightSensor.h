@@ -1,9 +1,9 @@
 #ifndef LIGHT_SENSOR_H
 #define LIGHT_SENSOR_H
 
-#include <Arduino.h>
+#include "Arduino.h"
 
-#include <Config.h>
+#include <../Config/Config.h>
 
 class LightSensor {
 public:

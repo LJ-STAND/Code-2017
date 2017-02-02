@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include <Pins.h>
+#include <../Config/Pins.h>
 
 #include "LightSensorData.h"
 #include "LightSensor.h"

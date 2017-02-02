@@ -4,7 +4,7 @@
  */
 
 #include <Arduino.h>
-#include <t3spi.h>
+#include <../t3spi/t3spi.h>
 
 #ifndef PINS_H
 #define PINS_H

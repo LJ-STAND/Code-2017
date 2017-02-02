@@ -5,13 +5,15 @@
 #include <Arduino.h>
 #include <t3spi.h>
 #include <i2c_t3.h>
-// #include <Bluetooth.h>
+#include <Config.h>
+#include <SensorData.h>
+#include <Bluetooth.h>
 
 #include <LinePosition.h>
 #include <RobotPosition.h>
 #include <CalculateRobotPosition.h>
 
-/* T3SPI spi;
+T3SPI spi;
 
 volatile uint16_t dataInTsop[DATA_LENGTH_TSOP];
 volatile uint16_t dataOutTsop[DATA_LENGTH_TSOP];
@@ -94,4 +96,4 @@ void loop() {
     position = calculateRobotPosition(sensorData.linePosition, position);
 
     move();
-} */
+}

@@ -13,7 +13,7 @@ public:
 
     static void send(String data, int dataCode = BluetoothDataType::info) {
         String msg = String(dataCode) + ";" + data;
-        Seria5.println(msg);
+        Serial5.println(msg);
     }
 
     static BluetoothData receive() {

@@ -35,23 +35,23 @@ void calculateOrbit() {
     // TODO
 
     int tsopAngle = tsops.getAngle();
-    int strength = tsops.getStrength();
+    int tsopStrength = tsops.getStrength();
 
-    if (angle < ORBIT_ORBIT_SMALL_ANGLE || angle > 360 - ORBIT_ORBIT_SMALL_ANGLE) {
-         movement.angle = (int) round(angle < 180 ? (angle * 0.5) : (180 + angle * 0.5));
-    } else if (angle < ORBIT_BIG_ANGLE || angle > 360 - ORBIT_BIG_ANGLE){
-        if (angle < 180) {
-            double nearFactor = (double)(angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
+    if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
+         movement.angle = (int) round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
+    } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE){
+        if (tsopAngle < 180) {
+            double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             movement.angle = (int) round(90 * nearFactor);
         } else {
-            double nearFactor = (double)(360 - angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
+            double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             movement.angle =  (int) round(360 - (90 * nearFactor));
         }
     } else {
-        if (strength > SHORT_STRENGTH) {
-            movement.angle =  angle + (angle < 180 ? 90 : -90);
-        } else if (strength > MEDIUM_STRENGTH) {
-            double strengthFactor = (double)(strength - MEDIUM_STRENGTH) / (double)(SHORT_STRENGTH - MEDIUM_STRENGTH);
+        if (strength > ORBIT_SHORT_STRENGTH) {
+            movement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
+        } else if (strength > ORBIT_BIG_STRENGTH) {
+            double strengthFactor = (double)(strength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
 
             movement.angle = mod(angle + (angle < 180 ? angleFactor : -angleFactor), 360);

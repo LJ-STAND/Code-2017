@@ -2,7 +2,7 @@
 #define MOVE_DATA_H
 
 typedef struct MoveData {
-    int angle, speed, rotation;
+    int angle, speed;
 } MoveData;
 
 #endif // MOVE_DATA_H

@@ -36,4 +36,6 @@
 #define ORBIT_SMALL_ANGLE 5
 #define ORBIT_BIG_ANGLE 20
 
+#define ORBIT_SPEED 255
+
 #endif // CONFIG_H

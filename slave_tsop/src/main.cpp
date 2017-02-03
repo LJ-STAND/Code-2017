@@ -32,14 +32,12 @@ void setup() {
 }
 
 void calculateOrbit() {
-    // TODO
-
     int tsopAngle = tsops.getAngle();
     int tsopStrength = tsops.getStrength();
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
          movement.angle = (int) round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
-    } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE){
+    } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             movement.angle = (int) round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
@@ -53,12 +51,13 @@ void calculateOrbit() {
         } else if (strength > ORBIT_BIG_STRENGTH) {
             double strengthFactor = (double)(strength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
-
-            movement.angle = mod(angle + (angle < 180 ? angleFactor : -angleFactor), 360);
+            movement.angle = angle + (angle < 180 ? angleFactor : -angleFactor);
         } else {
             movement.angle = angle;
         }
     }
+
+    movement.speed = ORBIT_SPEED;
 }
 
 void loop() {

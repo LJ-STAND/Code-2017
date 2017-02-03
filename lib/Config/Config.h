@@ -31,7 +31,7 @@
 // Orbit
 
 #define SHORT_STRENGTH 135
-#define MEDIUM_STRENGTH 110
+#define BIG_STRENGTH 110
 
 #define ORBIT_SMALL_ANGLE 5
 #define ORBIT_BIG_ANGLE 20

@@ -8,12 +8,12 @@ MotorArray::MotorArray() {
 }
 
 void MotorArray::move(int angle, int rotation, int speed) {
-    double angleAngleRadians = degreesToRadians(360 - angle);
+    double angleRadians = degreesToRadians(360 - angle);
 
-    double motorRightValue = cos(degreesToRadians(motorRight.motorAngle + 90) - angleAngleRadians);
-    double motorLeftValue = cos(degreesToRadians(motorLeft.motorAngle + 90) - angleAngleRadians);
-    double motorBackRightValue = cos(degreesToRadians(motorBackRight.motorAngle + 90) - angleAngleRadians);
-    double motorBackLeftValue = cos(degreesToRadians(motorBackLeft.motorAngle + 90) - angleAngleRadians);
+    double motorRightValue = cos(degreesToRadians(motorRight.motorAngle + 90) - angleRadians);
+    double motorLeftValue = cos(degreesToRadians(motorLeft.motorAngle + 90) - angleRadians);
+    double motorBackRightValue = cos(degreesToRadians(motorBackRight.motorAngle + 90) - angleRadians);
+    double motorBackLeftValue = cos(degreesToRadians(motorBackLeft.motorAngle + 90) - angleRadians);
 
     double updatedSpeed = (double) speed / doubleAbs(fmax(fmax(fmax(doubleAbs(motorLeftValue), doubleAbs(motorRightValue)), doubleAbs(motorBackRightValue)), doubleAbs(motorBackLeftValue)));
 

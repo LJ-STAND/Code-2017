@@ -54,8 +54,8 @@ void setup() {
 }
 
 void getSlaveData() {
-    spi.txrx16(dataOutTsop, dataInTsop, 1, false, MASTER_CS_TSOP);
-    spi.txrx16(dataOutLight, dataInLight, 1, false, MASTER_CS_LIGHT);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, false, MASTER_CS_TSOP);
+    spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, false, MASTER_CS_LIGHT);
 
     slaveData = SlaveData(static_cast<LinePosition>(dataInLight[0]), (int) dataInTsop[0], (int) dataInTsop[1]);
 }

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 enum BluetoothDataType: int {
-    none,
+    noData,
     info,
     tsop,
     lightSensor

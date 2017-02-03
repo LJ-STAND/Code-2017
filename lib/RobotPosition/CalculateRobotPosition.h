@@ -909,7 +909,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
         case RobotPosition::bigOnCornerFrontRight: {
             switch (line) {
                 case LinePosition::none: {
-                    return RobotPosition::overCornerFrontRight
+                    return RobotPosition::overCornerFrontRight;
                     break;
                 }
                 case LinePosition::front: {

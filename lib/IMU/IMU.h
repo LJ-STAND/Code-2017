@@ -4,7 +4,7 @@
 #include <I2C.h>
 #include <Vector3D.h>
 #include <LJSTANDCommon.h>
-#include <MotorController.h>
+#include <Config.h>
 
 #define MPU9250_ADDRESS 0x68
 #define MAG_ADDRESS 0x0C
@@ -33,8 +33,10 @@ public:
 
     void updateGyro();
     double calibrate();
-    double relativeHeading();
-    int correctionRotation();
+
+    // TODO: Move to main.cpp
+    // double relativeHeading();
+    // int correctionRotation();
 
 private:
     long previousTime;

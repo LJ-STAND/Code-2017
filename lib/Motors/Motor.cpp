@@ -14,9 +14,9 @@ Motor::Motor(int pwm, int inOne, int inTwo, int standby, int angle, bool reverse
 	pinMode(standbyPin, OUTPUT);
 }
 
-void Motor::set(int power) {
-	if (power > 0) {
-		analogWrite(pwmPin, constrain(power, 0, 255));
+void Motor::set(int speed) {
+	if (speed > 0) {
+		analogWrite(pwmPin, constrain(speed, 0, 255));
 
 		if (reversed) {
 			digitalWrite(inOnePin, HIGH);
@@ -25,8 +25,8 @@ void Motor::set(int power) {
 			digitalWrite(inOnePin, LOW);
 			digitalWrite(inTwoPin, HIGH);
 		}
-	} else if (power < 0) {
-		analogWrite(pwmPin, constrain(abs(power), 0, 255));
+	} else if (speed < 0) {
+		analogWrite(pwmPin, constrain(abs(speed), 0, 255));
 
 		if (reversed) {
 			digitalWrite(inOnePin, LOW);

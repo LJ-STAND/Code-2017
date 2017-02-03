@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#ifndef LIB_JSTANDCOMMON_JSTANDCOMMON_H_
-#define LIB_JSTANDCOMMON_JSTANDCOMMON_H_
+#ifndef LJSTANDCOMMON_H
+#define LJSTANDCOMMON_H
 
 #define TO_RADIANS 0.01745329251994329576923690768489
 
@@ -17,14 +17,6 @@
     } else{                                       \
         for (int q = upper; q >= lower; q--){     \
             *(a + q + 1) = *(a + q); }}}
-
-struct Vector3D {
-    double x;
-    double y;
-    double z;
-};
-
-
 
 // int len(int array[]);
 
@@ -57,4 +49,4 @@ double degreesToRadians(double degrees);
 
 double doubleAbs(double value);
 
-#endif  // LIB_JSTANDCOMMON_JSTANDCOMMON_H_
+#endif  // LJSTANDCOMMON_H

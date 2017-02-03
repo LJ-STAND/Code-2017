@@ -1,4 +1,6 @@
 /*
+ * SLAVE_LIGHT
+ *
  * Source file for the light slave teensy for LJ STAND 2017
  */
 

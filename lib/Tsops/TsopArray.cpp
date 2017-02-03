@@ -216,3 +216,11 @@ void TSOPArray::calculateStrength(int n) {
 
     strength = (double) strengthTotal / n;
 }
+
+int TSOPArray::getAngle() {
+    return angle;
+}
+
+int TSOPArray::getStrength() {
+    return strength;
+}

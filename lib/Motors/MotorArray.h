@@ -2,6 +2,8 @@
 #define MOTOR_ARRAY_H
 
 #include <Arduino.h>
+#include <Pins.h>
+#include <LJSTANDCommon.h>
 #include "Motor.h"
 
 class MotorArray {
@@ -12,7 +14,7 @@ public:
     Motor motorBackLeft;
 
     MotorArray();
-    void move(int direction, int rotation, int speed);
+    void move(int angle, int rotation, int speed);
     void brake();
 };
 

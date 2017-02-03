@@ -32,8 +32,6 @@ void setup() {
 }
 
 void calculateOrbit() {
-    // TODO
-
     int tsopAngle = tsops.getAngle();
     int tsopStrength = tsops.getStrength();
 

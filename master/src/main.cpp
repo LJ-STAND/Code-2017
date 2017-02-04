@@ -53,6 +53,33 @@ void setup() {
     imu.calibrate();
 }
 
+int calculateRotationCorrection() {
+    double relativeHeading = 180.0 - (doubleMod((imu.heading + imu.facingDirection) + 180, 360));
+    int correctionRotation;
+
+	if (abs(relativeHeading > IMU_THRESHOLD) {
+		correctionRotation = (int) relativeHeading;
+
+		if (correctionRotation < 0 && correctionRotation > -CORRECTION_ROTATION_MINIMUM) {
+			correctionRotation = -CORRECTION_ROTATION_MINIMUM;
+		} else if (correctionRotation > 0 && correctionRotation < CORRECTION_ROTATION_MINIMUM) {
+			correctionRotation = CORRECTION_ROTATION_MINIMUM;
+		} else if (correctionRotation > 0 && correctionRotation > CORRECTION_ROTATION_MAXIMUM) {
+			correctionRotation = CORRECTION_ROTATION_MAXIMUM;
+		} else if (correctionRotation < 0 && correctionRotation < -CORRECTION_ROTATION_MAXIMUM) {
+			correctionRotation = -CORRECTION_ROTATION_MAXIMUM;
+		}
+	} else {
+		correctionRotation = 0;
+	}
+
+	return correctionRotation;
+}
+
+MoveData calculateMovement() {
+    // TODO
+}
+
 void getSlaveData() {
     spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, false, MASTER_CS_TSOP);
     spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, false, MASTER_CS_LIGHT);
@@ -64,4 +91,6 @@ void loop() {
     getSlaveData();
 
     position = calculateRobotPosition(slaveData.linePosition, position);
+
+    motors.move(calculateMovement());
 }

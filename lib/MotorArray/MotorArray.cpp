@@ -28,6 +28,10 @@ void MotorArray::move(int angle, int rotation, int speed) {
     motorBackLeft.set(motorBackLeftSpeed);
 }
 
+void MotorArray::move(MoveData data) {
+    move(data.angle, data.rotation, data.speed);
+}
+
 void MotorArray::brake() {
     motorRight.brake();
     motorLeft.brake();

@@ -72,30 +72,3 @@ double IMU::calibrate() {
 
     return reading;
 }
-
-// TODO: Move to main.cpp
-// double IMU::relativeHeading() {
-//     return 180.0 - (doubleMod((heading + facingDirection) + 180, 360));
-// }
-//
-// int IMU::correctionRotation() {
-//     int correctionRotation;
-//
-// 	if (abs(relativeHeading()) > IMU_THRESHOLD) {
-// 		correctionRotation = (int) relativeHeading();
-//
-// 		if (correctionRotation < 0 && correctionRotation > -CORRECTION_ROTATION_MINIMUM) {
-// 			correctionRotation = -CORRECTION_ROTATION_MINIMUM;
-// 		} else if (correctionRotation > 0 && correctionRotation < CORRECTION_ROTATION_MINIMUM) {
-// 			correctionRotation = CORRECTION_ROTATION_MINIMUM;
-// 		} else if (correctionRotation > 0 && correctionRotation > CORRECTION_ROTATION_MAXIMUM) {
-// 			correctionRotation = CORRECTION_ROTATION_MAXIMUM;
-// 		} else if (correctionRotation < 0 && correctionRotation < -CORRECTION_ROTATION_MAXIMUM) {
-// 			correctionRotation = -CORRECTION_ROTATION_MAXIMUM;
-// 		}
-// 	} else {
-// 		correctionRotation = 0;
-// 	}
-//
-// 	return correctionRotation;
-// }

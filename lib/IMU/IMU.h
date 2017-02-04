@@ -34,10 +34,6 @@ public:
     void updateGyro();
     double calibrate();
 
-    // TODO: Move to main.cpp
-    // double relativeHeading();
-    // int correctionRotation();
-
 private:
     long previousTime;
     double calibration;

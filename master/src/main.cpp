@@ -55,25 +55,25 @@ void setup() {
 
 int calculateRotationCorrection() {
     double relativeHeading = 180.0 - (doubleMod((imu.heading + imu.facingDirection) + 180, 360));
-    int correctionRotation;
+    int rotationCorrection;
 
 	if (abs(relativeHeading > IMU_THRESHOLD) {
-		correctionRotation = (int) relativeHeading;
+		rotationCorrection = (int) relativeHeading;
 
-		if (correctionRotation < 0 && correctionRotation > -CORRECTION_ROTATION_MINIMUM) {
-			correctionRotation = -CORRECTION_ROTATION_MINIMUM;
-		} else if (correctionRotation > 0 && correctionRotation < CORRECTION_ROTATION_MINIMUM) {
-			correctionRotation = CORRECTION_ROTATION_MINIMUM;
-		} else if (correctionRotation > 0 && correctionRotation > CORRECTION_ROTATION_MAXIMUM) {
-			correctionRotation = CORRECTION_ROTATION_MAXIMUM;
-		} else if (correctionRotation < 0 && correctionRotation < -CORRECTION_ROTATION_MAXIMUM) {
-			correctionRotation = -CORRECTION_ROTATION_MAXIMUM;
+		if (rotationCorrection < 0 && rotationCorrection > -CORRECTION_ROTATION_MINIMUM) {
+			rotationCorrection = -CORRECTION_ROTATION_MINIMUM;
+		} else if (rotationCorrection > 0 && rotationCorrection < CORRECTION_ROTATION_MINIMUM) {
+			rotationCorrection = CORRECTION_ROTATION_MINIMUM;
+		} else if (rotationCorrection > 0 && rotationCorrection > CORRECTION_ROTATION_MAXIMUM) {
+			rotationCorrection = CORRECTION_ROTATION_MAXIMUM;
+		} else if (rotationCorrection < 0 && rotationCorrection < -CORRECTION_ROTATION_MAXIMUM) {
+			rotationCorrection = -CORRECTION_ROTATION_MAXIMUM;
 		}
 	} else {
-		correctionRotation = 0;
+		rotationCorrection = 0;
 	}
 
-	return correctionRotation;
+	return rotationCorrection;
 }
 
 MoveData calculateMovement() {

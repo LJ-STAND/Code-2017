@@ -57,7 +57,7 @@ int calculateRotationCorrection() {
     double relativeHeading = 180.0 - (doubleMod((imu.heading + imu.facingDirection) + 180, 360));
     int rotationCorrection;
 
-	if (abs(relativeHeading > IMU_THRESHOLD) {
+	if (abs(relativeHeading > IMU_THRESHOLD)) {
 		rotationCorrection = (int) relativeHeading;
 
 		if (rotationCorrection < 0 && rotationCorrection > -CORRECTION_ROTATION_MINIMUM) {

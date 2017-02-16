@@ -9,7 +9,7 @@ void DebugController::init() {
     pinMode(LED_6_RED, OUTPUT);
 }
 
-void DebugController::setLEDBrightness(int orange, int white, int yellow, int red, int white, int yellow) {
+void DebugController::setLEDBrightness(int orange, int white, int yellow, int blue, int green, int red) {
     setOrangeBrightness(orange);
     setWhiteBrightness(white);
     setYellowBrightness(yellow);

@@ -94,4 +94,31 @@
 #define LED_5_WHITE 29
 #define LED_6_YELLOW 30
 
+// TSOPs
+
+#define TSOP_0 0
+#define TSOP_1 1
+#define TSOP_2 2
+#define TSOP_3 3
+#define TSOP_4 4
+#define TSOP_5 5
+#define TSOP_6 6
+#define TSOP_7 7
+#define TSOP_8 8
+#define TSOP_9 9
+#define TSOP_10 15
+#define TSOP_11 16
+#define TSOP_12 17
+#define TSOP_13 18
+#define TSOP_14 19
+#define TSOP_15 20
+#define TSOP_16 21
+#define TSOP_17 22
+#define TSOP_18 23
+#define TSOP_19 24
+#define TSOP_20 25
+#define TSOP_21 26
+#define TSOP_22 27
+#define TSOP_23 28
+
 #endif // PINS_H

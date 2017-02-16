@@ -88,9 +88,13 @@ void getSlaveData() {
 }
 
 void loop() {
-    getSlaveData();
-
-    position = calculateRobotPosition(slaveData.linePosition, position);
-
-    motors.move(calculateMovement());
+    // getSlaveData();
+    //
+    // position = calculateRobotPosition(slaveData.linePosition, position);
+    //
+    // motors.move(calculateMovement());
+    delay(2000);
+    motors.move(0, 255, 0);
+    delay(2000);
+    motors.move(0, -255, 0);
 }

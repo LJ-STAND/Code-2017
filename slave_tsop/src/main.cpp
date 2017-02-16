@@ -6,8 +6,9 @@
 
 #include <Arduino.h>
 #include <t3spi.h>
-#include <tsops.h>
+#include <TSOPArray.h>
 #include <Config.h>
+#include <MoveData.h>
 
 T3SPI spi;
 
@@ -46,14 +47,14 @@ void calculateOrbit() {
             movement.angle =  (int) round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
         }
     } else {
-        if (strength > ORBIT_SHORT_STRENGTH) {
+        if (tsopStrength > ORBIT_SHORT_STRENGTH) {
             movement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
-        } else if (strength > ORBIT_BIG_STRENGTH) {
-            double strengthFactor = (double)(strength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
+        } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
+            double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
-            movement.angle = angle + (angle < 180 ? angleFactor : -angleFactor);
+            movement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
         } else {
-            movement.angle = angle;
+            movement.angle = tsopAngle;
         }
     }
 
@@ -61,12 +62,15 @@ void calculateOrbit() {
 }
 
 void loop() {
-    tsops.readOnce();
+    tsops.updateOnce();
 
-    if (tsops.tsopCounter > TSOP_LOOP_COUNT) {
+    if (tsops.TSOPCounter > TSOP_LOOP_COUNT) {
         tsops.finishRead();
         tsops.unlock();
 
+        Serial.println(tsops.getAngle());
+        Serial.println(tsops.getStrength());
+        Serial.println();
         calculateOrbit();
     }
 }

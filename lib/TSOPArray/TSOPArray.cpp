@@ -33,7 +33,7 @@ void TSOPArray::init() {
     on();
 }
 
-void TSOPArray::readOnce() {
+void TSOPArray::updateOnce() {
     // Read each TSOP once
     for (int i = 0; i < TSOP_NUM; i++) {
         tempValues[i] += digitalRead(TSOPPins[i]) ^ 1;
@@ -193,12 +193,12 @@ void TSOPArray::calculateAngle(int n) {
 
     relIndexAverage = (double) relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
 
-    double index = best + relIndexAv;
+    double index = best + relIndexAverage;
 
     index = doubleMod(index, (double) TSOP_NUM);
 
 
-    if (sortedFilteredValues[0] <= MIN_IGNORE_TSOPS) {
+    if (sortedFilteredValues[0] <= TSOP_MIN_IGNORE) {
         angle = -1;
     } else {
         angle = index * 360.0 / (double) TSOP_NUM;

@@ -82,7 +82,7 @@ int calculateRotationCorrection() {
 }
 
 MoveData calculateMovement() {
-    // TODO
+    motors.move(slaveData.orbitAngle, slaveData.orbitSpeed, calculateRotationCorrection());
 }
 
 void getSlaveData() {
@@ -93,5 +93,7 @@ void getSlaveData() {
 }
 
 void loop() {
-
+    getSlaveData();
+    imu.updateGyro();
+    calculateMovement();
 }

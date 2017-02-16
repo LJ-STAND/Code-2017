@@ -105,11 +105,15 @@ void loop() {
 
     for (int i = 0; i < 255; i++) {
         debug.setAllLEDBrightness(i);
-        delay(1);
+        motors.move(0, i, 0);
+        delay(50);
     }
+
+    delay(1000);
 
     for (int i = 255; i > 0; i--) {
         debug.setAllLEDBrightness(i);
-        delay(1);
+        motors.move(0, i, 0);
+        delay(50);
     }
 }

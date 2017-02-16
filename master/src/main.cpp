@@ -93,27 +93,6 @@ void getSlaveData() {
 }
 
 void loop() {
-    // getSlaveData();
-    //
-    // position = calculateRobotPosition(slaveData.linePosition, position);
-    //
-    // motors.move(calculateMovement());
-    // delay(2000);
-    // motors.move(0, 255, 0);
-    // delay(2000);
-    // motors.move(0, -255, 0);
-
-    for (int i = 0; i < 255; i++) {
-        debug.setAllLEDBrightness(i);
-        motors.move(0, i, 0);
-        delay(50);
-    }
-
-    delay(1000);
-
-    for (int i = 255; i > 0; i--) {
-        debug.setAllLEDBrightness(i);
-        motors.move(0, i, 0);
-        delay(50);
-    }
+    imu.updateGyro();
+    Serial.println(imu.heading);
 }

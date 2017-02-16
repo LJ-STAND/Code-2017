@@ -56,7 +56,7 @@ void IMU::updateGyro() {
     double reading = (double) readGyroscope().z;
 
 	long currentTime = micros();
-    heading += (((double)(currentTime - previousTime) / 1000000.0) * (reading - calibration));
+    heading += -(((double)(currentTime - previousTime) / 1000000.0) * (reading - calibration));
 	heading = doubleMod(heading, 360.0);
 
 	previousTime = currentTime;

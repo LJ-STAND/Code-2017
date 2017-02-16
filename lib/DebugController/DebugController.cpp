@@ -62,7 +62,7 @@ void DebugController::toggleOrange(bool on) {
 }
 
 void DebugController::setPinkBrightness(int brightness) {
-    analogWrite(LED_3_PINK, constrain(brighness, 0, 255));
+    analogWrite(LED_3_PINK, constrain(brightness, 0, 255));
 }
 
 void DebugController::togglePink(bool on) {
@@ -70,7 +70,7 @@ void DebugController::togglePink(bool on) {
 }
 
 void DebugController::setRedBrightness(int brightness) {
-    analogWrite(LED_4_RED, constrain(brightnes, 0, 255));
+    analogWrite(LED_4_RED, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleRed(bool on) {

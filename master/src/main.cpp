@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include <t3spi.h>
+#include <DebugController.h>
 #include <i2c_t3.h>
 #include <Config.h>
 #include <SlaveData.h>
@@ -28,6 +29,7 @@ volatile uint16_t dataOutLight[DATA_LENGTH_LIGHT];
 SlaveData slaveData;
 RobotPosition position;
 
+DebugController debug;
 MotorArray motors;
 IMU imu;
 
@@ -51,6 +53,9 @@ void setup() {
     // IMU
     imu.init();
     imu.calibrate();
+
+    debug.init();
+    debug.toggleAllLEDs(true);
 }
 
 int calculateRotationCorrection() {
@@ -93,8 +98,18 @@ void loop() {
     // position = calculateRobotPosition(slaveData.linePosition, position);
     //
     // motors.move(calculateMovement());
-    delay(2000);
-    motors.move(0, 255, 0);
-    delay(2000);
-    motors.move(0, -255, 0);
+    // delay(2000);
+    // motors.move(0, 255, 0);
+    // delay(2000);
+    // motors.move(0, -255, 0);
+
+    for (int i = 0; i < 255; i++) {
+        debug.setAllLEDBrightness(i);
+        delay(1);
+    }
+
+    for (int i = 255; i > 0; i--) {
+        debug.setAllLEDBrightness(i);
+        delay(1);
+    }
 }

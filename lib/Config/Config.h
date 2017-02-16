@@ -21,7 +21,6 @@
 
 #define TSOP_BEST_TSOP_NO_ANGLE 4
 #define TSOP_BEST_TSOP_NO_STRENGTH 1
-#define TSOP_MIN_IGNORE 5
 
 #define TSOP_K1 12
 #define TSOP_K2 1

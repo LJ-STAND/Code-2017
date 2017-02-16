@@ -93,6 +93,5 @@ void getSlaveData() {
 }
 
 void loop() {
-    imu.updateGyro();
-    Serial.println(imu.heading);
+
 }

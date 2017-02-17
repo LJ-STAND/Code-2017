@@ -97,5 +97,5 @@ void getSlaveData() {
 
 void loop() {
     imu.updateGyro();
-    Bluetooth::send(imu.heading, BluetoothData::compass);
+    Bluetooth::send(imu.heading, BluetoothDataType::compass);
 }

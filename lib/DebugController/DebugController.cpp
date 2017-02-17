@@ -92,3 +92,37 @@ void DebugController::setRedBrightness(int brightness) {
 void DebugController::toggleRed(bool on) {
     digitalWrite(LED_RED, on);
 }
+
+void DebugController::rgb(int r, int g, int b) {
+    setRedBrightness(r);
+    setGreenBrightness(g);
+    setBlueBrightness(b);
+}
+
+void DebugController::BBC() {
+    toggleGreen(true);
+    delay(400);
+    toggleGreen(false);
+    toggleWhite(true);
+    delay(400);
+    toggleWhite(false);
+    delay(400);
+    toggleWhite(true);
+    delay(400);
+    toggleWhite(false);
+    toggleGreen(true);
+    delay(400);
+    toggleGreen(false);
+    toggleWhite(true);
+    delay(400);
+    toggleWhite(false);
+    delay(400);
+    toggleAllLEDs(true);
+    delay(400);
+    toggleAllLEDs(false);
+    delay(400);
+}
+
+void DebugController::appSendIMU(double angle) {
+    Bluetooth::send(angle, BluetoothDataType::compass);
+}

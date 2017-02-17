@@ -88,7 +88,7 @@
 // LEDs
 
 #define LED_ORANGE 30
-#define LED_WHITE 20
+#define LED_WHITE 29
 #define LED_YELLOW 35
 #define LED_BLUE 36
 #define LED_GREEN 37

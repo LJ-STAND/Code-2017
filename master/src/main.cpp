@@ -96,8 +96,5 @@ void getSlaveData() {
 }
 
 void loop() {
-    getSlaveData();
-    debug.setRedBrightness(slaveData.orbitAngle);
-    debug.setGreenBrightness(slaveData.orbitSpeed);
-    motors.move(slaveData.orbitAngle, slaveData.orbitSpeed, 0);
+    debug.BBC();
 }

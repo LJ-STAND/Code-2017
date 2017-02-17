@@ -28,6 +28,9 @@ public:
     void setRedBrightness(int brightness);
     void toggleRed(bool on);
 
+    void rgb(int r, int g, int b);
+    void BBC();
+
     void appSendTSOPs(int tsop, int strength);
     void appSendIMU(double angle);
 };

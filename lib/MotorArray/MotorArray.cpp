@@ -22,10 +22,10 @@ void MotorArray::move(int angle, int rotation, int speed) {
     int motorBackRightSpeed = (int) round(motorBackRightValue * updatedSpeed) + rotation;
     int motorBackLeftSpeed = (int) round(motorBackLeftValue * updatedSpeed) + rotation;
 
-    motorRight.set(motorRightSpeed);
-    motorLeft.set(motorLeftSpeed);
-    motorBackRight.set(motorBackRightSpeed);
-    motorBackLeft.set(motorBackLeftSpeed);
+    motorRight.move(motorRightSpeed);
+    motorLeft.move(motorLeftSpeed);
+    motorBackRight.move(motorBackRightSpeed);
+    motorBackLeft.move(motorBackLeftSpeed);
 }
 
 void MotorArray::move(MoveData data) {

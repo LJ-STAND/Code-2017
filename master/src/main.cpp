@@ -58,7 +58,7 @@ void setup() {
     imu.calibrate();
 
     debug.init();
-    debug.toggleAllLEDs(true);
+    debug.toggleAllLEDs(false);
 }
 
 int calculateRotationCorrection() {

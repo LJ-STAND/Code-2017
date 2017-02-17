@@ -5,6 +5,7 @@
  */
 
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #include <t3spi.h>
 #include <DebugController.h>
 #include <i2c_t3.h>
@@ -32,6 +33,8 @@ RobotPosition position;
 DebugController debug;
 MotorArray motors;
 IMU imu;
+
+SoftwareSerial serial = SoftwareSerial(33, 34);
 
 void setup() {
     // I2C
@@ -82,7 +85,7 @@ int calculateRotationCorrection() {
 }
 
 MoveData calculateMovement() {
-    motors.move(slaveData.orbitAngle, slaveData.orbitSpeed, calculateRotationCorrection());
+    // TODO
 }
 
 void getSlaveData() {
@@ -93,7 +96,6 @@ void getSlaveData() {
 }
 
 void loop() {
-    getSlaveData();
     imu.updateGyro();
-    calculateMovement();
+    Bluetooth::send(imu.heading, BluetoothData::compass);
 }

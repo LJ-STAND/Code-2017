@@ -7,12 +7,15 @@ enum BluetoothDataType: int {
     noData,
     info,
     tsop,
-    lightSensor
+    lightSensor,
+    compass,
+    raw
 };
 
 typedef struct BluetoothData {
     BluetoothDataType type;
     int value;
+    String string;
 } BluetoothData;
 
 #endif

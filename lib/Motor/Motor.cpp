@@ -45,5 +45,5 @@ void Motor::move(int speed) {
 }
 
 void Motor::brake() {
-	set(0);
+	move(0);
 }

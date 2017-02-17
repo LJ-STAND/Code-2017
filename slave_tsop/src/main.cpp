@@ -68,8 +68,6 @@ void loop() {
         tsops.finishRead();
         tsops.unlock();
 
-        Serial.println(tsops.getStrength());
-
         calculateOrbit();
     }
 }

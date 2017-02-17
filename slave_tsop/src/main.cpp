@@ -69,6 +69,11 @@ void loop() {
         tsops.unlock();
 
         Serial.println(tsops.getAngle());
+        for (int i = 0; i++; i < TSOP_NUM){
+            Serial.println(tsops.values[i]);
+            Serial.println();
+        }
+        delay(10000);
 
         calculateOrbit();
     }

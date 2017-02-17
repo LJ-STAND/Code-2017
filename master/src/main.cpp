@@ -58,7 +58,7 @@ void setup() {
     imu.calibrate();
 
     debug.init();
-    debug.toggleAllLEDs(false);
+    debug.toggleAllLEDs(true);
 }
 
 int calculateRotationCorrection() {
@@ -96,5 +96,5 @@ void getSlaveData() {
 }
 
 void loop() {
-    debug.BBC();
+    getSlaveData();
 }

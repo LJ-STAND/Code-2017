@@ -96,6 +96,6 @@ void getSlaveData() {
 }
 
 void loop() {
-    imu.updateGyro();
-    Bluetooth::send(imu.heading, BluetoothDataType::compass);
+    getSlaveData();
+    motors.move(slaveData.orbitAngle, slaveData.orbitSpeed, 0);
 }

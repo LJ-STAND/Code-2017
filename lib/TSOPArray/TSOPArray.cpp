@@ -74,7 +74,7 @@ void TSOPArray::finishRead() {
         sortedFilteredValues[i] = 0;
         indexes[i] = 0;
     }
-    
+
     sortFilterValues();
     calculateAngleSimple();
     calculateAngle(TSOP_BEST_TSOP_NO_ANGLE);
@@ -189,9 +189,7 @@ void TSOPArray::calculateAngle(int n) {
         relIndexTotal += relIndexes[i];
     }
 
-    double relIndexAverage;
-
-    relIndexAverage = (double) relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
+    double relIndexAverage = (double) relIndexTotal / (double)(n + TSOP_FIRST_TSOP_WEIGHT + TSOP_SECOND_TSOP_WEIGHT - 2);
 
     double index = best + relIndexAverage;
 
@@ -217,10 +215,6 @@ void TSOPArray::calculateStrength(int n) {
     strength = (double) strengthTotal / n;
 }
 
-int TSOPArray::getAngle() {
-    return angle;
-}
+int TSOPArray::getAngle() {return angle;}
 
-int TSOPArray::getStrength() {
-    return strength;
-}
+int TSOPArray::getStrength() {return strength;}

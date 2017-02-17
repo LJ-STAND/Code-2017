@@ -10,7 +10,7 @@ public:
 	Motor() {}
 	Motor(int pwm, int inOne, int inTwo, int standby, int angle, bool reverse = false);
 
-	void set(int speed);
+	void move(int speed);
 	void brake();
 
 private:

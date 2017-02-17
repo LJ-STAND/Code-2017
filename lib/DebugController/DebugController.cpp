@@ -1,12 +1,12 @@
 #include "DebugController.h"
 
 void DebugController::init() {
-    pinMode(LED_1_ORANGE, OUTPUT);
-    pinMode(LED_2_WHITE, OUTPUT);
-    pinMode(LED_3_YELLOW, OUTPUT);
-    pinMode(LED_4_BLUE, OUTPUT);
-    pinMode(LED_5_GREEN, OUTPUT);
-    pinMode(LED_6_RED, OUTPUT);
+    pinMode(LED_ORANGE, OUTPUT);
+    pinMode(LED_WHITE, OUTPUT);
+    pinMode(LED_YELLOW, OUTPUT);
+    pinMode(LED_BLUE, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_RED, OUTPUT);
 }
 
 void DebugController::setLEDBrightness(int orange, int white, int yellow, int blue, int green, int red) {
@@ -46,49 +46,49 @@ void DebugController::toggleAllLEDs(bool on) {
 }
 
 void DebugController::setOrangeBrightness(int brightness) {
-    analogWrite(LED_1_ORANGE, constrain(brightness, 0, 255));
+    analogWrite(LED_ORANGE, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleOrange(bool on) {
-    digitalWrite(LED_1_ORANGE, on);
+    digitalWrite(LED_ORANGE, on);
 }
 
 void DebugController::setWhiteBrightness(int brightness) {
-    analogWrite(LED_2_WHITE, constrain(brightness, 0, 255));
+    analogWrite(LED_WHITE, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleWhite(bool on) {
-    digitalWrite(LED_2_WHITE, on);
+    digitalWrite(LED_WHITE, on);
 }
 
 void DebugController::setYellowBrightness(int brightness) {
-    analogWrite(LED_3_YELLOW, constrain(brightness, 0, 255));
+    analogWrite(LED_YELLOW, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleYellow(bool on) {
-    digitalWrite(LED_3_YELLOW, on);
+    digitalWrite(LED_YELLOW, on);
 }
 
 void DebugController::setBlueBrightness(int brightness) {
-    analogWrite(LED_4_BLUE, constrain(brightness, 0, 255));
+    analogWrite(LED_BLUE, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleBlue(bool on) {
-    digitalWrite(LED_4_BLUE, on);
+    digitalWrite(LED_BLUE, on);
 }
 
 void DebugController::setGreenBrightness(int brightness) {
-    analogWrite(LED_5_GREEN, constrain(brightness, 0, 255));
+    analogWrite(LED_GREEN, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleGreen(bool on) {
-    digitalWrite(LED_5_GREEN, on);
+    digitalWrite(LED_GREEN, on);
 }
 
 void DebugController::setRedBrightness(int brightness) {
-    analogWrite(LED_6_RED, constrain(brightness, 0, 255));
+    analogWrite(LED_RED, constrain(brightness, 0, 255));
 }
 
 void DebugController::toggleRed(bool on) {
-    digitalWrite(LED_6_RED, on);
+    digitalWrite(LED_RED, on);
 }

@@ -87,12 +87,12 @@
 
 // LEDs
 
-#define LED_1_ORANGE 38
-#define LED_2_WHITE 37
-#define LED_3_YELLOW 36
-#define LED_4_BLUE 35
-#define LED_5_GREEN 29
-#define LED_6_RED 30
+#define LED_ORANGE 30
+#define LED_WHITE 20
+#define LED_YELLOW 35
+#define LED_BLUE 36
+#define LED_GREEN 37
+#define LED_RED 38
 
 // TSOPs
 

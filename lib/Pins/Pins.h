@@ -66,7 +66,6 @@
 #define MOTOR_BACK_LEFT_SB 24
 
 // Communication
-// TODO: update from schematic
 
 #define MASTER_MOSI MOSI
 #define MASTER_MISO MISO

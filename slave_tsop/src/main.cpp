@@ -1,8 +1,8 @@
 /*
-* SLAVE_TSOP
-*
-* Source file for the TSOP slave teensy for LJ STAND 2017
-*/
+ * SLAVE_TSOP
+ *
+ * Source file for the TSOP slave teensy for LJ STAND 2017
+ */
 
 #include <Arduino.h>
 #include <t3spi.h>

@@ -1,6 +1,6 @@
 /*
  * MASTER
-
+ *
  * Source file for the master teensy for LJ STAND
  */
 
@@ -34,8 +34,6 @@ DebugController debug;
 MotorArray motors;
 IMU imu;
 
-SoftwareSerial serial = SoftwareSerial(33, 34);
-
 void setup() {
     // I2C
     Wire.begin(I2C_MASTER, 0x00, I2C_PINS_18_19, I2C_PULLUP_EXT, 400000);
@@ -46,8 +44,9 @@ void setup() {
     Bluetooth::init();
 
     // SPI
-    spi.begin_MASTER(MASTER_SCK, MASTER_MOSI, MASTER_MISO, CS0, CS_ActiveLOW);
+    spi.begin_MASTER(MASTER_SCK, MASTER_MOSI, MASTER_MISO, MASTER_CS_TSOP, CS_ActiveLOW);
     spi.setCTAR(CTAR_0, 16, SPI_MODE0, LSB_FIRST, SPI_CLOCK_DIV16);
+    spi.enableCS(MASTER_CS_LIGHT, CS_ActiveLOW);
 
     // Onboard LED
     pinMode(13, OUTPUT);
@@ -91,10 +90,10 @@ MoveData calculateMovement() {
 void getSlaveData() {
     spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, false, MASTER_CS_TSOP);
     spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, false, MASTER_CS_LIGHT);
-
-    slaveData = SlaveData(static_cast<LinePosition>(dataInLight[0]), (int) dataInTsop[0], (int) dataInTsop[1]);
+    slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), (int) dataInTsop[0], (int) dataInTsop[1]);
 }
 
 void loop() {
     getSlaveData();
+    Bluetooth::send(String(slaveData.orbitAngle), BluetoothDataType::info);
 }

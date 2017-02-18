@@ -94,6 +94,12 @@ void getSlaveData() {
 }
 
 void loop() {
-    getSlaveData();
-    Bluetooth::send(String(slaveData.orbitAngle), BluetoothDataType::info);
+    // getSlaveData();
+    // Bluetooth::send(String(slaveData.orbitAngle), BluetoothDataType::info);
+    BluetoothData data = Bluetooth::receive();
+    if (data.type != BluetoothDataType::noData) {
+        Bluetooth::send(data.string.toInt());
+        motors.move(0, data.string.toInt(), 0);
+    }
+
 }

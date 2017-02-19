@@ -4,13 +4,12 @@
  */
 
 #include <Arduino.h>
-#include <../t3spi/t3spi.h>
+#include <t3spi.h>
 
 #ifndef PINS_H
 #define PINS_H
 
 // Light Sensors
-// TODO: Update from schematic
 
 #define LS_0 A1
 #define LS_1 A2
@@ -42,8 +41,11 @@
 #define TSOP_PWR_3 31
 #define TSOP_PWR_4 32
 
+// Light Gate
+
+#define LIGHT_GATE A20
+
 // Motors
-// TODO: update from schematic
 
 #define MOTOR_RIGHT_IN1 0
 #define MOTOR_RIGHT_IN2 1

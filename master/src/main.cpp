@@ -19,6 +19,7 @@
 #include <CalculateRobotPosition.h>
 #include <MoveData.h>
 #include <Pins.h>
+#include <LightGate.h>
 
 T3SPI spi;
 
@@ -33,6 +34,7 @@ RobotPosition position;
 DebugController debug;
 MotorArray motors;
 IMU imu;
+LightGate lightGate;
 
 void setup() {
     // Onboard LED
@@ -65,8 +67,11 @@ void setup() {
     imu.init();
     imu.calibrate();
 
-    debug.toggleRed(true);
+    debug.toggleBlue(true);
 
+    // Light Gate
+    lightGate.init();
+    
     debug.toggleAllLEDs(true);
 }
 

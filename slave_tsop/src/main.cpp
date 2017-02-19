@@ -21,7 +21,7 @@ MoveData movement;
 void setup() {
     Serial.begin(9600);
 
-    spi.begin_SLAVE(ALT_SCK, MOSI, MISO, CS0);
+    spi.begin_SLAVE(SLAVE_TSOP_SCK, SLAVE_TSOP_MOSI, SLAVE_TSOP_MISO, SLAVE_TSOP_CS);
     spi.setCTAR_SLAVE(16, SPI_MODE0);
 
     NVIC_ENABLE_IRQ(IRQ_SPI0);

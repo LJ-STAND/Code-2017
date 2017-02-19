@@ -8,6 +8,7 @@
 #include <t3spi.h>
 #include <LightSensorArray.h>
 #include <LinePosition.h>
+#include <Pins.h>
 
 T3SPI spi;
 
@@ -19,7 +20,7 @@ LightSensorArray lightSensorArray;
 void setup() {
     Serial.begin(9600);
 
-    spi.begin_SLAVE(ALT_SCK, MOSI, MISO, CS0);
+    spi.begin_SLAVE(SLAVE_LIGHT_SCK, SLAVE_LIGHT_MOSI, SLAVE_LIGHT_MISO, SLAVE_LIGHT_CS);
     spi.setCTAR_SLAVE(16, SPI_MODE0);
 
     NVIC_ENABLE_IRQ(IRQ_SPI0);

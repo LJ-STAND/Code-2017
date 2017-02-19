@@ -74,4 +74,8 @@
 
 #define ORBIT_SPEED 255
 
+// Debug
+
+#define DEBUG_APP_IMU true
+
 #endif // CONFIG_H

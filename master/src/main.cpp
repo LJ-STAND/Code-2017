@@ -103,5 +103,9 @@ void getSlaveData() {
 
 void loop() {
     getSlaveData();
-    Serial.println(String(slaveData.orbitAngle) + ", " + String(slaveData.orbitSpeed));
+    imu.updateGyro();
+
+    #if DEBUG_APP_IMU
+    debug.appSendIMU(imu.heading);
+    #endif
 }

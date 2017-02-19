@@ -35,28 +35,38 @@ MotorArray motors;
 IMU imu;
 
 void setup() {
+    // Onboard LED
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);
+
+    // Debug
+    debug.init();
+
     // I2C
     Wire.begin(I2C_MASTER, 0x00, I2C_PINS_18_19, I2C_PULLUP_EXT, 400000);
     Wire.setDefaultTimeout(200000);
 
+    debug.toggleOrange(true);
+
     // Serial
     Serial.begin(9600);
     Bluetooth::init();
+
+    debug.toggleWhite(true);
 
     // SPI
     spi.begin_MASTER(MASTER_SCK, MASTER_MOSI, MASTER_MISO, MASTER_CS_TSOP, CS_ActiveLOW);
     spi.setCTAR(CTAR_0, 16, SPI_MODE0, LSB_FIRST, SPI_CLOCK_DIV16);
     spi.enableCS(MASTER_CS_LIGHT, CS_ActiveLOW);
 
-    // Onboard LED
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
+    debug.toggleYellow(true);
 
     // IMU
     imu.init();
     imu.calibrate();
 
-    debug.init();
+    debug.toggleRed(true);
+
     debug.toggleAllLEDs(true);
 }
 

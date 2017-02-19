@@ -1,7 +1,7 @@
 /*
  * MASTER
  *
- * Source file for the master teensy for LJ STAND
+ * Source file for the master teensy for LJ STAND 2017
  */
 
 #include <Arduino.h>
@@ -71,7 +71,7 @@ void setup() {
 
     // Light Gate
     lightGate.init();
-    
+
     debug.toggleAllLEDs(true);
 }
 

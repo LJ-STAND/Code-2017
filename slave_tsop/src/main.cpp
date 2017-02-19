@@ -73,7 +73,14 @@ void loop() {
 }
 
 void spi0_isr() {
-    dataOut[0] = (uint16_t) movement.angle;
-    dataOut[1] = (uint16_t) movement.speed;
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
+    int spiRequest = dataIn[0];
+
+    if (spiRequest == SPI_TSOP_ANGLE) {
+        dataOut[0] = (uint16_t) movement.angle;
+    } else if (spiRequest == SPI_TSOP_SPEED) {
+        dataOut[0] = (uint16_t) movement.speed;
+    } else {
+        dataOut[0] = 0;
+    }
 }

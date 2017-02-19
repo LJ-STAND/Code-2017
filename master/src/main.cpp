@@ -88,18 +88,20 @@ MoveData calculateMovement() {
 }
 
 void getSlaveData() {
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, false, MASTER_CS_TSOP);
-    spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, false, MASTER_CS_LIGHT);
-    slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), (int) dataInTsop[0], (int) dataInTsop[1]);
+    dataOutTsop[0] = SPI_TSOP_ANGLE;
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    int orbitAngle = dataInTsop[0];
+
+    dataOutTsop[0] = SPI_TSOP_SPEED;
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    int orbitSpeed = dataInTsop[0];
+
+    spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, CTAR_0, MASTER_CS_LIGHT);
+
+    slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), orbitAngle, orbitSpeed);
 }
 
 void loop() {
-    // getSlaveData();
-    // Bluetooth::send(String(slaveData.orbitAngle), BluetoothDataType::info);
-    BluetoothData data = Bluetooth::receive();
-    if (data.type != BluetoothDataType::noData) {
-        Bluetooth::send(data.string.toInt());
-        motors.move(0, data.string.toInt(), 0);
-    }
-
+    getSlaveData();
+    Serial.println(String(slaveData.orbitAngle) + ", " + String(slaveData.orbitSpeed));
 }

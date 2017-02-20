@@ -27,11 +27,40 @@ void setup() {
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
+
+    lightSensorArray.init();
 }
 
 void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
+    Serial.println(lightSensorArray.data.ls0);
+    Serial.println(lightSensorArray.data.ls1);
+    Serial.println(lightSensorArray.data.ls2);
+    Serial.println(lightSensorArray.data.ls3);
+    Serial.println(lightSensorArray.data.ls4);
+    Serial.println(lightSensorArray.data.ls5);
+    Serial.println(lightSensorArray.data.ls6);
+    Serial.println(lightSensorArray.data.ls7);
+    Serial.println(lightSensorArray.data.ls8);
+    Serial.println(lightSensorArray.data.ls9);
+    Serial.println(lightSensorArray.data.ls10);
+    Serial.println(lightSensorArray.data.ls11);
+    Serial.println(lightSensorArray.data.ls12);
+    Serial.println(lightSensorArray.data.ls13);
+    Serial.println(lightSensorArray.data.ls14);
+    Serial.println(lightSensorArray.data.ls15);
+    Serial.println(lightSensorArray.data.ls16);
+    Serial.println(lightSensorArray.data.ls17);
+    Serial.println(lightSensorArray.data.ls18);
+    Serial.println(lightSensorArray.data.ls19);
+    Serial.println(lightSensorArray.data.ls20);
+    Serial.println(lightSensorArray.data.ls21);
+    Serial.println(lightSensorArray.data.ls22);
+    Serial.println(lightSensorArray.data.ls23);
+    Serial.println();
+    delay(2000);
+
 }
 
 void spi0_isr() {

@@ -12,6 +12,7 @@ public:
 
     void read();
     bool isOnWhite();
+    int getValue();
 
 private:
     int value;

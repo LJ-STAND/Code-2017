@@ -19,8 +19,8 @@ public:
     void calculatePostion();
     LinePosition getLinePosition();
 
-private:
     LightSensorData data;
+
     LinePosition position;
 
     LightSensor ls0;

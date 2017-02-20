@@ -26,3 +26,7 @@ bool LightSensor::isOnWhite() {
     read();
     return (value > thresholdValue);
 }
+
+int LightSensor::getValue() {
+    return value;
+}

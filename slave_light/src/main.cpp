@@ -31,36 +31,60 @@ void setup() {
     lightSensorArray.init();
 }
 
+void debug() {
+    Serial.print(lightSensorArray.ls0.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls1.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls2.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls3.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls4.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls5.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls6.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls7.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls8.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls9.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls10.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls11.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls12.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls13.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls14.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls15.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls16.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls17.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls18.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls19.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls20.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls21.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls22.getValue());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.ls23.getValue());
+    Serial.println();
+}
+
 void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
-    Serial.println(lightSensorArray.data.ls0);
-    Serial.println(lightSensorArray.data.ls1);
-    Serial.println(lightSensorArray.data.ls2);
-    Serial.println(lightSensorArray.data.ls3);
-    Serial.println(lightSensorArray.data.ls4);
-    Serial.println(lightSensorArray.data.ls5);
-    Serial.println(lightSensorArray.data.ls6);
-    Serial.println(lightSensorArray.data.ls7);
-    Serial.println(lightSensorArray.data.ls8);
-    Serial.println(lightSensorArray.data.ls9);
-    Serial.println(lightSensorArray.data.ls10);
-    Serial.println(lightSensorArray.data.ls11);
-    Serial.println(lightSensorArray.data.ls12);
-    Serial.println(lightSensorArray.data.ls13);
-    Serial.println(lightSensorArray.data.ls14);
-    Serial.println(lightSensorArray.data.ls15);
-    Serial.println(lightSensorArray.data.ls16);
-    Serial.println(lightSensorArray.data.ls17);
-    Serial.println(lightSensorArray.data.ls18);
-    Serial.println(lightSensorArray.data.ls19);
-    Serial.println(lightSensorArray.data.ls20);
-    Serial.println(lightSensorArray.data.ls21);
-    Serial.println(lightSensorArray.data.ls22);
-    Serial.println(lightSensorArray.data.ls23);
-    Serial.println();
-    delay(2000);
-
 }
 
 void spi0_isr() {

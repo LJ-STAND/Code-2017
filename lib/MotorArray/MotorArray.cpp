@@ -8,7 +8,7 @@ MotorArray::MotorArray() {
 }
 
 void MotorArray::move(int angle, int rotation, int speed) {
-    double angleRadians = degreesToRadians(360 - angle);
+    double angleRadians = degreesToRadians(angle);
 
     double motorRightValue = cos(degreesToRadians(motorRight.motorAngle + 90) - angleRadians);
     double motorLeftValue = cos(degreesToRadians(motorLeft.motorAngle + 90) - angleRadians);

@@ -76,26 +76,31 @@ void setup() {
 }
 
 int calculateRotationCorrection() {
-    double relativeHeading = 180.0 - (doubleMod((imu.heading + imu.facingDirection) + 180, 360));
-    int rotationCorrection;
-
-	if (abs(relativeHeading > IMU_THRESHOLD)) {
-		rotationCorrection = (int) relativeHeading;
-
-		if (rotationCorrection < 0 && rotationCorrection > -CORRECTION_ROTATION_MINIMUM) {
-			rotationCorrection = -CORRECTION_ROTATION_MINIMUM;
-		} else if (rotationCorrection > 0 && rotationCorrection < CORRECTION_ROTATION_MINIMUM) {
-			rotationCorrection = CORRECTION_ROTATION_MINIMUM;
-		} else if (rotationCorrection > 0 && rotationCorrection > CORRECTION_ROTATION_MAXIMUM) {
-			rotationCorrection = CORRECTION_ROTATION_MAXIMUM;
-		} else if (rotationCorrection < 0 && rotationCorrection < -CORRECTION_ROTATION_MAXIMUM) {
-			rotationCorrection = -CORRECTION_ROTATION_MAXIMUM;
-		}
-	} else {
-		rotationCorrection = 0;
-	}
-
-	return rotationCorrection;
+    int rotation = (imu.heading > 180 ? 360 : 0) - imu.heading;
+    if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM){
+        return rotation;
+    }
+    return (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
+    // double relativeHeading = 180.0 - (doubleMod((imu.heading + imu.facingDirection) + 180, 360));
+    // int rotationCorrection;
+    //
+	// if (abs(relativeHeading > IMU_THRESHOLD)) {
+	// 	rotationCorrection = (int) relativeHeading;
+    //
+	// 	if (rotationCorrection < 0 && rotationCorrection > -CORRECTION_ROTATION_MINIMUM) {
+	// 		rotationCorrection = -CORRECTION_ROTATION_MINIMUM;
+	// 	} else if (rotationCorrection > 0 && rotationCorrection < CORRECTION_ROTATION_MINIMUM) {
+	// 		rotationCorrection = CORRECTION_ROTATION_MINIMUM;
+	// 	} else if (rotationCorrection > 0 && rotationCorrection > CORRECTION_ROTATION_MAXIMUM) {
+	// 		rotationCorrection = CORRECTION_ROTATION_MAXIMUM;
+	// 	} else if (rotationCorrection < 0 && rotationCorrection < -CORRECTION_ROTATION_MAXIMUM) {
+	// 		rotationCorrection = -CORRECTION_ROTATION_MAXIMUM;
+	// 	}
+	// } else {
+	// 	rotationCorrection = 0;
+	// }
+    //
+	// return rotationCorrection;
 }
 
 MoveData calculateMovement() {
@@ -123,4 +128,10 @@ void loop() {
     #if DEBUG_APP_IMU
     debug.appSendIMU(imu.heading);
     #endif
+
+    // Serial.println(slaveData.orbitAngle);
+
+    // motors.move(slaveData.orbitAngle, CORRECTION_ROTATION_MULTIPLIER * calculateRotationCorrection(), (slaveData.orbitAngle != -1 ? 255 : 0));
+    motors.move(0, 0, 255);
+
 }

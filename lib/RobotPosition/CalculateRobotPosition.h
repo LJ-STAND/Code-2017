@@ -1287,7 +1287,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::centreHorizontal: {
-                    return RobotPosition:smallOnBackLine;
+                    return RobotPosition::smallOnBackLine;
                     break;
                 }
             }
@@ -1439,7 +1439,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::left: {
-                    return RobotPosition::smallOnleftLine;
+                    return RobotPosition::smallOnLeftLine;
                     break;
                 }
                 case LinePosition::smallCornerFrontRight: {

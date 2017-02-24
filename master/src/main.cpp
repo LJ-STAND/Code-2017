@@ -118,8 +118,5 @@ void loop() {
     debug.appSendIMU(imu.heading);
     #endif
 
-    // Bluetooth::send(String(slaveData.orbitAngle));
-
-    // motors.move(slaveData.orbitAngle, calculateRotationCorrection(), (slaveData.orbitAngle != -1 ? 255 : 0));
-    motors.move(0, calculateRotationCorrection(), 0);
+    motors.move(slaveData.orbitAngle, calculateRotationCorrection(), (slaveData.orbitAngle != -1 ? 255 : 0));
 }

@@ -44,7 +44,7 @@ void calculateOrbit() {
             movement.angle = (int) round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
         } else {
             double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            movement.angle =  (int) round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
+            movement.angle = (int) round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {

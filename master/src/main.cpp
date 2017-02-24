@@ -78,10 +78,13 @@ void setup() {
 int calculateRotationCorrection() {
     int correctionRotation;
     int rotation = (imu.heading > 180 ? 360 : 0) - imu.heading;
-    if (rotation < IMU_THRESHOLD) {
+
+    if (abs(rotation) < IMU_THRESHOLD) {
         correctionRotation = 0;
-    } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM){
-        correctionRotation = 0;
+    } else if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
+        correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MINIMUM : -CORRECTION_ROTATION_MINIMUM);
+    } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM) {
+        correctionRotation = rotation;
     } else {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }

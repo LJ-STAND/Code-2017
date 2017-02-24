@@ -12,6 +12,8 @@ Motor::Motor(int pwm, int inOne, int inTwo, int standby, int angle, bool reverse
 	pinMode(inOne, OUTPUT);
 	pinMode(inTwo, OUTPUT);
 	pinMode(standbyPin, OUTPUT);
+
+	analogWriteFrequency(pwm, 19000);
 }
 
 void Motor::move(int speed) {

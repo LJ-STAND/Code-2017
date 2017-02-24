@@ -78,6 +78,6 @@
 
 // Debug
 
-#define DEBUG_APP_IMU true
+#define DEBUG_APP_IMU false
 
 #endif // CONFIG_H

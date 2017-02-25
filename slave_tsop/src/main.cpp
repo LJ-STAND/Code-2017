@@ -77,7 +77,7 @@ void spi0_isr() {
     int spiRequest = dataIn[0];
 
     if (spiRequest == SPI_TSOP_ANGLE) {
-        dataOut[0] = (uint16_t) movement.angle;
+        dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
     } else if (spiRequest == SPI_TSOP_SPEED) {
         dataOut[0] = (uint16_t) movement.speed;
     } else {

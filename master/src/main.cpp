@@ -118,5 +118,5 @@ void loop() {
     debug.appSendIMU(imu.heading);
     #endif
 
-    motors.move(slaveData.orbitAngle, calculateRotationCorrection(), (slaveData.orbitAngle != -1 ? 255 : 0));
+    motors.move(slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0, calculateRotationCorrection(), (slaveData.orbitAngle != TSOP_NO_BALL ? 255 : 0));
 }

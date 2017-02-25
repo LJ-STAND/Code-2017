@@ -35,6 +35,8 @@
 #define TSOP_FILTER_NOISE true
 #define TSOP_FILTER_SURROUNDING true
 
+#define TSOP_NO_BALL 400
+
 // SPI
 
 #define DATA_LENGTH_TSOP 1

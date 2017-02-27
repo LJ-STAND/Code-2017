@@ -35,7 +35,7 @@
 #define TSOP_FILTER_NOISE true
 #define TSOP_FILTER_SURROUNDING true
 
-#define TSOP_NO_BALL 420
+#define TSOP_NO_BALL 400
 
 // SPI
 
@@ -76,7 +76,7 @@
 #define ORBIT_SMALL_ANGLE 5
 #define ORBIT_BIG_ANGLE 20
 
-#define ORBIT_SPEED 100
+#define ORBIT_SPEED 50
 
 // Debug
 

@@ -47,25 +47,15 @@
 
 // Motors
 
-// #define MOTOR_RIGHT_IN1 0
-// #define MOTOR_RIGHT_IN2 1
-// #define MOTOR_RIGHT_PWM 2
-// #define MOTOR_RIGHT_SB 3
-//
-// #define MOTOR_LEFT_IN1 4
-// #define MOTOR_LEFT_IN2 5
-// #define MOTOR_LEFT_PWM 6
-// #define MOTOR_LEFT_SB 7
+#define MOTOR_RIGHT_IN1 0
+#define MOTOR_RIGHT_IN2 1
+#define MOTOR_RIGHT_PWM 2
+#define MOTOR_RIGHT_SB 3
 
-#define MOTOR_LEFT_IN1 0
-#define MOTOR_LEFT_IN2 1
-#define MOTOR_LEFT_PWM 2
-#define MOTOR_LEFT_SB 3
-
-#define MOTOR_RIGHT_IN1 4
-#define MOTOR_RIGHT_IN2 5
-#define MOTOR_RIGHT_PWM 6
-#define MOTOR_RIGHT_SB 7
+#define MOTOR_LEFT_IN1 4
+#define MOTOR_LEFT_IN2 5
+#define MOTOR_LEFT_PWM 6
+#define MOTOR_LEFT_SB 7
 
 #define MOTOR_BACK_RIGHT_IN1 8
 #define MOTOR_BACK_RIGHT_IN2 16

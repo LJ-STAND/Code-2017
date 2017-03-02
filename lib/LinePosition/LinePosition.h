@@ -4,22 +4,22 @@
 #include <Arduino.h>
 
 enum LinePosition {
-    front,
-    right,
-    back,
-    left,
-    smallCornerFrontRight,
-    smallCornerBackRight,
-    smallCornerBackLeft,
-    smallCornerFrontLeft,
-    bigCornerFrontRight,
-    bigCornerBackRight,
-    bigCornerBackLeft,
-    bigCornerFrontLeft,
-    centreVertical,
-    centreHorizontal,
-    none,
-    unknown
+    front, // 0
+    right, // 1
+    back, // 2
+    left, // 3
+    smallCornerFrontRight, // 4
+    smallCornerBackRight, // 5
+    smallCornerBackLeft, // 6
+    smallCornerFrontLeft, // 7
+    bigCornerFrontRight, // 8
+    bigCornerBackRight, // 9
+    bigCornerBackLeft, // 10
+    bigCornerFrontLeft, // 11
+    centreVertical, // 12
+    centreHorizontal, // 13
+    none, // 14
+    unknown // 15
 };
 
 #endif // LINE_POSITION_H

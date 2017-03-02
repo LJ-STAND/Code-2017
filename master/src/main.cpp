@@ -30,6 +30,7 @@ volatile uint16_t dataOutLight[DATA_LENGTH_LIGHT];
 
 SlaveData slaveData;
 RobotPosition position;
+RobotPosition previousPosition = RobotPosition::field;
 
 DebugController debug;
 MotorArray motors;
@@ -93,6 +94,99 @@ int calculateRotationCorrection() {
 }
 
 MoveData calculateMovement() {
+    int angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
+    int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
+    int rotation = calculateRotationCorrection();
+    if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){
+        int orbitAngle = slaveData.orbitAngle;
+        if (position == RobotPosition::smallOnFrontLine) {
+            if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = orbitAngle;
+                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+            }
+        }
+        if (position == RobotPosition::bigOnFrontLine) {
+            if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
+                if (orbitAngle < 180) {
+                    angle = 120;
+                }
+                else {
+                    angle = 240;
+                }
+            }
+        }
+        if (position == RobotPosition::overFrontLine) {
+            if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = 180;
+            }
+        }
+        if (position == RobotPosition::smallOnRightLine) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = orbitAngle;
+                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+            }
+        }
+        if (position == RobotPosition::bigOnRightLine) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
+                if (orbitAngle > 90) {
+                    angle = 210;
+                }
+                else {
+                    angle = 330;
+                }
+            }
+        }
+        if (position == RobotPosition::overRightLine) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = 270;
+            }
+        }
+        if (position == RobotPosition::smallOnBackLine) {
+            if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = orbitAngle;
+                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+            }
+        }
+        if (position == RobotPosition::bigOnBackLine) {
+            if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
+                if (orbitAngle > 180) {
+                    angle = 300;
+                }
+                else {
+                    angle = 60;
+                }
+            }
+        }
+        if (position == RobotPosition::overFrontLine) {
+            if (315 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 45 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = 0;
+            }
+        }
+        if (position == RobotPosition::smallOnLeftLine) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = orbitAngle;
+                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+            }
+        }
+        if (position == RobotPosition::bigOnLeftLine) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
+                if (orbitAngle > 270) {
+                    angle = 30;
+                }
+                else {
+                    angle = 150;
+                }
+            }
+        }
+        if (position == RobotPosition::overLeftLine) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
+                angle = 90;
+            }
+        }
+    }
+    // NEED TO DO CORNERS
+    MoveData data = MoveData(angle, speed, rotation);
+    return data;
     // TODO
 }
 
@@ -110,6 +204,7 @@ void getSlaveData() {
     slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), orbitAngle, orbitSpeed);
 }
 
+
 void loop() {
     getSlaveData();
     imu.updateGyro();
@@ -118,7 +213,20 @@ void loop() {
     debug.appSendIMU(imu.heading);
     #endif
 
-    motors.move((slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0), calculateRotationCorrection(), /*(slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0)*/ ORBIT_SPEED);
+    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    MoveData movement = calculateMovement();
+    previousPosition = position;
+
+    Serial.println(position);
+    Serial.println(slaveData.linePosition);
+    // Serial.println(movement.angle);
+    Serial.println();
+
+    // delay(1000);
+
+    motors.move(movement.angle, movement.rotation, movement.speed);
+
+    // motors.move((slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0), calculateRotationCorrection(), (slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0) /*ORBIT_SPEED*/);
     // motors.move(90, calculateRotationCorrection(), 100);
     // motors.motorLeft.move(100);
 }

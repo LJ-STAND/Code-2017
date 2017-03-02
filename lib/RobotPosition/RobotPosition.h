@@ -4,31 +4,31 @@
 #include <Arduino.h>
 
 enum RobotPosition {
-    smallOnFrontLine,
-    bigOnFrontLine,
-    overFrontLine,
-    smallOnRightLine,
-    bigOnRightLine,
-    overRightLine,
-    smallOnBackLine,
-    bigOnBackLine,
-    overBackLine,
-    smallOnLeftLine,
-    bigOnLeftLine,
-    overLeftLine,
-    smallOnCornerFrontRight,
-    bigOnCornerFrontRight,
-    overCornerFrontRight,
-    smallOnCornerBackRight,
-    bigOnCornerBackRight,
-    overCornerBackRight,
-    smallOnCornerBackLeft,
-    bigOnCornerBackLeft,
-    overCornerBackLeft,
-    smallOnCornerFrontLeft,
-    bigOnCornerFrontLeft,
-    overCornerFrontLeft,
-    field
+    smallOnFrontLine, // 0
+    bigOnFrontLine, // 1
+    overFrontLine, // 2
+    smallOnRightLine, // 3
+    bigOnRightLine, // 4
+    overRightLine, // 5
+    smallOnBackLine, // 6
+    bigOnBackLine, // 7
+    overBackLine, // 8
+    smallOnLeftLine, // 9
+    bigOnLeftLine, // 10
+    overLeftLine, // 11
+    smallOnCornerFrontRight, // 12
+    bigOnCornerFrontRight, // 13
+    overCornerFrontRight, // 14
+    smallOnCornerBackRight, // 15
+    bigOnCornerBackRight, // 16
+    overCornerBackRight, // 17
+    smallOnCornerBackLeft, // 18
+    bigOnCornerBackLeft, // 19
+    overCornerBackLeft, // 20
+    smallOnCornerFrontLeft, // 21
+    bigOnCornerFrontLeft, // 22
+    overCornerFrontLeft, // 23
+    field // 24
 };
 
 #endif // LINE_POSITION_H

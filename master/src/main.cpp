@@ -217,16 +217,10 @@ void loop() {
     MoveData movement = calculateMovement();
     previousPosition = position;
 
-    Serial.println(position);
-    Serial.println(slaveData.linePosition);
+    // Serial.println(position);
+    // Serial.println(slaveData.linePosition);
     // Serial.println(movement.angle);
-    Serial.println();
-
-    // delay(1000);
+    // Serial.println();
 
     motors.move(movement.angle, movement.rotation, movement.speed);
-
-    // motors.move((slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0), calculateRotationCorrection(), (slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0) /*ORBIT_SPEED*/);
-    // motors.move(90, calculateRotationCorrection(), 100);
-    // motors.motorLeft.move(100);
 }

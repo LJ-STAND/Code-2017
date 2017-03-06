@@ -22,19 +22,21 @@ void MotorArray::move(int angle, int rotation, int speed) {
     int motorBackRightSpeed = (int) round(motorBackRightValue * updatedSpeed) + rotation;
     int motorBackLeftSpeed = (int) round(motorBackLeftValue * updatedSpeed) + rotation;
 
-    double updatedSpeed2 = (double) speed / doubleAbs(fmax(fmax(fmax(doubleAbs(motorLeftSpeed), doubleAbs(motorRightSpeed)), doubleAbs(motorBackRightSpeed)), doubleAbs(motorBackLeftSpeed)));
+    double updatedSpeed2 = (double) 255 / doubleAbs(fmax(fmax(fmax(doubleAbs(motorLeftSpeed), doubleAbs(motorRightSpeed)), doubleAbs(motorBackRightSpeed)), doubleAbs(motorBackLeftSpeed)));
 
-    int motorRightSpeed2 = (int) round(motorRightSpeed * updatedSpeed2);
-    int motorLeftSpeed2 = (int) round(motorLeftSpeed * updatedSpeed2);
-    int motorBackRightSpeed2 = (int) round(motorBackRightSpeed * updatedSpeed2);
-    int motorBackLeftSpeed2 = (int) round(motorBackLeftSpeed * updatedSpeed2);
+    if (updatedSpeed2 < 1) {
+        int motorRightSpeed = (int) round(motorRightSpeed * updatedSpeed2);
+        int motorLeftSpeed = (int) round(motorLeftSpeed * updatedSpeed2);
+        int motorBackRightSpeed = (int) round(motorBackRightSpeed * updatedSpeed2);
+        int motorBackLeftSpeed = (int) round(motorBackLeftSpeed * updatedSpeed2);
+    }
 
 
 
-    motorRight.move(motorRightSpeed2);
-    motorLeft.move(motorLeftSpeed2);
-    motorBackRight.move(motorBackRightSpeed2);
-    motorBackLeft.move(motorBackLeftSpeed2);
+    motorRight.move(motorRightSpeed);
+    motorLeft.move(motorLeftSpeed);
+    motorBackRight.move(motorBackRightSpeed);
+    motorBackLeft.move(motorBackLeftSpeed);
 }
 
 void MotorArray::move(MoveData data) {

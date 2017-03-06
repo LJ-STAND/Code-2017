@@ -57,8 +57,21 @@ void calculateOrbit() {
             movement.angle = tsopAngle;
         }
     }
+    double moveSpeedModifier;
+    if (movement.angle < 90) { // 0-90 degrees
+        moveSpeedModifier = (90 - movement.angle) / 90.0;
+    }
+    else if (movement.angle < 180) { // 90-180 degrees
+        moveSpeedModifier = (movement.angle - 90) / 90.0;
+    }
+    else if (movement.angle < 270) { //180-270 degrees
+        moveSpeedModifier = (270 - movement.angle) / 90.0;
+    }
+    else { // 270-360 degrees
+        moveSpeedModifier = (movement.angle - 270) / 90.0;
+    }
 
-    movement.speed = ORBIT_SPEED;
+    movement.speed = MIN_ORBIT_SPEED + (MAX_ORBIT_SPEED - MIN_ORBIT_SPEED) * moveSpeedModifier;
 }
 
 void loop() {

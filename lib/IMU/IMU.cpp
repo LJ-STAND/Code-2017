@@ -65,7 +65,7 @@ void IMU::updateGyro() {
 
 void IMU::updateAccelerometer() {
     Vector3D reading = readAccelerometer();
-    Vector2D twoAxis = (Vector2D) {(reading.x - calibrationAccelX) * 9.8, (calibrationAccelY - 0.03) * 9.8};
+    Vector2D twoAxis = (Vector2D) {(reading.x - calibrationAccelX) * 9.8, (reading.y- calibrationAccelY) * 9.8};
 
     long currentTime = micros();
     long deltaTime = currentTime - previousTimeAccel;

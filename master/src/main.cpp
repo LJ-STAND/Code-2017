@@ -97,6 +97,7 @@ MoveData calculateMovement() {
     int angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
     int rotation = calculateRotationCorrection();
+
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){
         int orbitAngle = slaveData.orbitAngle;
         if (position == RobotPosition::smallOnFrontLine) {
@@ -105,6 +106,7 @@ MoveData calculateMovement() {
                 speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
             }
         }
+
         if (position == RobotPosition::bigOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle < 180) {
@@ -115,17 +117,20 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = 180;
             }
         }
+
         if (position == RobotPosition::smallOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = orbitAngle;
                 speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
             }
         }
+
         if (position == RobotPosition::bigOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 90) {
@@ -136,17 +141,20 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = 270;
             }
         }
+
         if (position == RobotPosition::smallOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = orbitAngle;
                 speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
             }
         }
+
         if (position == RobotPosition::bigOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 180) {
@@ -157,17 +165,20 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overFrontLine) {
             if (315 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 45 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = 0;
             }
         }
+
         if (position == RobotPosition::smallOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = orbitAngle;
                 speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
             }
         }
+
         if (position == RobotPosition::bigOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 270) {
@@ -178,6 +189,7 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 angle = 90;
@@ -207,7 +219,7 @@ void getSlaveData() {
 
 void loop() {
     getSlaveData();
-    imu.updateGyro();
+    imu.update();
 
     #if DEBUG_APP_IMU
     debug.appSendIMU(imu.heading);
@@ -220,7 +232,8 @@ void loop() {
     // Serial.println(position);
     // Serial.println(slaveData.linePosition);
     // Serial.println(movement.angle);
-    // Serial.println();
+    // Serial.println(imu.position.x);
+    // Serial.println(imu.velocity.x);
 
     motors.move(movement.angle, movement.rotation, movement.speed);
 }

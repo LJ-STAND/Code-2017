@@ -8,7 +8,8 @@ void IMU::init() {
     I2CwriteByte(MPU9250_ADDRESS, 0x37, 0x02);
     I2CwriteByte(MAG_ADDRESS, 0x0A, 0x16);
 
-    previousTime = micros();
+    previousTimeGyro = micros();
+    previousTimeAccel = micros();
 };
 
 Vector3D IMU::readAccelerometer() {
@@ -56,19 +57,48 @@ void IMU::updateGyro() {
     double reading = (double) readGyroscope().z;
 
 	long currentTime = micros();
-    heading += -(((double)(currentTime - previousTime) / 1000000.0) * (reading - calibration));
+    heading += -(((double)(currentTime - previousTimeGyro) / 1000000.0) * (reading - calibrationGyro));
 	heading = doubleMod(heading, 360.0);
 
-	previousTime = currentTime;
+	previousTimeGyro = currentTime;
 }
 
-double IMU::calibrate() {
-    readGyroscope();
+void IMU::updateAccelerometer() {
+    Vector3D reading = readAccelerometer();
+    Vector2D twoAxis = (Vector2D) {(reading.x - calibrationAccelX) * 9.8, (calibrationAccelY - 0.03) * 9.8};
 
-    delay(IMU_CALIBRATION_TIME);
+    long currentTime = micros();
+    long deltaTime = currentTime - previousTimeAccel;
 
-    double reading = (double) readGyroscope().z;
-    calibration = reading;
+    velocity.x += (((double)(deltaTime) / 1000000.0) * twoAxis.x);
+    velocity.y += (((double)(deltaTime) / 1000000.0) * twoAxis.y);
 
-    return reading;
+    position.x += (((double)(deltaTime) / 1000000.0) * velocity.x);
+    position.y += (((double)(deltaTime) / 1000000.0) * velocity.y);
+
+    previousTimeAccel = currentTime;
+}
+
+void IMU::update() {
+    updateGyro();
+    updateAccelerometer();
+}
+
+void IMU::calibrate() {
+    delay(1000);
+
+    for (int i = 0; i < IMU_CALIBRATION_COUNT; i++) {
+        double readingGyro = (double)readGyroscope().z;
+        calibrationGyro += readingGyro;
+    }
+
+    for (int i = 0; i < IMU_CALIBRATION_COUNT; i++) {
+        Vector3D readingAccel = readAccelerometer();
+        calibrationAccelX += readingAccel.x;
+        calibrationAccelY += readingAccel.y;
+    }
+
+    calibrationGyro /= IMU_CALIBRATION_COUNT;
+    calibrationAccelX /= IMU_CALIBRATION_COUNT;
+    calibrationAccelY /= IMU_CALIBRATION_COUNT;
 }

@@ -3,13 +3,15 @@
 
 #include <I2C.h>
 #include <Vector3D.h>
+#include <Vector2D.h>
 #include <LJSTANDCommon.h>
 #include <Config.h>
 
 class IMU {
 public:
     double heading;
-    double facingDirection;
+    Vector2D velocity;
+    Vector2D position;
 
     IMU() {};
     void init();
@@ -19,11 +21,16 @@ public:
     Vector3D readMagnetometer();
 
     void updateGyro();
-    double calibrate();
+    void updateAccelerometer();
+    void update();
+    void calibrate();
 
 private:
-    long previousTime;
-    double calibration;
+    long previousTimeGyro;
+    long previousTimeAccel;
+    double calibrationGyro;
+    double calibrationAccelX;
+    double calibrationAccelY;
 
     double convertRawAcceleration(int raw) {
         // Since we are using 2G range
@@ -35,11 +42,11 @@ private:
     }
 
     double convertRawGyro(int raw) {
-        // Since we are using 500 degrees/seconds range
-        // -500 maps to a raw value of -32768
-        // +500 maps to a raw value of 32767
+        // Since we are using 1000 degrees/seconds range
+        // -1000 maps to a raw value of -32768
+        // +1000 maps to a raw value of 32767
 
-        double g = (raw * 500.0) / 32768.0;
+        double g = (raw * 1000.0) / 32768.0;
         return g;
     }
 };

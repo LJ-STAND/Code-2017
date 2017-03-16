@@ -20,7 +20,8 @@
 #include <MoveData.h>
 #include <Pins.h>
 #include <LightGate.h>
-#include <GoalFinder.h>
+#include <PixyI2C.h>
+#include <GoalData.h>
 
 T3SPI spi;
 
@@ -29,17 +30,18 @@ volatile uint16_t dataOutTsop[DATA_LENGTH_TSOP];
 volatile uint16_t dataInLight[DATA_LENGTH_LIGHT];
 volatile uint16_t dataOutLight[DATA_LENGTH_LIGHT];
 
-SlaveData slaveData;
-RobotPosition position;
-RobotPosition previousPosition = RobotPosition::field;
-
 DebugController debug;
 MotorArray motors;
 IMU imu;
 LightGate lightGate;
-GoalFinder goalFinder;
+PixyI2C pixy;
 
-unsigned long lastUpdate;
+SlaveData slaveData;
+RobotPosition position;
+RobotPosition previousPosition = RobotPosition::field;
+GoalData goalData;
+
+unsigned long lastPixyUpdate;
 
 void setup() {
     // Onboard LED
@@ -81,11 +83,10 @@ void setup() {
     debug.toggleGreen(true);
 
     // Pixy
-    // pixy.init();
+    pixy.init();
+    lastPixyUpdate = micros();
 
     debug.toggleAllLEDs(true);
-
-    lastUpdate = micros();
 }
 
 int calculateRotationCorrection() {
@@ -109,8 +110,15 @@ MoveData calculateMovement() {
     int angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
     int rotation = calculateRotationCorrection();
+
+    if (angle < BALL_FRONT_BUFFER || angle > 360 - BALL_FRONT_BUFFER) {
+        angle += goalData.angle;
+    }
+
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){
         int orbitAngle = slaveData.orbitAngle;
+
+        // Front
         if (position == RobotPosition::smallOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
                 speed =  0;
@@ -129,6 +137,8 @@ MoveData calculateMovement() {
         if (position == RobotPosition::overFrontLine) {
             angle = 180;
         }
+
+        // Right
         if (position == RobotPosition::smallOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 speed = 0;
@@ -147,6 +157,8 @@ MoveData calculateMovement() {
         if (position == RobotPosition::overRightLine) {
             angle = 270;
         }
+
+        // Back
         if (position == RobotPosition::smallOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
                 speed = 0;
@@ -162,9 +174,11 @@ MoveData calculateMovement() {
                 }
             }
         }
-        if (position == RobotPosition::overFrontLine) {
+        if (position == RobotPosition::overBackLine) {
             angle = 0;
         }
+
+        // Left
         if (position == RobotPosition::smallOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 speed = 0;
@@ -188,6 +202,7 @@ MoveData calculateMovement() {
     //     angle = 0;
     //     speed = MAX_ORBIT_SPEED;
     // }
+
     // NEED TO DO CORNERS
     MoveData data = MoveData(angle, speed, rotation);
     return data;
@@ -208,19 +223,36 @@ void getSlaveData() {
     slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), orbitAngle, orbitSpeed);
 }
 
-// void updatePixy() {
-//     if (micros() - lastUpdate > 20000) {
-//         uint16_t blocks = pixy.getBlocks();
-//         // Serial.println(blocks);
-//         lastUpdate = micros();
-//     }
-// }
+void updatePixy() {
+    if (micros() - lastUpdate > 20000) {
+        uint16_t blocks = pixy.getBlocks();
 
+        if (blocks > 1) {
+            goalData.status = GoalStatus::blocked;
+        } else if (blocks > 0) {
+            goalData.status = GoalStatus::visible;
+        } else {
+            goalData.status = GoalStatus::invisible;
+        }
+
+        int height = pixy.blocks[0].height;
+        goalData.distance = (height / (GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER;
+
+        int middleGoalPoint = pixy.blocks[0].x + (pixy.blocks[0].width / 2);
+        int goalDiffMiddleFOV = middleGoalPoint - 160;
+
+        if (goalData.status != GoalStatus::invisible) {
+            goalData.angle = (goalDiffMiddleFOV / 160) * 75;
+        }
+
+        lastUpdate = micros();
+    }
+}
 
 void loop() {
     getSlaveData();
     imu.update();
-    // updatePixy();
+    updatePixy();
 
     #if DEBUG_APP_IMU
     debug.appSendIMU(imu.heading);

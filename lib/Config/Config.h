@@ -87,6 +87,14 @@
 #define MIN_ORBIT_SPEED 255
 #define MAX_ORBIT_SPEED 127
 
+#define BALL_FRONT_BUFFER 10
+
+// Pixy
+
+#define GOAL_HEIGHT_SHORT 120
+#define GOAL_HEIGHT_LONG 20
+#define GOAL_DISTANCE_MULTIPLIER 100
+
 // Debug
 
 #define DEBUG_APP_IMU false

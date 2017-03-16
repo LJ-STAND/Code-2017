@@ -22,6 +22,8 @@
 // PixyI2C pixy(0x55);
 //
 
+// Modified to use Teensy I2C library
+
 #ifndef _PIXYI2C_H
 #define _PIXYI2C_H
 

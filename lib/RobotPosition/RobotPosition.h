@@ -31,4 +31,22 @@ enum RobotPosition {
     field // 24
 };
 
+String robotPositionString(RobotPosition position) {
+    switch (position) {
+        case smallOnFrontLine: {
+            return "Small on front line";
+        }
+
+        case bigOnFrontLine: {
+            return "Big on front line";
+        }
+
+        case overFrontLine: {
+            return "Over front line";
+        }
+
+        // TODO
+    }
+}
+
 #endif // LINE_POSITION_H

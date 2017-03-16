@@ -83,6 +83,8 @@ void loop() {
 
         calculateOrbit();
     }
+    // Serial.println(movement.angle);
+
 }
 
 void spi0_isr() {

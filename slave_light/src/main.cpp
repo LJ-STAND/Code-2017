@@ -17,6 +17,8 @@ volatile uint16_t dataOut[DATA_LENGTH_LIGHT];
 
 LightSensorArray lightSensorArray;
 
+LinePosition previousPosition = LinePosition::none;
+
 void setup() {
     Serial.begin(9600);
 
@@ -80,11 +82,19 @@ void debug() {
     Serial.print(", ");
     Serial.print(lightSensorArray.ls23.getValue());
     Serial.println();
+    delay(1000);
 }
 
 void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
+    LinePosition position = lightSensorArray.getLinePosition();
+    if (position!=previousPosition) {
+        Serial.println(position);
+        previousPosition = position;
+    }
+    // debug();
+
 }
 
 void spi0_isr() {

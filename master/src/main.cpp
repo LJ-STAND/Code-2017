@@ -20,7 +20,7 @@
 #include <MoveData.h>
 #include <Pins.h>
 #include <LightGate.h>
-#include <PixyI2C.h>
+#include <GoalFinder.h>
 
 T3SPI spi;
 
@@ -37,7 +37,7 @@ DebugController debug;
 MotorArray motors;
 IMU imu;
 LightGate lightGate;
-PixyI2C pixy;
+GoalFinder goalFinder;
 
 unsigned long lastUpdate;
 
@@ -57,7 +57,6 @@ void setup() {
 
     // Serial
     Serial.begin(9600);
-    Serial.println("memes");
     Bluetooth::init();
 
     debug.toggleWhite(true);
@@ -82,7 +81,7 @@ void setup() {
     debug.toggleGreen(true);
 
     // Pixy
-    pixy.init();
+    // pixy.init();
 
     debug.toggleAllLEDs(true);
 
@@ -114,8 +113,7 @@ MoveData calculateMovement() {
         int orbitAngle = slaveData.orbitAngle;
         if (position == RobotPosition::smallOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = orbitAngle;
-                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+                speed =  0;
             }
         }
         if (position == RobotPosition::bigOnFrontLine) {
@@ -129,14 +127,11 @@ MoveData calculateMovement() {
             }
         }
         if (position == RobotPosition::overFrontLine) {
-            if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = 180;
-            }
+            angle = 180;
         }
         if (position == RobotPosition::smallOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = orbitAngle;
-                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+                speed = 0;
             }
         }
         if (position == RobotPosition::bigOnRightLine) {
@@ -150,14 +145,11 @@ MoveData calculateMovement() {
             }
         }
         if (position == RobotPosition::overRightLine) {
-            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = 270;
-            }
+            angle = 270;
         }
         if (position == RobotPosition::smallOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = orbitAngle;
-                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+                speed = 0;
             }
         }
         if (position == RobotPosition::bigOnBackLine) {
@@ -171,14 +163,11 @@ MoveData calculateMovement() {
             }
         }
         if (position == RobotPosition::overFrontLine) {
-            if (315 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 45 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = 0;
-            }
+            angle = 0;
         }
         if (position == RobotPosition::smallOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = orbitAngle;
-                speed =  (int) slaveData.orbitSpeed * LS_MOVEMENT_SMALL_MULTIPLIER;
+                speed = 0;
             }
         }
         if (position == RobotPosition::bigOnLeftLine) {
@@ -192,15 +181,13 @@ MoveData calculateMovement() {
             }
         }
         if (position == RobotPosition::overLeftLine) {
-            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
-                angle = 90;
-            }
+            angle = 90;
         }
     }
-    if (lightGate.hasBall()) {
-        angle = 0;
-        speed = MAX_ORBIT_SPEED;
-    }
+    // if (lightGate.hasBall()) {
+    //     angle = 0;
+    //     speed = MAX_ORBIT_SPEED;
+    // }
     // NEED TO DO CORNERS
     MoveData data = MoveData(angle, speed, rotation);
     return data;
@@ -221,10 +208,19 @@ void getSlaveData() {
     slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), orbitAngle, orbitSpeed);
 }
 
+// void updatePixy() {
+//     if (micros() - lastUpdate > 20000) {
+//         uint16_t blocks = pixy.getBlocks();
+//         // Serial.println(blocks);
+//         lastUpdate = micros();
+//     }
+// }
+
 
 void loop() {
     getSlaveData();
     imu.update();
+    // updatePixy();
 
     #if DEBUG_APP_IMU
     debug.appSendIMU(imu.heading);
@@ -232,7 +228,10 @@ void loop() {
 
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
     MoveData movement = calculateMovement();
-    previousPosition = position;
+    if (previousPosition != position) {
+        Bluetooth::send(String(position));
+        previousPosition = position;
+    }
 
     // Serial.println(position);
     // Serial.println(slaveData.linePosition);
@@ -241,10 +240,4 @@ void loop() {
     // Serial.println(imu.position.x);
 
     motors.move(movement.angle, movement.rotation, movement.speed);
-
-    if (micros() - lastUpdate > 20000) {
-        uint16_t blocks = pixy.getBlocks();
-        // Serial.println(blocks);
-        lastUpdate = micros();
-    }
 }

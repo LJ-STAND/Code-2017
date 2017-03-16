@@ -33,6 +33,7 @@ public:
 
     void appSendTSOPs(int tsop, int strength);
     void appSendIMU(double angle);
+    void appSendString(String string);
 };
 
 #endif

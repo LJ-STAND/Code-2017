@@ -250,18 +250,22 @@ void updatePixy() {
 }
 
 void loop() {
+    // Sensors
     getSlaveData();
     imu.update();
     updatePixy();
 
+    // Debug
     #if DEBUG_APP_IMU
     debug.appSendIMU(imu.heading);
     #endif
 
+    // Movement
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
     MoveData movement = calculateMovement();
+
     if (previousPosition != position) {
-        Bluetooth::send(String(position));
+        appSendDebug(String(position));
         previousPosition = position;
     }
 

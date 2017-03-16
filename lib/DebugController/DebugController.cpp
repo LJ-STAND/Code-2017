@@ -126,3 +126,7 @@ void DebugController::BBC() {
 void DebugController::appSendIMU(double angle) {
     Bluetooth::send(angle, BluetoothDataType::compass);
 }
+
+void DebugController::appSendString(String string) {
+    Bluetooth::send(string);
+}

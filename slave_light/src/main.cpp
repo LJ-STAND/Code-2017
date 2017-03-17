@@ -89,12 +89,11 @@ void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
     LinePosition position = lightSensorArray.getLinePosition();
-    if (position!=previousPosition) {
-        Serial.println(position);
+    
+    if (position != previousPosition) {
+        Serial.println(linePositionString(position));
         previousPosition = position;
     }
-    // debug();
-
 }
 
 void spi0_isr() {

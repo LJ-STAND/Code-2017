@@ -111,7 +111,7 @@ MoveData calculateMovement() {
     int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
     int rotation = calculateRotationCorrection();
 
-    if (angle < BALL_FRONT_BUFFER || angle > 360 - BALL_FRONT_BUFFER) {
+    if (lightGate.hasBall() && goalData.status == GoalStatus::visible) {
         angle += goalData.angle;
     }
 
@@ -124,6 +124,7 @@ MoveData calculateMovement() {
                 speed =  0;
             }
         }
+
         if (position == RobotPosition::bigOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle < 180) {
@@ -134,6 +135,7 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overFrontLine) {
             angle = 180;
         }
@@ -144,6 +146,7 @@ MoveData calculateMovement() {
                 speed = 0;
             }
         }
+
         if (position == RobotPosition::bigOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 90) {
@@ -154,6 +157,7 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overRightLine) {
             angle = 270;
         }
@@ -164,6 +168,7 @@ MoveData calculateMovement() {
                 speed = 0;
             }
         }
+
         if (position == RobotPosition::bigOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 180) {
@@ -174,6 +179,7 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overBackLine) {
             angle = 0;
         }
@@ -184,6 +190,7 @@ MoveData calculateMovement() {
                 speed = 0;
             }
         }
+
         if (position == RobotPosition::bigOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 270) {
@@ -194,14 +201,11 @@ MoveData calculateMovement() {
                 }
             }
         }
+
         if (position == RobotPosition::overLeftLine) {
             angle = 90;
         }
     }
-    // if (lightGate.hasBall()) {
-    //     angle = 0;
-    //     speed = MAX_ORBIT_SPEED;
-    // }
 
     // NEED TO DO CORNERS
     MoveData data = MoveData(angle, speed, rotation);
@@ -265,7 +269,7 @@ void loop() {
     MoveData movement = calculateMovement();
 
     if (previousPosition != position) {
-        appSendDebug(String(position));
+        appSendDebug(String(robotPositionString(position)));
         previousPosition = position;
     }
 

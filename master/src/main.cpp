@@ -111,8 +111,8 @@ MoveData calculateMovement() {
     int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
     int rotation = calculateRotationCorrection();
 
-    if (lightGate.hasBall() && goalData.status == GoalStatus::visible) {
-        angle += goalData.angle;
+    if (lightGate.hasBall() && goalData.status != GoalStatus::invisible) {
+        // We have the ball and we can see the goal
     }
 
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){

@@ -45,6 +45,94 @@ String robotPositionString(RobotPosition position) {
             return "Over front line";
         }
 
+        case smallOnRightLine: {
+            return "Small on right line";
+        }
+
+        case bigOnRightLine: {
+            return "Big on right line";
+        }
+
+        case overRightLine: {
+            return "Over right line";
+        }
+
+        case smallOnBackLine: {
+            return "Small on back line";
+        }
+
+        case bigOnBackLine: {
+            return "Big on back line";
+        }
+
+        case overBackLine: {
+            return "Over line";
+        }
+
+        case smallOnLeftLine: {
+            return "Small on left line";
+        }
+
+        case bigOnLeftLine: {
+            return "Big on left line";
+        }
+
+        case overLeftLine: {
+            return "Over left line";
+        }
+
+        case smallOnCornerFrontRight: {
+            return "Small on corner front right";
+        }
+
+        case bigOnCornerFrontRight: {
+            return "Big on corner front right";
+        }
+
+        case overCornerFrontRight: {
+            return "Over corner front right";
+        }
+
+        case smallOnCornerBackRight: {
+            return "Small on corner back right";
+        }
+
+        case bigOnCornerBackRight: {
+            return "Big on corner back right";
+        }
+
+        case overCornerBackRight: {
+            return "Over corner back right";
+        }
+
+        case smallOnCornerBackLeft: {
+            return "Small on corner back left";
+        }
+
+        case bigOnCornerBackLeft: {
+            return "Big on corner back left";
+        }
+
+        case overCornerBackLeft: {
+            return "Over corner back left";
+        }
+
+        case smallOnCornerFrontLeft: {
+            return "Small on corner front left ";
+        }
+
+        case bigOnCornerFrontLeft: {
+            return "Big on corner front left";
+        }
+
+        case overCornerFrontLeft: {
+            return "Over corner front left";
+        }
+
+        case field: {
+            return "Field";
+        }
+
         // TODO
     }
 }

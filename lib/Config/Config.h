@@ -52,6 +52,7 @@
 
 #define SPI_TSOP_ANGLE 1
 #define SPI_TSOP_SPEED 2
+#define SPI_TSOP_HASBALL 5
 
 // IMU
 
@@ -77,6 +78,7 @@
 #define ACC_FULL_SCALE_16_G 0x18
 
 // Orbit
+/* !!!!! IF CHANGED UPLOAD TO SLAVE_TSOP !!!!! */
 
 #define ORBIT_SHORT_STRENGTH 125
 #define ORBIT_BIG_STRENGTH 115
@@ -84,8 +86,8 @@
 #define ORBIT_SMALL_ANGLE 10
 #define ORBIT_BIG_ANGLE 15
 
-#define MIN_ORBIT_SPEED 255
-#define MAX_ORBIT_SPEED 127
+#define MIN_ORBIT_SPEED 127
+#define MAX_ORBIT_SPEED 255
 
 #define BALL_FRONT_BUFFER 10
 

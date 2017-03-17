@@ -23,68 +23,86 @@ enum LinePosition {
 };
 
 String linePositionString(LinePosition position) {
-    case RobotPosition::front: {
-        return "Front";
-    }
+    switch (position) {
+        case LinePosition::front: {
+            return "Front";
+            break;
+        }
 
-    case RobotPosition::right: {
-        return "Right";
-    }
+        case LinePosition::right: {
+            return "Right";
+            break;
+        }
 
-    case RobotPosition::back: {
-        return "Back";
-    }
+        case LinePosition::back: {
+            return "Back";
+            break;
+        }
 
-    case RobotPosition::left: {
-        return "Left";
-    }
+        case LinePosition::left: {
+            return "Left";
+            break;
+        }
 
-    case RobotPosition::smallCornerFrontRight: {
-        return "Small corner front right";
-    }
+        case LinePosition::smallCornerFrontRight: {
+            return "Small corner front right";
+            break;
+        }
 
-    case RobotPosition::smallCornerBackRight: {
-        return "Small corner back right";
-    }
+        case LinePosition::smallCornerBackRight: {
+            return "Small corner back right";
+            break;
+        }
 
-    case RobotPosition::smallCornerBackLeft: {
-        return "Small corner back left";
-    }
+        case LinePosition::smallCornerBackLeft: {
+            return "Small corner back left";
+            break;
+        }
 
-    case RobotPosition::smallCornerFrontLeft: {
-        return "Small corner front left";
-    }
+        case LinePosition::smallCornerFrontLeft: {
+            return "Small corner front left";
+            break;
+        }
 
-    case RobotPosition::bigCornerFrontRight: {
-        return "Big corner front right";
-    }
+        case LinePosition::bigCornerFrontRight: {
+            return "Big corner front right";
+            break;
+        }
 
-    case RobotPosition::bigCornerBackRight: {
-        return "Big corner back right";
-    }
+        case LinePosition::bigCornerBackRight: {
+            return "Big corner back right";
+            break;
+        }
 
-    case RobotPosition::bigCornerBackLeft: {
-        return "Big corner back left";
-    }
+        case LinePosition::bigCornerBackLeft: {
+            return "Big corner back left";
+            break;
+        }
 
-    case RobotPosition::bigCornerFrontLeft: {
-        return "Big corner front left";
-    }
+        case LinePosition::bigCornerFrontLeft: {
+            return "Big corner front left";
+            break;
+        }
 
-    case RobotPosition::centreVertical: {
-        return "Centre vertical";
-    }
+        case LinePosition::centreVertical: {
+            return "Centre vertical";
+            break;
+        }
 
-    case RobotPosition::centreHorizontal: {
-        return "Centre horizontal";
-    }
+        case LinePosition::centreHorizontal: {
+            return "Centre horizontal";
+            break;
+        }
 
-    case RobotPosition::none: {
-        return "None";
-    }
+        case LinePosition::none: {
+            return "None";
+            break;
+        }
 
-    case RobotPosition::unknown: {
-        return "Unknown";
+        case LinePosition::unknown: {
+            return "Unknown";
+            break;
+        }
     }
 }
 

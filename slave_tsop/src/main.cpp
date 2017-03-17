@@ -57,17 +57,16 @@ void calculateOrbit() {
             movement.angle = tsopAngle;
         }
     }
+
     double moveSpeedModifier;
+
     if (movement.angle < 90) { // 0-90 degrees
         moveSpeedModifier = (90 - movement.angle) / 90.0;
-    }
-    else if (movement.angle < 180) { // 90-180 degrees
+    } else if (movement.angle < 180) { // 90-180 degrees
         moveSpeedModifier = (movement.angle - 90) / 90.0;
-    }
-    else if (movement.angle < 270) { //180-270 degrees
+    } else if (movement.angle < 270) { //180-270 degrees
         moveSpeedModifier = (270 - movement.angle) / 90.0;
-    }
-    else { // 270-360 degrees
+    } else { // 270-360 degrees
         moveSpeedModifier = (movement.angle - 270) / 90.0;
     }
 
@@ -83,8 +82,6 @@ void loop() {
 
         calculateOrbit();
     }
-    // Serial.println(movement.angle);
-
 }
 
 void spi0_isr() {
@@ -95,6 +92,8 @@ void spi0_isr() {
         dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
     } else if (spiRequest == SPI_TSOP_SPEED) {
         dataOut[0] = (uint16_t) movement.speed;
+    } else if (spiRequest == SPI_TSOP_HASBALL) {
+        dataOut[0] = (uint16_t) tsops.hasBall();
     } else {
         dataOut[0] = 0;
     }

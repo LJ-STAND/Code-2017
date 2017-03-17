@@ -111,9 +111,19 @@ MoveData calculateMovement() {
     int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
     int rotation = calculateRotationCorrection();
 
-    if (lightGate.hasBall() && goalData.status != GoalStatus::invisible) {
-        // We have the ball and we can see the goal
-    }
+    // Serial.println(goalData.status);
+    // if (goalData.status != GoalStatus::invisible && slaveData.hasBallTsop) {
+    //     // We have the ball and we can see the goal
+    //
+    //     // angle = mod(goalData.angle > 0 ? goalData.angle - 45 : mod(goalData.angle, 360) + 45, 360);
+    //     angle = 0;
+    //
+    //     // angle = goalData.angle > 0 ? 270 : 90;
+    //     rotation += (int)(((double)goalData.angle / 75.0) * 255);
+    //     speed = 255;
+    //
+    //     Serial.println(String(goalData.angle) + ", " + String(angle) + ", " + String(rotation));
+    // }
 
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){
         int orbitAngle = slaveData.orbitAngle;
@@ -214,21 +224,35 @@ MoveData calculateMovement() {
 }
 
 void getSlaveData() {
+    // Does three transfers to ensure the recieved data is what is being requested
+
     dataOutTsop[0] = SPI_TSOP_ANGLE;
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
     spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
     int orbitAngle = dataInTsop[0];
 
     dataOutTsop[0] = SPI_TSOP_SPEED;
     spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
     int orbitSpeed = dataInTsop[0];
+
+    dataOutTsop[0] = SPI_TSOP_HASBALL;
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
+    bool hasBallTsop = (bool)dataInTsop[0];
 
     spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, CTAR_0, MASTER_CS_LIGHT);
 
-    slaveData = SlaveData(static_cast<LinePosition>((int) dataInLight[0]), orbitAngle, orbitSpeed);
+    Serial.println(String(orbitAngle) + ", " + String(orbitSpeed) + ", " + String(hasBallTsop));
+
+    slaveData = SlaveData(static_cast<LinePosition>((int)dataInLight[0]), orbitAngle, orbitSpeed, hasBallTsop);
 }
 
 void updatePixy() {
-    if (micros() - lastUpdate > 20000) {
+    if (micros() - lastPixyUpdate > 30000) {
         uint16_t blocks = pixy.getBlocks();
 
         if (blocks > 1) {
@@ -239,17 +263,20 @@ void updatePixy() {
             goalData.status = GoalStatus::invisible;
         }
 
-        int height = pixy.blocks[0].height;
-        goalData.distance = (height / (GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER;
-
-        int middleGoalPoint = pixy.blocks[0].x + (pixy.blocks[0].width / 2);
-        int goalDiffMiddleFOV = middleGoalPoint - 160;
-
         if (goalData.status != GoalStatus::invisible) {
-            goalData.angle = (goalDiffMiddleFOV / 160) * 75;
+            double height = pixy.blocks[0].height;
+            goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
+
+            double middleGoalPoint = (double)pixy.blocks[0].x;
+            double goalDiffMiddleFOV = middleGoalPoint - 160;
+
+            goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
+        } else {
+            goalData.distance = 0;
+            goalData.angle = 0;
         }
 
-        lastUpdate = micros();
+        lastPixyUpdate = micros();
     }
 }
 
@@ -269,7 +296,7 @@ void loop() {
     MoveData movement = calculateMovement();
 
     if (previousPosition != position) {
-        appSendDebug(String(robotPositionString(position)));
+        // debug.appSendString(String(robotPositionString(position)));
         previousPosition = position;
     }
 
@@ -278,6 +305,10 @@ void loop() {
     // Serial.println(movement.angle);
     // Serial.println();
     // Serial.println(imu.position.x);
+    // Serial.println(lightGate.hasBall());
+    // Serial.println(slaveData.hasBallTsop);
+
+    // debug.appSendString(lightGate.hasBall());
 
     motors.move(movement.angle, movement.rotation, movement.speed);
 }

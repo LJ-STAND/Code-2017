@@ -22,6 +22,7 @@
 #include <LightGate.h>
 #include <PixyI2C.h>
 #include <GoalData.h>
+#include <Sonar.h>
 
 T3SPI spi;
 
@@ -35,6 +36,7 @@ MotorArray motors;
 IMU imu;
 LightGate lightGate;
 PixyI2C pixy;
+Sonar sonarFront;
 
 SlaveData slaveData;
 RobotPosition position;
@@ -85,6 +87,8 @@ void setup() {
     // Pixy
     pixy.init();
     lastPixyUpdate = micros();
+
+    sonarFront.init(0x70);
 
     debug.toggleAllLEDs(true);
 }
@@ -281,34 +285,75 @@ void updatePixy() {
 }
 
 void loop() {
-    // Sensors
-    getSlaveData();
-    imu.update();
-    updatePixy();
+    // // Sensors
+    // getSlaveData();
+    // imu.update();
+    // updatePixy();
+    //
+    // // Debug
+    // #if DEBUG_APP_IMU
+    // debug.appSendIMU(imu.heading);
+    // #endif
+    //
+    // // Movement
+    // position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    // MoveData movement = calculateMovement();
+    //
+    // if (previousPosition != position) {
+    //     // debug.appSendString(String(robotPositionString(position)));
+    //     previousPosition = position;
+    // }
+    //
+    // // Serial.println(position);
+    // // Serial.println(slaveData.linePosition);
+    // // Serial.println(movement.angle);
+    // // Serial.println();
+    // // Serial.println(imu.position.x);
+    // // Serial.println(lightGate.hasBall());
+    // // Serial.println(slaveData.hasBallTsop);
+    //
+    // // debug.appSendString(lightGate.hasBall());
+    //
+    // motors.move(movement.angle, movement.rotation, movement.speed);
 
-    // Debug
-    #if DEBUG_APP_IMU
-    debug.appSendIMU(imu.heading);
-    #endif
+    // byte error, address;
+    // int nDevices;
+    //
+    // Serial.println("Scanning...");
+    //
+    // nDevices = 0;
+    // for(address = 1; address < 127; address++ )
+    // {
+    //     // The i2c_scanner uses the return value of
+    //     // the Write.endTransmisstion to see if
+    //     // a device did acknowledge to the address.
+    //     Wire.beginTransmission(address);
+    //     error = Wire.endTransmission();
+    //
+    //     if (error == 0)
+    //     {
+    //         Serial.print("I2C device found at address 0x");
+    //         if (address<16)
+    //         Serial.print("0");
+    //         Serial.print(address,HEX);
+    //         Serial.println("  !");
+    //
+    //         nDevices++;
+    //     }
+    //     else if (error==4)
+    //     {
+    //         Serial.print("Unknown error at address 0x");
+    //         if (address<16)
+    //         Serial.print("0");
+    //         Serial.println(address,HEX);
+    //     }
+    // }
+    // if (nDevices == 0)
+    // Serial.println("No I2C devices found\n");
+    // else
+    // Serial.println("done\n");
+    //
+    // delay(1000);
 
-    // Movement
-    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    MoveData movement = calculateMovement();
-
-    if (previousPosition != position) {
-        // debug.appSendString(String(robotPositionString(position)));
-        previousPosition = position;
-    }
-
-    // Serial.println(position);
-    // Serial.println(slaveData.linePosition);
-    // Serial.println(movement.angle);
-    // Serial.println();
-    // Serial.println(imu.position.x);
-    // Serial.println(lightGate.hasBall());
-    // Serial.println(slaveData.hasBallTsop);
-
-    // debug.appSendString(lightGate.hasBall());
-
-    motors.move(movement.angle, movement.rotation, movement.speed);
+    Serial.println(sonarFront.read());
 }

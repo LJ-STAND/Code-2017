@@ -97,6 +97,12 @@
 #define GOAL_HEIGHT_LONG 20
 #define GOAL_DISTANCE_MULTIPLIER 100
 
+// Sonars
+
+#define SONAR_FRONT_ADDRESS
+#define SONAR_RANGE_TIME 65
+
+
 // Debug
 
 #define DEBUG_APP_IMU false

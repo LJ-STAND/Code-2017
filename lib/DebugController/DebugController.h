@@ -30,6 +30,7 @@ public:
 
     void rgb(int r, int g, int b);
     void BBC();
+    void flashAllLEDs(int n, int delayTime);
 
     void appSendTSOPs(int tsop, int strength);
     void appSendIMU(double angle);

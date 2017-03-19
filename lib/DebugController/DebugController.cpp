@@ -130,3 +130,12 @@ void DebugController::appSendIMU(double angle) {
 void DebugController::appSendString(String string) {
     Bluetooth::send(string);
 }
+
+void DebugController::flashAllLEDs(int n, int delayTime) {
+    for (int i = 0; i < n; i++) {
+        toggleAllLEDs(true);
+        delay(delayTime);
+        toggleAllLEDs(false);
+        delay(delayTime);
+    }
+}

@@ -38,3 +38,44 @@ int Sonar::read() {
 
     return lastRange;
 }
+
+void Sonar::setRange(double newRange) {
+    int range = (int)((double)((newRange - 0.043) / 0.043) + 0.5);
+
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x02);
+    Wire.write(range);
+    Wire.endTransmission();
+}
+
+void Sonar::setAddress(uint16_t newAddress) {
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x00);
+    Wire.write(0xA0);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x00);
+    Wire.write(0xAA);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x00);
+    Wire.write(0xA5);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x00);
+    Wire.write(newAddress);
+    Wire.endTransmission();
+
+    i2cAddress = newAddress / 2;
+
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(0x00);
+    Wire.endTransmission();
+
+    Wire.requestFrom(newAddress, 1);
+    while (Wire.available() < 1);
+    Serial.println(Wire.read());
+}

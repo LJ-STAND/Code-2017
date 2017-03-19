@@ -82,16 +82,18 @@ void debug() {
     Serial.print(", ");
     Serial.print(lightSensorArray.ls23.getValue());
     Serial.println();
-    delay(1000);
+    delay(100);
 }
 
 void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
     LinePosition position = lightSensorArray.getLinePosition();
-    
+
+    debug();
+
     if (position != previousPosition) {
-        Serial.println(linePositionString(position));
+        // Serial.println(linePositionString(position));
         previousPosition = position;
     }
 }

@@ -44,6 +44,7 @@ RobotPosition previousPosition = RobotPosition::field;
 GoalData goalData;
 
 unsigned long lastPixyUpdate;
+int facingDirection;
 
 void setup() {
     // Onboard LED
@@ -88,14 +89,17 @@ void setup() {
     pixy.init();
     lastPixyUpdate = micros();
 
-    sonarFront.init(0x70);
+    // sonarFront.init(0x70);
+    // sonarFront.setAddress(0xE2);
 
     debug.toggleAllLEDs(true);
+    delay(500);
+    debug.flashAllLEDs(3, 200);
 }
 
 int calculateRotationCorrection() {
     int correctionRotation;
-    int rotation = (imu.heading > 180 ? 360 : 0) - imu.heading;
+    int rotation = (mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360);
 
     if (abs(rotation) < IMU_THRESHOLD) {
         correctionRotation = 0;
@@ -110,121 +114,125 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-MoveData calculateMovement() {
-    int angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
-    int speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
-    int rotation = calculateRotationCorrection();
-
-    // Serial.println(goalData.status);
-    // if (goalData.status != GoalStatus::invisible && slaveData.hasBallTsop) {
-    //     // We have the ball and we can see the goal
-    //
-    //     // angle = mod(goalData.angle > 0 ? goalData.angle - 45 : mod(goalData.angle, 360) + 45, 360);
-    //     angle = 0;
-    //
-    //     // angle = goalData.angle > 0 ? 270 : 90;
-    //     rotation += (int)(((double)goalData.angle / 75.0) * 255);
-    //     speed = 255;
-    //
-    //     Serial.println(String(goalData.angle) + ", " + String(angle) + ", " + String(rotation));
-    // }
-
-    if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL){
+MoveData calculateLineAvoid(MoveData movement) {
+    if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL && AVOID_LINE) {
         int orbitAngle = slaveData.orbitAngle;
 
         // Front
         if (position == RobotPosition::smallOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                speed =  0;
+                movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle < 180) {
-                    angle = 120;
-                }
-                else {
-                    angle = 240;
+                    movement.angle = 120;
+                } else {
+                    movement.angle = 240;
                 }
             }
         }
 
         if (position == RobotPosition::overFrontLine) {
-            angle = 180;
+            movement.angle = 180;
         }
 
         // Right
         if (position == RobotPosition::smallOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
-                speed = 0;
+                movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 90) {
-                    angle = 210;
-                }
-                else {
-                    angle = 330;
+                    movement.angle = 210;
+                } else {
+                    movement.angle = 330;
                 }
             }
         }
 
         if (position == RobotPosition::overRightLine) {
-            angle = 270;
+            movement.angle = 270;
         }
 
         // Back
         if (position == RobotPosition::smallOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
-                speed = 0;
+                movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 180) {
-                    angle = 300;
-                }
-                else {
-                    angle = 60;
+                    movement.angle = 300;
+                } else {
+                    movement.angle = 60;
                 }
             }
         }
 
         if (position == RobotPosition::overBackLine) {
-            angle = 0;
+            movement.angle = 0;
         }
 
         // Left
         if (position == RobotPosition::smallOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
-                speed = 0;
+                movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 270) {
-                    angle = 30;
-                }
-                else {
-                    angle = 150;
+                    movement.angle = 30;
+                } else {
+                    movement.angle = 150;
                 }
             }
         }
 
         if (position == RobotPosition::overLeftLine) {
-            angle = 90;
+            movement.angle = 90;
         }
     }
 
-    // NEED TO DO CORNERS
-    MoveData data = MoveData(angle, speed, rotation);
-    return data;
-    // TODO
+    return movement;
+}
+
+MoveData calculateMovement() {
+    MoveData movement;
+    movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
+    movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
+
+    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTsop) {
+        // We have the ball and we can see the goal
+        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 1.2), 360);
+
+        movement.angle = mod(-((int)min(((double)goalData.angle / 75.0) * 150, 90)), 360);
+        // angle = 0;
+        //
+        // // angle = goalData.angle > 0 ? 270 : 90;
+        // rotation += (int)(((double)goalData.angle / 75.0) * GOAL_ROTATION_MULTIPLIER);
+        // speed = 255;
+        //
+        // // Serial.println(String(goalData.angle) + ", " + String(angle) + ", " + String(rotation));
+    } else {
+        facingDirection = 0;
+    }
+
+    // movement = calculateLineAvoid(movement);
+    Serial.println(String(goalData.status != GoalStatus::invisible & slaveData.hasBallTsop) + ", " + String(movement.angle) + ", " + String(goalData.angle));
+
+    movement.rotation = calculateRotationCorrection();
+
+    return movement;
 }
 
 void getSlaveData() {
@@ -250,7 +258,7 @@ void getSlaveData() {
 
     spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, CTAR_0, MASTER_CS_LIGHT);
 
-    Serial.println(String(orbitAngle) + ", " + String(orbitSpeed) + ", " + String(hasBallTsop));
+    // Serial.println(String(orbitAngle) + ", " + String(orbitSpeed) + ", " + String(hasBallTsop));
 
     slaveData = SlaveData(static_cast<LinePosition>((int)dataInLight[0]), orbitAngle, orbitSpeed, hasBallTsop);
 }
@@ -268,6 +276,7 @@ void updatePixy() {
         }
 
         if (goalData.status != GoalStatus::invisible) {
+            debug.toggleRed(true);
             double height = pixy.blocks[0].height;
             goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
 
@@ -276,6 +285,7 @@ void updatePixy() {
 
             goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
         } else {
+            debug.toggleRed(false);
             goalData.distance = 0;
             goalData.angle = 0;
         }
@@ -285,75 +295,36 @@ void updatePixy() {
 }
 
 void loop() {
-    // // Sensors
-    // getSlaveData();
-    // imu.update();
-    // updatePixy();
-    //
-    // // Debug
-    // #if DEBUG_APP_IMU
-    // debug.appSendIMU(imu.heading);
-    // #endif
-    //
-    // // Movement
-    // position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    // MoveData movement = calculateMovement();
-    //
-    // if (previousPosition != position) {
-    //     // debug.appSendString(String(robotPositionString(position)));
-    //     previousPosition = position;
-    // }
-    //
-    // // Serial.println(position);
-    // // Serial.println(slaveData.linePosition);
-    // // Serial.println(movement.angle);
-    // // Serial.println();
-    // // Serial.println(imu.position.x);
-    // // Serial.println(lightGate.hasBall());
-    // // Serial.println(slaveData.hasBallTsop);
-    //
-    // // debug.appSendString(lightGate.hasBall());
-    //
-    // motors.move(movement.angle, movement.rotation, movement.speed);
+    // Sensors
+    getSlaveData();
+    imu.update();
+    updatePixy();
 
-    // byte error, address;
-    // int nDevices;
-    //
-    // Serial.println("Scanning...");
-    //
-    // nDevices = 0;
-    // for(address = 1; address < 127; address++ )
-    // {
-    //     // The i2c_scanner uses the return value of
-    //     // the Write.endTransmisstion to see if
-    //     // a device did acknowledge to the address.
-    //     Wire.beginTransmission(address);
-    //     error = Wire.endTransmission();
-    //
-    //     if (error == 0)
-    //     {
-    //         Serial.print("I2C device found at address 0x");
-    //         if (address<16)
-    //         Serial.print("0");
-    //         Serial.print(address,HEX);
-    //         Serial.println("  !");
-    //
-    //         nDevices++;
-    //     }
-    //     else if (error==4)
-    //     {
-    //         Serial.print("Unknown error at address 0x");
-    //         if (address<16)
-    //         Serial.print("0");
-    //         Serial.println(address,HEX);
-    //     }
-    // }
-    // if (nDevices == 0)
-    // Serial.println("No I2C devices found\n");
-    // else
-    // Serial.println("done\n");
-    //
-    // delay(1000);
+    // Debug
+    #if DEBUG_APP_IMU
+    debug.appSendIMU(imu.heading);
+    #endif
+
+    // Movement
+    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    MoveData movement = calculateMovement();
+
+    if (previousPosition != position) {
+        // debug.appSendString(String(robotPositionString(position)));
+        previousPosition = position;
+    }
+
+    // Serial.println(position);
+    // Serial.println(slaveData.linePosition);
+    // Serial.println(movement.angle);
+    // Serial.println();
+    // Serial.println(imu.position.x);
+    debug.toggleGreen(lightGate.hasBall());
+    // Serial.println(slaveData.hasBallTsop);
+
+    // debug.appSendString(lightGate.hasBall());
+
+    // motors.move(movement.angle, movement.rotation, movement.speed);
 
     Serial.println(sonarFront.read());
 }

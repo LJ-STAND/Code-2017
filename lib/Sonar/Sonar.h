@@ -10,6 +10,8 @@ public:
     Sonar() {};
     void init(uint16_t address);
     int read();
+    void setRange(double newRange);
+    void setAddress(uint16_t newAddress);
 
 private:
     void beginRanging();

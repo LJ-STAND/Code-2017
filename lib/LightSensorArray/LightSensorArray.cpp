@@ -143,3 +143,39 @@ void LightSensorArray::calculatePostion() {
 LinePosition LightSensorArray::getLinePosition() {
     return position;
 }
+
+uint16_t getFirst16Bit() {
+    LightSensorBitsUnion bitsUnion;
+    bitsUnion.bits.b0 = data.ls0;
+    bitsUnion.bits.b1 = data.ls1;
+    bitsUnion.bits.b2 = data.ls2;
+    bitsUnion.bits.b3 = data.ls3;
+    bitsUnion.bits.b4 = data.ls4;
+    bitsUnion.bits.b5 = data.ls5;
+    bitsUnion.bits.b6 = data.ls6;
+    bitsUnion.bits.b7 = data.ls7;
+    bitsUnion.bits.b8 = data.ls8;
+    bitsUnion.bits.b9 = data.ls9;
+    bitsUnion.bits.b10 = data.ls10;
+    bitsUnion.bits.b11 = data.ls11;
+    bitsUnion.bits.b12 = data.ls12;
+    bitsUnion.bits.b13 = data.ls13;
+    bitsUnion.bits.b14 = data.ls14;
+    bitsUnion.bits.b15 = data.ls15;
+
+    return bitsUnion.bit16;
+}
+
+uint16_t getSecond16Bit() {
+    LightSensorBitsUnion bitsUnion;
+    bitsUnion.bits.b0 = data.ls16;
+    bitsUnion.bits.b1 = data.ls17;
+    bitsUnion.bits.b2 = data.ls18;
+    bitsUnion.bits.b3 = data.ls19;
+    bitsUnion.bits.b4 = data.ls20;
+    bitsUnion.bits.b5 = data.ls21;
+    bitsUnion.bits.b6 = data.ls22;
+    bitsUnion.bits.b7 = data.ls23;
+
+    return bitsUnion.bit16;
+}

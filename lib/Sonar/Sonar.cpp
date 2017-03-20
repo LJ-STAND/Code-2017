@@ -69,7 +69,7 @@ void Sonar::setAddress(uint16_t newAddress) {
     Wire.write(newAddress);
     Wire.endTransmission();
 
-    i2cAddress = newAddress / 2;
+    i2cAddress = newAddress >> 1;
 
     Wire.beginTransmission(i2cAddress);
     Wire.write(0x00);

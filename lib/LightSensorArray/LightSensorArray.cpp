@@ -144,7 +144,7 @@ LinePosition LightSensorArray::getLinePosition() {
     return position;
 }
 
-uint16_t getFirst16Bit() {
+uint16_t LightSensorArray::getFirst16Bit() {
     LightSensorBitsUnion bitsUnion;
     bitsUnion.bits.b0 = data.ls0;
     bitsUnion.bits.b1 = data.ls1;
@@ -166,7 +166,7 @@ uint16_t getFirst16Bit() {
     return bitsUnion.bit16;
 }
 
-uint16_t getSecond16Bit() {
+uint16_t LightSensorArray::getSecond16Bit() {
     LightSensorBitsUnion bitsUnion;
     bitsUnion.bits.b0 = data.ls16;
     bitsUnion.bits.b1 = data.ls17;

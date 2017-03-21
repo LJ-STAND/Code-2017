@@ -23,6 +23,7 @@
 #include <PixyI2C.h>
 #include <GoalData.h>
 #include <Sonar.h>
+#include <Slave.h>
 
 T3SPI spi;
 
@@ -41,7 +42,10 @@ Sonar sonarRight;
 Sonar sonarBack;
 Sonar sonarLeft;
 
+SlaveLightSensor slaveLightSensor;
+SlaveTSOP slaveTSOP;
 SlaveData slaveData;
+
 RobotPosition position;
 RobotPosition previousPosition = RobotPosition::field;
 GoalData goalData;
@@ -241,34 +245,6 @@ MoveData calculateMovement() {
     return movement;
 }
 
-void getSlaveData() {
-    // Does three transfers to ensure the recieved data is what is being requested
-
-    dataOutTsop[0] = SPI_TSOP_ANGLE;
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    int orbitAngle = dataInTsop[0];
-
-    dataOutTsop[0] = SPI_TSOP_SPEED;
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    int orbitSpeed = dataInTsop[0];
-
-    dataOutTsop[0] = SPI_TSOP_HASBALL;
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    spi.txrx16(dataOutTsop, dataInTsop, DATA_LENGTH_TSOP, CTAR_0, MASTER_CS_TSOP);
-    bool hasBallTsop = (bool)dataInTsop[0];
-
-    spi.txrx16(dataOutLight, dataInLight, DATA_LENGTH_LIGHT, CTAR_0, MASTER_CS_LIGHT);
-
-    // Serial.println(String(orbitAngle) + ", " + String(orbitSpeed) + ", " + String(hasBallTsop));
-
-    slaveData = SlaveData(static_cast<LinePosition>((int)dataInLight[0]), orbitAngle, orbitSpeed, hasBallTsop);
-}
-
 void updatePixy() {
     if (micros() - lastPixyUpdate > 30000) {
         uint16_t blocks = pixy.getBlocks();
@@ -301,8 +277,10 @@ void updatePixy() {
 }
 
 void loop() {
+    // Slaves
+    slaveData = SlaveData(slaveLightSensor.getLinePosition(), slaveTSOP.getOrbitAngle(), slaveTSOP.getOrbitSpeed(), slaveTSOP.getHasBallTSOP());
+
     // Sensors
-    getSlaveData();
     imu.update();
     updatePixy();
 
@@ -330,5 +308,5 @@ void loop() {
 
     // debug.appSendString(lightGate.hasBall());
 
-    // motors.move(movement.angle, movement.rotation, movement.speed);
+    // motors.move(movement.angle, movement.rotation, movement.speed);[]
 }

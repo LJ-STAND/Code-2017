@@ -9,6 +9,7 @@
 #include <TSOPArray.h>
 #include <Config.h>
 #include <MoveData.h>
+#include <Slave.h>
 
 T3SPI spi;
 
@@ -88,11 +89,11 @@ void spi0_isr() {
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
     int spiRequest = dataIn[0];
 
-    if (spiRequest == SPI_TSOP_ANGLE) {
+    if (spiRequest == SlaveCommands::orbitAngle) {
         dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
-    } else if (spiRequest == SPI_TSOP_SPEED) {
+    } else if (spiRequest == SlaveCommands::orbitSpeed) {
         dataOut[0] = (uint16_t) movement.speed;
-    } else if (spiRequest == SPI_TSOP_HASBALL) {
+    } else if (spiRequest == SlaveCommands::hasBallTSOP) {
         dataOut[0] = (uint16_t) tsops.hasBall();
     } else {
         dataOut[0] = 0;

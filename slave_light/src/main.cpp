@@ -9,6 +9,7 @@
 #include <LightSensorArray.h>
 #include <LinePosition.h>
 #include <Pins.h>
+#include <Slave.h>
 
 T3SPI spi;
 
@@ -99,6 +100,12 @@ void loop() {
 }
 
 void spi0_isr() {
-    dataOut[0] = (uint16_t) lightSensorArray.getLinePosition();
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_LIGHT);
+    int spiRequest = dataIn[0];
+
+    if (spiRequest == SlaveCommands::linePosition) {
+        dataOut[0] = (uint16_t) lightSensorArray.getLinePosition();
+    } else {
+        dataOut[0] = 0;
+    }
 }

@@ -52,9 +52,6 @@
 #define DATA_LENGTH_TSOP 1
 #define DATA_LENGTH_LIGHT 1
 
-#define SPI_TSOP_ANGLE 1
-#define SPI_TSOP_SPEED 2
-#define SPI_TSOP_HASBALL 5
 
 // IMU
 

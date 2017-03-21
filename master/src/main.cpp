@@ -37,6 +37,9 @@ IMU imu;
 LightGate lightGate;
 PixyI2C pixy;
 Sonar sonarFront;
+Sonar sonarRight;
+Sonar sonarBack;
+Sonar sonarLeft;
 
 SlaveData slaveData;
 RobotPosition position;
@@ -89,8 +92,11 @@ void setup() {
     pixy.init();
     lastPixyUpdate = micros();
 
-    // sonarFront.init(0x70);
-    // sonarFront.setAddress(0xE2);
+    // Sonars
+    sonarFront.init(SONAR_FRONT_ADDRESS);
+    sonarRight.init(SONAR_RIGHT_ADDRESS);
+    sonarBack.init(SONAR_BACK_ADDRESS);
+    sonarLeft.init(SONAR_LEFT_ADDRESS);
 
     debug.toggleAllLEDs(true);
     delay(500);
@@ -228,7 +234,7 @@ MoveData calculateMovement() {
     }
 
     // movement = calculateLineAvoid(movement);
-    Serial.println(String(goalData.status != GoalStatus::invisible & slaveData.hasBallTsop) + ", " + String(movement.angle) + ", " + String(goalData.angle));
+    // Serial.println(String(goalData.status != GoalStatus::invisible & slaveData.hasBallTsop) + ", " + String(movement.angle) + ", " + String(goalData.angle));
 
     movement.rotation = calculateRotationCorrection();
 
@@ -325,6 +331,4 @@ void loop() {
     // debug.appSendString(lightGate.hasBall());
 
     // motors.move(movement.angle, movement.rotation, movement.speed);
-
-    Serial.println(sonarFront.read());
 }

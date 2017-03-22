@@ -8,6 +8,8 @@
 enum SlaveCommands: int {
     noCommand,
     linePosition,
+    lightSensorsFirst16Bit,
+    lightSensorsSecond16Bit,
     orbitAngle,
     orbitSpeed,
     hasBallTSOP
@@ -28,6 +30,8 @@ class SlaveLightSensor: public Slave {
 public:
     void init();
     LinePosition getLinePosition();
+    uint16_t getFirst16Bit();
+    uint16_t getSecond16Bit();
 };
 
 class SlaveTSOP: public Slave {

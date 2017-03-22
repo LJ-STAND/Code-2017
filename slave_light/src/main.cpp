@@ -103,9 +103,21 @@ void spi0_isr() {
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_LIGHT);
     int spiRequest = dataIn[0];
 
-    if (spiRequest == SlaveCommands::linePosition) {
-        dataOut[0] = (uint16_t) lightSensorArray.getLinePosition();
-    } else {
-        dataOut[0] = 0;
+    switch (spiRequest) {
+        case SlaveCommands::linePosition: {
+            dataOut[0] = (uint16_t)lightSensorArray.getLinePosition();
+        }
+
+        case SlaveCommands::lightSensorsFirst16Bit: {
+            dataOut[0] = lightSensorArray.getFirst16Bit();
+        }
+
+        case SlaveCommands::lightSensorsSecond16Bit: {
+            dataOut[0] = lightSensorArray.getSecond16Bit();
+        }
+
+        default: {
+            dataOut[0] = 0;
+        }
     }
 }

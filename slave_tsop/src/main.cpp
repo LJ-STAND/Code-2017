@@ -38,14 +38,14 @@ void calculateOrbit() {
     int tsopStrength = tsops.getStrength();
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-         movement.angle = (int) round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
+         movement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
     } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            movement.angle = (int) round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
+            movement.angle = (int)round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
         } else {
             double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            movement.angle = (int) round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
+            movement.angle = (int)round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
@@ -89,13 +89,17 @@ void spi0_isr() {
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
     int spiRequest = dataIn[0];
 
-    if (spiRequest == SlaveCommands::orbitAngle) {
-        dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
-    } else if (spiRequest == SlaveCommands::orbitSpeed) {
-        dataOut[0] = (uint16_t) movement.speed;
-    } else if (spiRequest == SlaveCommands::hasBallTSOP) {
-        dataOut[0] = (uint16_t) tsops.hasBall();
-    } else {
-        dataOut[0] = 0;
+    switch (spiRequest) {
+        case SlaveCommands::orbitAngle {
+            dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
+        }
+
+        case SlaveCommands::orbitSpeed {
+            dataOut[0] = (uint16_t)movement.speed;
+        }
+
+        case SlaveCommands::hasBallTSOP: {
+            dataOut[0] = (uint16_t)tsops.hasBall();
+        }
     }
 }

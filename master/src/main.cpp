@@ -70,8 +70,9 @@ void setup() {
     // SPI
     spi.begin_MASTER(MASTER_SCK, MASTER_MOSI, MASTER_MISO, MASTER_CS_TSOP, CS_ActiveLOW);
     spi.setCTAR(CTAR_0, 16, SPI_MODE0, LSB_FIRST, SPI_CLOCK_DIV16);
-    spi.enableCS(MASTER_CS_LIGHT, CS_ActiveLOW);
-    spi.enableCS(MASTER_CS_PIXY, CS_ActiveLOW);
+
+    slaveLightSensor.init();
+    slaveTSOP.init();
 
     debug.toggleYellow(true);
 
@@ -272,7 +273,11 @@ void updatePixy() {
 
 void loop() {
     // Slaves
-    slaveData = SlaveData(slaveLightSensor.getLinePosition(), slaveTSOP.getOrbitAngle(), slaveTSOP.getOrbitSpeed(), slaveTSOP.getHasBallTSOP());
+    LinePosition linePosition = slaveLightSensor.getLinePosition();
+    int orbitAngle = slaveTSOP.getOrbitAngle();
+    int orbitSpeed = slaveTSOP.getOrbitSpeed();
+    bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
+    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
 
     // Sensors
     imu.update();
@@ -288,19 +293,10 @@ void loop() {
     MoveData movement = calculateMovement();
 
     if (previousPosition != position) {
-        // debug.appSendString(String(robotPositionString(position)));
         previousPosition = position;
     }
 
-    // Serial.println(position);
-    // Serial.println(slaveData.linePosition);
-    // Serial.println(movement.angle);
-    // Serial.println();
-    // Serial.println(imu.position.x);
     debug.toggleGreen(lightGate.hasBall());
-    // Serial.println(slaveData.hasBallTsop);
 
-    // debug.appSendString(lightGate.hasBall());
-
-    // motors.move(movement.angle, movement.rotation, movement.speed);[]
+    motors.move(movement.angle, movement.rotation, movement.speed);
 }

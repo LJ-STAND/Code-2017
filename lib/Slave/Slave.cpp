@@ -18,15 +18,15 @@ uint16_t Slave::txrx(uint16_t command) {
 }
 
 void SlaveLightSensor::init() {
-    Slave::init(SLAVE_LIGHT_CS);
+    Slave::init(MASTER_CS_LIGHT);
 }
 
 LinePosition SlaveLightSensor::getLinePosition() {
-    return static_cast<LinePosition>(txrx());
+    return static_cast<LinePosition>(txrx(SlaveCommands::linePosition));
 }
 
 void SlaveTSOP::init() {
-    Slave::init(SLAVE_TSOP_CS);
+    Slave::init(MASTER_CS_TSOP);
 }
 
 int SlaveTSOP::getOrbitAngle() {

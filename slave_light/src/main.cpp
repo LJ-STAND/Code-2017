@@ -106,18 +106,22 @@ void spi0_isr() {
     switch (spiRequest) {
         case SlaveCommands::linePosition: {
             dataOut[0] = (uint16_t)lightSensorArray.getLinePosition();
+            break;
         }
 
         case SlaveCommands::lightSensorsFirst16Bit: {
             dataOut[0] = lightSensorArray.getFirst16Bit();
+            break;
         }
 
         case SlaveCommands::lightSensorsSecond16Bit: {
             dataOut[0] = lightSensorArray.getSecond16Bit();
+            break;
         }
 
         default: {
             dataOut[0] = 0;
+            break;
         }
     }
 }

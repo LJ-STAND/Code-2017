@@ -89,17 +89,26 @@ void spi0_isr() {
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
     int spiRequest = dataIn[0];
 
+    // Serial.println(String(spiRequest) + ": " + String(dataOut[0]));
+
     switch (spiRequest) {
-        case SlaveCommands::orbitAngle {
+        case SlaveCommands::orbitAngle: {
             dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
+            break;
         }
 
-        case SlaveCommands::orbitSpeed {
+        case SlaveCommands::orbitSpeed: {
             dataOut[0] = (uint16_t)movement.speed;
+            break;
         }
 
         case SlaveCommands::hasBallTSOP: {
             dataOut[0] = (uint16_t)tsops.hasBall();
+            break;
+        }
+
+        default: {
+            dataOut[0] = 0;
         }
     }
 }

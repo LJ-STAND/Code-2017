@@ -139,3 +139,7 @@ void DebugController::flashAllLEDs(int n, int delayTime) {
         delay(delayTime);
     }
 }
+
+void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit) {
+
+}

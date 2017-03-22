@@ -1,8 +1,6 @@
 #ifndef CALCULATEROBOTPOSITION_H
 #define CALCULATEROBOTPOSITION_H
 
-// I heard you wanted cancer, so I gave you CalculateRobotPosition.h.
-
 #include "RobotPosition.h"
 #include <LinePosition.h>
 

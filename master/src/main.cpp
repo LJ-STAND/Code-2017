@@ -24,6 +24,7 @@
 #include <GoalData.h>
 #include <Sonar.h>
 #include <Slave.h>
+#include <Timer.h>
 
 T3SPI spi;
 DebugController debug;
@@ -44,7 +45,11 @@ RobotPosition position;
 RobotPosition previousPosition = RobotPosition::field;
 GoalData goalData;
 
-unsigned long lastPixyUpdate;
+Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
+Timer ledTimer = Timer(1000000);
+
+bool ledOn;
+
 int facingDirection;
 
 void setup() {
@@ -89,7 +94,6 @@ void setup() {
 
     // Pixy
     pixy.init();
-    lastPixyUpdate = micros();
 
     // Sonars
     sonarFront.init(SONAR_FRONT_ADDRESS);
@@ -241,7 +245,7 @@ MoveData calculateMovement() {
 }
 
 void updatePixy() {
-    if (micros() - lastPixyUpdate > 30000) {
+    if (pixyTimer.timeHasPassed()) {
         uint16_t blocks = pixy.getBlocks();
 
         if (blocks > 1) {
@@ -266,8 +270,6 @@ void updatePixy() {
             goalData.distance = 0;
             goalData.angle = 0;
         }
-
-        lastPixyUpdate = micros();
     }
 }
 
@@ -297,6 +299,11 @@ void loop() {
     }
 
     debug.toggleGreen(lightGate.hasBall());
+
+    if (ledTimer.timeHasPassed()) {
+        debug.toggleBlue(ledOn);
+        ledOn = !ledOn;
+    }
 
     motors.move(movement.angle, movement.rotation, movement.speed);
 }

@@ -4,7 +4,7 @@
 typedef struct MoveData {
     int angle, speed, rotation;
 
-    MoveData(){};
+    MoveData() {};
     MoveData(int moveAngle, int moveSpeed, int moveRotation) {
         angle = moveAngle;
         speed = moveSpeed;

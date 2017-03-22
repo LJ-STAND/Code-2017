@@ -236,8 +236,8 @@ MoveData calculateMovement() {
         facingDirection = 0;
     }
 
+    // NOTE IF THE LINE AVOIDANCE DOESNT WORK ITS BECAUSE ITS NOT ENABLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // movement = calculateLineAvoid(movement);
-    // Serial.println(String(goalData.status != GoalStatus::invisible & slaveData.hasBallTsop) + ", " + String(movement.angle) + ", " + String(goalData.angle));
 
     movement.rotation = calculateRotationCorrection();
 

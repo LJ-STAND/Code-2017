@@ -5,7 +5,7 @@
 #include <Pins.h>
 #include <LJSTANDCommon.h>
 #include <MoveData.h>
-#include "Motor.h"
+#include <Motor.h>
 
 class MotorArray {
 public:

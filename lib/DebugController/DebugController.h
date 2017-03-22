@@ -4,6 +4,7 @@
 #include <Pins.h>
 #include <Arduino.h>
 #include <Bluetooth.h>
+#include <LightSensorData.h>
 
 class DebugController {
 public:

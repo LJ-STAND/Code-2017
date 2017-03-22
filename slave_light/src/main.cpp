@@ -94,7 +94,6 @@ void loop() {
     debug();
 
     if (position != previousPosition) {
-        // Serial.println(linePositionString(position));
         previousPosition = position;
     }
 }

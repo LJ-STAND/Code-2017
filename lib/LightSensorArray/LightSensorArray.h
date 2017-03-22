@@ -2,9 +2,7 @@
 #define LIGHT_SENSOR_ARRAY_H
 
 #include <Arduino.h>
-
 #include <Pins.h>
-
 #include <LightSensorData.h>
 #include <LightSensor.h>
 #include <LinePosition.h>

@@ -21,7 +21,7 @@ enum LinePosition {
     none, // 14
     unknown // 15
 };
-// 
+
 // String linePositionString(LinePosition position) {
 //     switch (position) {
 //         case LinePosition::front: {

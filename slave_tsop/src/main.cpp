@@ -61,13 +61,17 @@ void calculateOrbit() {
 
     double moveSpeedModifier;
 
-    if (movement.angle < 90) { // 0-90 degrees
+    if (movement.angle < 90) {
+        // 0-90 degrees
         moveSpeedModifier = (90 - movement.angle) / 90.0;
-    } else if (movement.angle < 180) { // 90-180 degrees
+    } else if (movement.angle < 180) {
+        // 90-180 degrees
         moveSpeedModifier = (movement.angle - 90) / 90.0;
-    } else if (movement.angle < 270) { //180-270 degrees
+    } else if (movement.angle < 270) {
+        // 180-270 degrees
         moveSpeedModifier = (270 - movement.angle) / 90.0;
-    } else { // 270-360 degrees
+    } else {
+        // 270-360 degrees
         moveSpeedModifier = (movement.angle - 270) / 90.0;
     }
 
@@ -88,8 +92,6 @@ void loop() {
 void spi0_isr() {
     spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
     int spiRequest = dataIn[0];
-
-    // Serial.println(String(spiRequest) + ": " + String(dataOut[0]));
 
     switch (spiRequest) {
         case SlaveCommands::orbitAngle: {

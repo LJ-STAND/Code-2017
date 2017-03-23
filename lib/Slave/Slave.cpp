@@ -25,6 +25,14 @@ LinePosition SlaveLightSensor::getLinePosition() {
     return static_cast<LinePosition>(txrx(SlaveCommands::linePosition));
 }
 
+uint16_t SlaveLightSensor::getFirst16Bit() {
+    return txrx(SlaveCommands::lightSensorsFirst16Bit);
+}
+
+uint16_t SlaveLightSensor::getSecond16Bit() {
+    return txrx(SlaveCommands::lightSensorsSecond16Bit);
+}
+
 void SlaveTSOP::init() {
     Slave::init(MASTER_CS_TSOP);
 }

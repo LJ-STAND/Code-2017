@@ -2,7 +2,6 @@
 
 void Sonar::init(uint16_t address) {
     i2cAddress = address;
-    lastRangeTime = millis();
     beginRanging();
 }
 
@@ -29,11 +28,9 @@ int Sonar::range() {
 }
 
 int Sonar::read() {
-    if (millis() - lastRangeTime > SONAR_RANGE_TIME) {
+    if (rangeTimer.timeHasPassed()) {
         lastRange = range();
         beginRanging();
-
-        lastRangeTime = millis();
     }
 
     return lastRange;

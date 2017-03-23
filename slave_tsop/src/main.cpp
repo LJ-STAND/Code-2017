@@ -81,7 +81,7 @@ void calculateOrbit() {
 void loop() {
     tsops.updateOnce();
 
-    if (tsops.TSOPCounter > TSOP_LOOP_COUNT) {
+    if (tsops.tsopCounter > TSOP_LOOP_COUNT) {
         tsops.finishRead();
         tsops.unlock();
 

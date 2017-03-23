@@ -7,14 +7,14 @@ typedef struct SlaveData {
     LinePosition linePosition;
     int orbitAngle;
     int orbitSpeed;
-    bool hasBallTsop;
+    bool hasBallTSOP;
 
     SlaveData() {}
     SlaveData(LinePosition position, int angle, int speed, bool hasBall) {
         linePosition = position;
         orbitAngle = angle;
         orbitSpeed = speed;
-        hasBallTsop = hasBall;
+        hasBallTSOP = hasBall;
     }
 } SlaveData;
 

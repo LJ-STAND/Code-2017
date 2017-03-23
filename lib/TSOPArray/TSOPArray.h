@@ -33,7 +33,7 @@ public:
     int filteredValues[TSOP_NUM] = {0};
     int sortedFilteredValues[TSOP_NUM] = {0};
     int indexes[TSOP_NUM] = {0};
-    int TSOPCounter = 0;
+    int tsopCounter = 0;
 
 private:
     int angle = 0;

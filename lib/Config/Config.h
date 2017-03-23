@@ -104,11 +104,12 @@
 #define SONAR_RIGHT_ADDRESS 0x71 // 0xE2
 #define SONAR_BACK_ADDRESS 0x72 // 0xE4
 #define SONAR_LEFT_ADDRESS 0x73 // 0xE6
-#define SONAR_RANGE_TIME 65
 
+#define SONAR_RANGE_TIME 65000
 
 // Debug
 
 #define DEBUG_APP_IMU false
+#define DEBUG_APP_LIGHTSENSORS true
 
 #endif // CONFIG_H

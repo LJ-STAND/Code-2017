@@ -220,7 +220,7 @@ MoveData calculateMovement() {
     movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
-    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTsop) {
+    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTSOP) {
         // We have the ball and we can see the goal
         facingDirection = mod(imu.heading + (int)((double)goalData.angle * 1.2), 360);
 
@@ -236,7 +236,7 @@ MoveData calculateMovement() {
         facingDirection = 0;
     }
 
-    // NOTE IF THE LINE AVOIDANCE DOESNT WORK ITS BECAUSE ITS NOT ENABLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // NOTE IF THE LINE AVOIDANCE DOESNT WORK ITS BECAUSE ITS NOT ENABLED!!!
     // movement = calculateLineAvoid(movement);
 
     movement.rotation = calculateRotationCorrection();
@@ -290,6 +290,10 @@ void loop() {
     debug.appSendIMU(imu.heading);
     #endif
 
+    #if DEBUG_APP_LIGHTSENSORS
+    debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
+    #endif
+
     // Movement
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
     MoveData movement = calculateMovement();
@@ -305,5 +309,5 @@ void loop() {
         ledOn = !ledOn;
     }
 
-    motors.move(movement.angle, movement.rotation, movement.speed);
+    motors.move(movement);
 }

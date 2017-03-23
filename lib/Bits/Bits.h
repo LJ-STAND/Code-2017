@@ -18,6 +18,25 @@ typedef struct Bits {
     unsigned b13:1;
     unsigned b14:1;
     unsigned b15:1;
+
+    void boolArray(bool* array) {
+        array[0] = (bool)b0;
+        array[1] = (bool)b1;
+        array[2] = (bool)b2;
+        array[3] = (bool)b3;
+        array[4] = (bool)b4;
+        array[5] = (bool)b5;
+        array[6] = (bool)b6;
+        array[7] = (bool)b7;
+        array[8] = (bool)b8;
+        array[9] = (bool)b9;
+        array[10] = (bool)b10;
+        array[11] = (bool)b11;
+        array[12] = (bool)b12;
+        array[13] = (bool)b13;
+        array[14] = (bool)b14;
+        array[15] = (bool)b15;
+    }
 } Bits;
 
 union BitsUnion {

@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <i2c_t3.h>
 #include <Config.h>
+#include <Timer.h>
 
 class Sonar {
 public:
@@ -19,7 +20,7 @@ private:
 
     int lastRange;
     uint16_t i2cAddress;
-    unsigned long lastRangeTime;
+    Timer rangeTimer = Timer(SONAR_RANGE_TIME);
 };
 
 #endif // SONAR_H

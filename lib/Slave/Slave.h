@@ -12,7 +12,8 @@ enum SlaveCommands: int {
     lightSensorsSecond16Bit,
     orbitAngle,
     orbitSpeed,
-    hasBallTSOP
+    hasBallTSOP,
+    tsopAngle
 };
 
 class Slave {
@@ -40,6 +41,7 @@ public:
     int getOrbitAngle();
     int getOrbitSpeed();
     bool getHasBallTSOP();
+    int getTSOPAngle();
 };
 
 #endif // SLAVE_H

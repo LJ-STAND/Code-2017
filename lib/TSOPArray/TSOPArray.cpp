@@ -39,7 +39,7 @@ void TSOPArray::updateOnce() {
         tempValues[i] += digitalRead(TSOPPins[i]) ^ 1;
     }
 
-    TSOPCounter++;
+    tsopCounter++;
 }
 void TSOPArray::on() {
     // Turn the TSOPs on
@@ -66,7 +66,7 @@ void TSOPArray::unlock() {
 
 void TSOPArray::finishRead() {
     // Complete a reading of the TSOPs after a certain amount of individual readings, TSOP values are now stored in the values array until the next complete read
-    TSOPCounter = 0;
+    tsopCounter = 0;
     for (int i = 0; i < TSOP_NUM; i++) {
         values[i] = tempValues[i];
         tempValues[i] = 0;

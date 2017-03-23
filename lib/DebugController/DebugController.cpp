@@ -141,5 +141,28 @@ void DebugController::flashAllLEDs(int n, int delayTime) {
 }
 
 void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit) {
+    BitsUnion first;
+    BitsUnion second;
+    first.bit16 = first16Bit;
+    second.bit16 = second16Bit;
 
+    bool lightSensors[32];
+    first.bits.boolArray(lightSensors);
+    second.bits.boolArray(lightSensors + 16);
+
+    String sendString = "";
+
+    for (int i = 0; i < 24; i += 2) {
+        if (lightSensors[i] && !lightSensors[i + 1]) {
+            sendString += "1";
+        } else if (!lightSensors[i] && lightSensors[i + 1]) {
+            sendString += "2";
+        } else if (lightSensors[i] && lightSensors[i + 1]) {
+            sendString += "3";
+        } else {
+            sendString += "0";
+        }
+    }
+
+    Bluetooth::send(sendString, BluetoothDataType::lightSensor);
 }

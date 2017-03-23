@@ -136,7 +136,7 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle < 180) {
+                if (orbitAngle > 0) {
                     movement.angle = 120;
                 } else {
                     movement.angle = 240;
@@ -150,13 +150,13 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         // Right
         if (position == RobotPosition::smallOnRightLine) {
-            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnRightLine) {
-            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle && orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
                 if (orbitAngle > 90) {
                     movement.angle = 210;
                 } else {
@@ -192,14 +192,14 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         // Left
         if (position == RobotPosition::smallOnLeftLine) {
-            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
                 movement.speed = 0;
             }
         }
 
         if (position == RobotPosition::bigOnLeftLine) {
-            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 0 + LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle > 270) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
+                if (orbitAngle > 270 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
                     movement.angle = 30;
                 } else {
                     movement.angle = 150;
@@ -210,6 +210,91 @@ MoveData calculateLineAvoid(MoveData movement) {
         if (position == RobotPosition::overLeftLine) {
             movement.angle = 90;
         }
+
+        // Front right corner
+        if (position == RobotPosition::smallOnCornerFrontRight) {
+            if (270 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                movement.speed = 0;
+            }
+        }
+
+        if (position == RobotPosition::bigOnCornerFrontRight) {
+            if (270 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                if (orbitAngle > 45) {
+                    movement.angle = 210;
+                } else {
+                    movement.angle = 240;
+                }
+            }
+        }
+
+        if (position == RobotPosition::overCornerFrontRight) {
+            movement.angle = 225;
+        }
+
+        // Back right corner
+        if (position == RobotPosition::smallOnCornerBackRight) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360) < orbitAngle || orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                movement.speed = 0;
+            }
+        }
+
+        if (position == RobotPosition::bigOnCornerBackRight) {
+            if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360) < orbitAngle || orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                if (orbitAngle > 135) {
+                    movement.angle = 300;
+                } else {
+                    movement.angle = 330;
+                }
+            }
+        }
+
+        if (position == RobotPosition::overCornerBackRight) {
+            movement.angle = 315;
+        }
+
+        // Back left corner
+        if (position == RobotPosition::smallOnCornerBackLeft) {
+            if (90 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle <  LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                movement.speed = 0;
+            }
+        }
+
+        if (position == RobotPosition::bigOnCornerBackLeft) {
+            if (90 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                if (orbitAngle > 225 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                    movement.angle = 30;
+                } else {
+                    movement.angle = 60;
+                }
+            }
+        }
+
+        if (position == RobotPosition::overCornerBackLeft) {
+            movement.angle = 45;
+        }
+
+        // Front left corner
+        if (position == RobotPosition::smallOnCornerFrontLeft) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                movement.speed = 0;
+            }
+        }
+
+        if (position == RobotPosition::bigOnCornerFrontLeft) {
+            if (180 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                if (orbitAngle > 315 || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                    movement.angle = 120;
+                } else {
+                    movement.angle = 150;
+                }
+            }
+        }
+
+        if (position == RobotPosition::overCornerFrontLeft) {
+            movement.angle = 135;
+        }
+
     }
 
     return movement;
@@ -220,7 +305,7 @@ MoveData calculateMovement() {
     movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
-    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTSOP) {
+    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTSOP && FACE_GOAL) {
         // We have the ball and we can see the goal
         facingDirection = mod(imu.heading + (int)((double)goalData.angle * 1.2), 360);
 
@@ -237,7 +322,7 @@ MoveData calculateMovement() {
     }
 
     // NOTE IF THE LINE AVOIDANCE DOESNT WORK ITS BECAUSE ITS NOT ENABLED!!!
-    // movement = calculateLineAvoid(movement);
+    movement = calculateLineAvoid(movement);
 
     movement.rotation = calculateRotationCorrection();
 
@@ -299,6 +384,7 @@ void loop() {
     MoveData movement = calculateMovement();
 
     if (previousPosition != position) {
+        // debug.appSendString(robotPositionString(position));
         previousPosition = position;
     }
 

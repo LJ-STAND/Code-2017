@@ -224,5 +224,5 @@ int TSOPArray::getStrength() {
 }
 
 bool TSOPArray::hasBall() {
-    return (angle < BALL_FRONT_BUFFER || angle > 360 - BALL_FRONT_BUFFER);
+    return ((angle < BALL_FRONT_BUFFER || angle > 360 - BALL_FRONT_BUFFER) && strength > TSOP_HAS_BALL_STRENGTH);
 }

@@ -17,7 +17,7 @@ volatile uint16_t dataIn[DATA_LENGTH_TSOP];
 volatile uint16_t dataOut[DATA_LENGTH_TSOP];
 
 TSOPArray tsops;
-MoveData movement;
+MoveData orbitMovement;
 
 void setup() {
     Serial.begin(9600);
@@ -38,44 +38,45 @@ void calculateOrbit() {
     int tsopStrength = tsops.getStrength();
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-         movement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
+         orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * 0.5) : (180 + tsopAngle * 0.5));
     } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            movement.angle = (int)round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
+            orbitMovement.angle = (int)round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
         } else {
             double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            movement.angle = (int)round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
+            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
-            movement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
+            orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
         } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
             double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
-            movement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
+            orbitMovement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
         } else {
-            movement.angle = tsopAngle;
+            orbitMovement.angle = tsopAngle;
         }
     }
 
-    double moveSpeedModifier;
-
-    if (movement.angle < 90) {
-        // 0-90 degrees
-        moveSpeedModifier = (90 - movement.angle) / 90.0;
-    } else if (movement.angle < 180) {
-        // 90-180 degrees
-        moveSpeedModifier = (movement.angle - 90) / 90.0;
-    } else if (movement.angle < 270) {
-        // 180-270 degrees
-        moveSpeedModifier = (270 - movement.angle) / 90.0;
-    } else {
-        // 270-360 degrees
-        moveSpeedModifier = (movement.angle - 270) / 90.0;
-    }
-
-    movement.speed = MIN_ORBIT_SPEED + (MAX_ORBIT_SPEED - MIN_ORBIT_SPEED) * moveSpeedModifier;
+    // double moveSpeedModifier;
+    //
+    // if (orbitMovement.angle < 90) {
+    //     // 0-90 degrees
+    //     moveSpeedModifier = (90 - orbitMovement.angle) / 90.0;
+    // } else if (orbitMovement.angle < 180) {
+    //     // 90-180 degrees
+    //     moveSpeedModifier = (orbitMovement.angle - 90) / 90.0;
+    // } else if (orbitMovement.angle < 270) {
+    //     // 180-270 degrees
+    //     moveSpeedModifier = (270 - orbitMovement.angle) / 90.0;
+    // } else {
+    //     // 270-360 degrees
+    //     moveSpeedModifier = (orbitMovement.angle - 270) / 90.0;
+    // }
+    //
+    // orbitMovement.speed = MIN_ORBIT_SPEED + (MAX_ORBIT_SPEED - MIN_ORBIT_SPEED) * moveSpeedModifier;
+    orbitMovement.speed = MAX_ORBIT_SPEED;
 }
 
 void loop() {
@@ -95,12 +96,12 @@ void spi0_isr() {
 
     switch (spiRequest) {
         case SlaveCommands::orbitAngle: {
-            dataOut[0] = (uint16_t)(movement.angle != -1 ? movement.angle : TSOP_NO_BALL);
+            dataOut[0] = (uint16_t)(orbitMovement.angle != -1 ? orbitMovement.angle : TSOP_NO_BALL);
             break;
         }
 
         case SlaveCommands::orbitSpeed: {
-            dataOut[0] = (uint16_t)movement.speed;
+            dataOut[0] = (uint16_t)orbitMovement.speed;
             break;
         }
 

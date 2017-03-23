@@ -148,6 +148,7 @@ void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16
 
     bool lightSensors[32];
     first.bits.boolArray(lightSensors);
+    // Starts from element 16 of lightSensors
     second.bits.boolArray(lightSensors + 16);
 
     String sendString = "";

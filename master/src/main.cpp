@@ -320,8 +320,7 @@ MoveData calculateMovement() {
     } else {
         facingDirection = 0;
     }
-
-    // NOTE IF THE LINE AVOIDANCE DOESNT WORK ITS BECAUSE ITS NOT ENABLED!!!
+    
     movement = calculateLineAvoid(movement);
 
     movement.rotation = calculateRotationCorrection();

@@ -379,6 +379,8 @@ void loop() {
     debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
     #endif
 
+    Serial.println(String(slaveData.orbitAngle) + ", " + String(slaveData.orbitSpeed));
+
     // Movement
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
     MoveData movement = calculateMovement();

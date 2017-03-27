@@ -10,6 +10,7 @@
 #include <LinePosition.h>
 #include <Pins.h>
 #include <Slave.h>
+#include <EEPROM.h>
 
 T3SPI spi;
 

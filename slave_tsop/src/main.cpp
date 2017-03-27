@@ -10,6 +10,7 @@
 #include <Config.h>
 #include <MoveData.h>
 #include <Slave.h>
+#include <EEPROM.h>
 
 T3SPI spi;
 
@@ -58,6 +59,7 @@ void calculateOrbit() {
             orbitMovement.angle = tsopAngle;
         }
     }
+    orbitMovement.angle = tsopAngle;
 
     // double moveSpeedModifier;
     //

@@ -25,6 +25,7 @@
 #include <Sonar.h>
 #include <Slave.h>
 #include <Timer.h>
+#include <EEPROM.h>
 
 T3SPI spi;
 DebugController debug;
@@ -51,6 +52,8 @@ Timer ledTimer = Timer(1000000);
 bool ledOn;
 
 int facingDirection;
+
+
 
 void setup() {
     // Onboard LED
@@ -307,9 +310,9 @@ MoveData calculateMovement() {
 
     if (goalData.status != GoalStatus::invisible && slaveData.hasBallTSOP && FACE_GOAL) {
         // We have the ball and we can see the goal
-        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 1.2), 360);
+        // facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
 
-        movement.angle = mod(-((int)min(((double)goalData.angle / 75.0) * 150, 90)), 360);
+        movement.angle = goalData.angle;
         // angle = 0;
         //
         // // angle = goalData.angle > 0 ? 270 : 90;
@@ -320,10 +323,10 @@ MoveData calculateMovement() {
     } else {
         facingDirection = 0;
     }
-    
+
     movement = calculateLineAvoid(movement);
 
-    movement.rotation = calculateRotationCorrection();
+    movement.rotation = 0; // calculateRotationCorrection();
 
     return movement;
 }

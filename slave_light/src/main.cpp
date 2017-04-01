@@ -11,6 +11,8 @@
 #include <Pins.h>
 #include <Slave.h>
 #include <EEPROM.h>
+#include <Timer.h>
+#include <LJSTANDCommon.h>
 
 T3SPI spi;
 
@@ -20,6 +22,9 @@ volatile uint16_t dataOut[DATA_LENGTH_LIGHT];
 LightSensorArray lightSensorArray;
 
 LinePosition previousPosition = LinePosition::none;
+
+Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_LIGHT);
+bool ledOn;
 
 void setup() {
     Serial.begin(9600);
@@ -36,55 +41,56 @@ void setup() {
 }
 
 void debug() {
-    Serial.print(lightSensorArray.ls0.getValue());
+    Serial.print(lightSensorArray.ls0.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls1.getValue());
+    Serial.print(lightSensorArray.ls1.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls2.getValue());
+    Serial.print(lightSensorArray.ls2.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls3.getValue());
+    Serial.print(lightSensorArray.ls3.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls4.getValue());
+    Serial.print(lightSensorArray.ls4.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls5.getValue());
+    Serial.print(lightSensorArray.ls5.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls6.getValue());
+    Serial.print(lightSensorArray.ls6.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls7.getValue());
+    Serial.print(lightSensorArray.ls7.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls8.getValue());
+    Serial.print(lightSensorArray.ls8.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls9.getValue());
+    Serial.print(lightSensorArray.ls9.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls10.getValue());
+    Serial.print(lightSensorArray.ls10.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls11.getValue());
+    Serial.print(lightSensorArray.ls11.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls12.getValue());
+    Serial.print(lightSensorArray.ls12.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls13.getValue());
+    Serial.print(lightSensorArray.ls13.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls14.getValue());
+    Serial.print(lightSensorArray.ls14.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls15.getValue());
+    Serial.print(lightSensorArray.ls15.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls16.getValue());
+    Serial.print(lightSensorArray.ls16.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls17.getValue());
+    Serial.print(lightSensorArray.ls17.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls18.getValue());
+    Serial.print(lightSensorArray.ls18.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls19.getValue());
+    Serial.print(lightSensorArray.ls19.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls20.getValue());
+    Serial.print(lightSensorArray.ls20.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls21.getValue());
+    Serial.print(lightSensorArray.ls21.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls22.getValue());
+    Serial.print(lightSensorArray.ls22.isOnWhite());
     Serial.print(", ");
-    Serial.print(lightSensorArray.ls23.getValue());
+    Serial.print(lightSensorArray.ls23.isOnWhite());
+    Serial.print(", ");
+    Serial.print(linePositionString(lightSensorArray.getLinePosition()));
     Serial.println();
-    delay(100);
 }
 
 void loop() {
@@ -96,6 +102,11 @@ void loop() {
 
     if (position != previousPosition) {
         previousPosition = position;
+    }
+
+    if (ledTimer.timeHasPassed()) {
+        digitalWrite(LED_BUILTIN, ledOn);
+        ledOn = !ledOn;
     }
 }
 

@@ -2,6 +2,7 @@
  */
 
 #include <Arduino.h>
+#include <LinePosition.h>
 
 #ifndef LJSTANDCOMMON_H
 #define LJSTANDCOMMON_H
@@ -48,5 +49,7 @@ int sign(double value);
 double degreesToRadians(double degrees);
 
 double doubleAbs(double value);
+
+String linePositionString(LinePosition position);
 
 #endif  // LJSTANDCOMMON_H

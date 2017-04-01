@@ -26,6 +26,7 @@
 #include <Slave.h>
 #include <Timer.h>
 #include <EEPROM.h>
+#include <SparkFunMPU9250-DMP.h>
 
 T3SPI spi;
 DebugController debug;
@@ -47,7 +48,7 @@ RobotPosition previousPosition = RobotPosition::field;
 GoalData goalData;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
-Timer ledTimer = Timer(1000000);
+Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 
 bool ledOn;
 
@@ -85,6 +86,11 @@ void setup() {
     // IMU
     imu.init();
     imu.calibrate();
+
+    // imu.begin();
+    // imu.setSensors(INV_XYZ_GYRO);
+    // imu.setGyroFSR(2000);
+    // imu.dmpBegin(DMP_FEATURE_GYRO_CAL | DMP_FEATURE_SEND_CAL_GYRO | DMP_FEATURE_6X_LP_QUAT);
 
     debug.toggleBlue(true);
 
@@ -358,9 +364,20 @@ void updatePixy() {
     }
 }
 
+// void updateIMU() {
+//     if (imu.fifoAvailable()) {
+//         if (imu.dmpUpdateFifo() == INV_SUCCESS) {
+//             imu.computeEulerAngles();
+//
+//             Serial.println(imu.yaw);
+//         }
+//     }
+// }
+
 void loop() {
     // Slaves
     LinePosition linePosition = slaveLightSensor.getLinePosition();
+
     int orbitAngle = slaveTSOP.getOrbitAngle();
     int orbitSpeed = slaveTSOP.getOrbitSpeed();
     bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
@@ -379,8 +396,6 @@ void loop() {
     debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
     #endif
 
-    Serial.println(String(slaveData.orbitAngle) + ", " + String(slaveData.orbitSpeed));
-
     // Movement
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
     MoveData movement = calculateMovement();
@@ -393,13 +408,9 @@ void loop() {
     debug.toggleGreen(lightGate.hasBall());
 
     if (ledTimer.timeHasPassed()) {
-        debug.toggleBlue(ledOn);
+        digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
 
     motors.move(movement);
-    // motors.motorRight.move(255);
-    // motors.motorLeft.move(255);
-    // motors.motorBackRight.move(-255);
-    // motors.motorBackLeft.move(-255);
 }

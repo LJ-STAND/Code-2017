@@ -98,7 +98,7 @@ typedef struct LightSensorData {
 
         lsRightBackRight = (int) ls7 + (int) ls8;
         lsCentreBackRight = (int) ls9;
-        lsLeftBackLeft = (int) ls10 + (int) ls11;
+        lsLeftBackRight = (int) ls10 + (int) ls11;
 
         lsRightBackLeft = (int) ls13 + (int) ls14;
         lsCentreBackLeft = (int) ls15;

@@ -11,6 +11,7 @@
 #include <MoveData.h>
 #include <Slave.h>
 #include <EEPROM.h>
+#include <Timer.h>
 
 T3SPI spi;
 
@@ -19,6 +20,9 @@ volatile uint16_t dataOut[DATA_LENGTH_TSOP];
 
 TSOPArray tsops;
 MoveData orbitMovement;
+
+Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_TSOP);
+bool ledOn;
 
 void setup() {
     Serial.begin(9600);
@@ -83,6 +87,11 @@ void loop() {
         tsops.unlock();
 
         calculateOrbit();
+    }
+
+    if (ledTimer.timeHasPassed()) {
+        digitalWrite(LED_BUILTIN, ledOn);
+        ledOn = !ledOn;
     }
 }
 

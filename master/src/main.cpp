@@ -53,8 +53,6 @@ bool ledOn;
 
 int facingDirection;
 
-
-
 void setup() {
     // Onboard LED
     pinMode(13, OUTPUT);
@@ -326,7 +324,7 @@ MoveData calculateMovement() {
 
     movement = calculateLineAvoid(movement);
 
-    movement.rotation = 0; // calculateRotationCorrection();
+    movement.rotation = calculateRotationCorrection();
 
     return movement;
 }
@@ -400,4 +398,8 @@ void loop() {
     }
 
     motors.move(movement);
+    // motors.motorRight.move(255);
+    // motors.motorLeft.move(255);
+    // motors.motorBackRight.move(-255);
+    // motors.motorBackLeft.move(-255);
 }

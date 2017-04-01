@@ -31,8 +31,6 @@ void MotorArray::move(int angle, int rotation, int speed) {
         int motorBackLeftSpeed = (int) round(motorBackLeftSpeed * updatedSpeed2);
     }
 
-
-
     motorRight.move(motorRightSpeed);
     motorLeft.move(motorLeftSpeed);
     motorBackRight.move(motorBackRightSpeed);

@@ -403,6 +403,8 @@ void loop() {
     if (previousPosition != position) {
         // debug.appSendString(robotPositionString(position));
         previousPosition = position;
+
+        Serial5.println(linePositionString(linePosition) + ", " + robotPositionString(position));
     }
 
     debug.toggleGreen(lightGate.hasBall());

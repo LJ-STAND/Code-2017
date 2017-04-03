@@ -285,7 +285,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::left: {
-                    return RobotPosition::smallOnLeftLine;
+                    return RobotPosition::bigOnRightLine;
                     break;
                 }
                 case LinePosition::smallCornerFrontRight: {

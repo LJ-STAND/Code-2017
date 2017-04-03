@@ -103,10 +103,10 @@ void LightSensorArray::calculatePostion() {
                     if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         if (data.lsLeftFrontRight + data.lsFront + data.lsRightBackLeft + data.lsBack) {
                             position = LinePosition::centreVertical;
-                        } else if (data.lsRightFrontRight + data.lsRight + data.lsLeftBackLeft + data.lsLeft == data.lsTotal) {
-                            position = LinePosition::centreHorizontal;
                         } else if (data.lsLeftFrontRight + data.lsFront + data.lsCentreFrontRight + data.lsLeftBackLeft + data.lsCentreBackLeft + data.lsLeft == data.lsTotal) {
                             position = LinePosition::bigCornerFrontLeft;
+                        } else if (data.lsRightFrontRight + data.lsRight + data.lsLeftBackLeft + data.lsLeft == data.lsTotal) {
+                            position = LinePosition::centreHorizontal;
                         } else if (data.lsRightFrontRight + data.lsCentreFrontRight + data.lsRight + data.lsRightBackLeft + data.lsBack + data.lsCentreBackLeft == data.lsTotal) {
                             position = LinePosition::bigCornerBackRight;
                         } else {
@@ -115,10 +115,10 @@ void LightSensorArray::calculatePostion() {
                     } else if (data.lsQuadBackRight + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         if (data.lsLeftBackRight + data.lsBack + data.lsRightFrontLeft + data.lsFront == data.lsTotal) {
                             position = LinePosition::centreVertical;
-                        } else if (data.lsRightBackRight + data.lsRight + data.lsLeftFrontLeft + data.lsLeft == data.lsTotal) {
-                            position = LinePosition::centreHorizontal;
                         } else if (data.lsLeftBackRight + data.lsBack + data.lsCentreBackRight + data.lsLeftFrontLeft + data.lsLeft + data.lsCentreFrontLeft) {
                             position = LinePosition::bigCornerBackLeft;
+                        } else if (data.lsRightBackRight + data.lsRight + data.lsLeftFrontLeft + data.lsLeft == data.lsTotal) {
+                            position = LinePosition::centreHorizontal;
                         } else if (data.lsRightBackRight + data.lsRight + data.lsCentreBackRight + data.lsRightFrontLeft + data.lsCentreFrontLeft + data.lsFront == data.lsTotal) {
                             position = LinePosition::bigCornerFrontRight;
                         } else {

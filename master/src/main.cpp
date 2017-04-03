@@ -148,7 +148,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 240;
                 // }
-                movement.speed = 0;
+                movement.angle = 180;
             }
         }
 
@@ -170,7 +170,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 330;
                 // }
-                movement.speed = 0;
+                movement.angle = 270;
             }
         }
 
@@ -192,7 +192,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 60;
                 // }
-                movement.speed = 0;
+                movement.angle = 0;
             }
         }
 
@@ -214,7 +214,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 150;
                 // }
-                movement.speed = 0;
+                movement.angle = 90;
             }
         }
 
@@ -236,7 +236,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 240;
                 // }
-                movement.speed = 0;
+                movement.angle = 225;
             }
         }
 
@@ -258,7 +258,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 330;
                 // }
-                movement.speed = 0;
+                movement.angle = 315;
             }
         }
 
@@ -280,7 +280,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 60;
                 // }
-                movement.speed = 0;
+                movement.angle = 45;
             }
         }
 
@@ -302,7 +302,7 @@ MoveData calculateLineAvoid(MoveData movement) {
                 // } else {
                 //     movement.angle = 150;
                 // }
-                movement.speed = 0;
+                movement.angle = 135;
             }
         }
 

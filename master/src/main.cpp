@@ -143,11 +143,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnFrontLine) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle > 0) {
-                    movement.angle = 120;
-                } else {
-                    movement.angle = 240;
-                }
+                // if (orbitAngle > 0) {
+                //     movement.angle = 120;
+                // } else {
+                //     movement.angle = 240;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -164,11 +165,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnRightLine) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER, 360) < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle > 90) {
-                    movement.angle = 210;
-                } else {
-                    movement.angle = 330;
-                }
+                // if (orbitAngle > 90) {
+                //     movement.angle = 210;
+                // } else {
+                //     movement.angle = 330;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -185,11 +187,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnBackLine) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle && orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle > 180) {
-                    movement.angle = 300;
-                } else {
-                    movement.angle = 60;
-                }
+                // if (orbitAngle > 180) {
+                //     movement.angle = 300;
+                // } else {
+                //     movement.angle = 60;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -206,11 +209,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnLeftLine) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
-                if (orbitAngle > 270 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
-                    movement.angle = 30;
-                } else {
-                    movement.angle = 150;
-                }
+                // if (orbitAngle > 270 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER) {
+                //     movement.angle = 30;
+                // } else {
+                //     movement.angle = 150;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -227,11 +231,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnCornerFrontRight) {
             if (270 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 180 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                if (orbitAngle > 45) {
-                    movement.angle = 210;
-                } else {
-                    movement.angle = 240;
-                }
+                // if (orbitAngle > 45) {
+                //     movement.angle = 210;
+                // } else {
+                //     movement.angle = 240;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -248,11 +253,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnCornerBackRight) {
             if (mod(0 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360) < orbitAngle || orbitAngle < 270 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                if (orbitAngle > 135) {
-                    movement.angle = 300;
-                } else {
-                    movement.angle = 330;
-                }
+                // if (orbitAngle > 135) {
+                //     movement.angle = 300;
+                // } else {
+                //     movement.angle = 330;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -269,11 +275,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnCornerBackLeft) {
             if (90 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                if (orbitAngle > 225 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                    movement.angle = 30;
-                } else {
-                    movement.angle = 60;
-                }
+                // if (orbitAngle > 225 || orbitAngle < LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                //     movement.angle = 30;
+                // } else {
+                //     movement.angle = 60;
+                // }
+                movement.speed = 0;
             }
         }
 
@@ -290,11 +297,12 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         if (position == RobotPosition::bigOnCornerFrontLeft) {
             if (180 - LS_MOVEMENT_ANGLE_BUFFER_CORNER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                if (orbitAngle > 315 || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
-                    movement.angle = 120;
-                } else {
-                    movement.angle = 150;
-                }
+                // if (orbitAngle > 315 || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER_CORNER) {
+                //     movement.angle = 120;
+                // } else {
+                //     movement.angle = 150;
+                // }
+                movement.speed = 0;
             }
         }
 

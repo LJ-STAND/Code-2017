@@ -88,15 +88,15 @@ typedef struct LightSensorData {
 
     void calculateQuadrants() {
         lsFront = (int) ls0;
-        lsRight = (int) ls6;
+        lsRight = (int) ls6; // 1
         lsBack = (int) ls12;
-        lsLeft = (int) ls18;
+        lsLeft = (int) ls18; // 1
 
         lsLeftFrontRight = (int) ls1 + (int) ls2;
         lsCentreFrontRight = (int) ls3;
         lsRightFrontRight = (int) ls4 + (int) ls5;
 
-        lsRightBackRight = (int) ls7 + (int) ls8;
+        lsRightBackRight = (int) ls7 + (int) ls8; // 1
         lsCentreBackRight = (int) ls9;
         lsLeftBackRight = (int) ls10 + (int) ls11;
 
@@ -104,7 +104,7 @@ typedef struct LightSensorData {
         lsCentreBackLeft = (int) ls15;
         lsLeftBackLeft = (int) ls16 + (int) ls17;
 
-        lsLeftFrontLeft = (int) ls19 + (int) ls20;
+        lsLeftFrontLeft = (int) ls19 + (int) ls20; // 1
         lsCentreFrontLeft = (int) ls21;
         lsRightFrontLeft = (int) ls22 + (int) ls23;
 

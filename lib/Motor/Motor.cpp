@@ -38,8 +38,8 @@ void Motor::move(int speed) {
 			digitalWrite(inTwoPin, LOW);
 		}
 	} else {
-		analogWrite(pwmPin, 0);
-		digitalWrite(inOnePin, LOW);
+		analogWrite(pwmPin, 1);
+		digitalWrite(inOnePin, HIGH);
 		digitalWrite(inTwoPin, LOW);
 	}
 

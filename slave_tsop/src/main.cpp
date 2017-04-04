@@ -55,7 +55,8 @@ void calculateOrbit() {
             orbitMovement.angle = (int)round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
         }
 
-        orbitMovement.speed = (int)round((double)(MAX_ORBIT_SPEED - MIN_ORBIT_SPEED) * 0.2) + MIN_ORBIT_SPEED;
+        // orbitMovement.speed = (int)round((double)(MAX_ORBIT_SPEED - MIN_ORBIT_SPEED) * 0.2) + MIN_ORBIT_SPEED;
+        orbitMovement.speed = MAX_ORBIT_SPEED;
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
             orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);

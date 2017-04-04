@@ -320,11 +320,10 @@ MoveData calculateMovement() {
     movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
-    if (goalData.status != GoalStatus::invisible && slaveData.hasBallTSOP && FACE_GOAL) {
+    if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
         // We have the ball and we can see the goal
-        // facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
-
-        movement.angle = goalData.angle;
+        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
+        
         // angle = 0;
         //
         // // angle = goalData.angle > 0 ? 270 : 90;

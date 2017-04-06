@@ -85,11 +85,10 @@ void IMU::update() {
 }
 
 void IMU::calibrate() {
-    delay(1000);
-
     for (int i = 0; i < IMU_CALIBRATION_COUNT; i++) {
         double readingGyro = (double)readGyroscope().z;
         calibrationGyro += readingGyro;
+        delay(IMU_CALIBRATION_TIME);
     }
 
     for (int i = 0; i < IMU_CALIBRATION_COUNT; i++) {

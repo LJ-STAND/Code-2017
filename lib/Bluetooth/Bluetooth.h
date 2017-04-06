@@ -12,7 +12,7 @@ public:
     }
 
     static void send(String data, int dataCode = BluetoothDataType::info) {
-        Serial5.println(String(dataCode) + ";" + data);
+        Serial5.print("-" + String(dataCode) + ";" + data + "-");
     }
 
     static BluetoothData receive() {

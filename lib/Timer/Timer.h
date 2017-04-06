@@ -6,6 +6,7 @@
 class Timer {
 public:
     Timer(unsigned long duration);
+    void update();
     bool timeHasPassed();
 
 private:

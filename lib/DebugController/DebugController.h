@@ -6,6 +6,9 @@
 #include <Bluetooth.h>
 #include <LightSensorData.h>
 #include <Bits.h>
+#include <Config.h>
+#include <Timer.h>
+#include <BluetoothData.h>
 
 class DebugController {
 public:
@@ -38,6 +41,11 @@ public:
     void appSendIMU(double angle);
     void appSendString(String string);
     void appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit);
+
+private:
+    Timer bluetoothTimer = Timer(BLUETOOTH_DELAY);
+
+    void sendBluetoothIfCan(String data, BluetoothDataType dataCode = BluetoothDataType::info);
 };
 
 #endif

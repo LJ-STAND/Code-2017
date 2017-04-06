@@ -52,7 +52,7 @@ Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 
 bool ledOn;
 
-int facingDirection;
+int facingDirection = 0;
 
 void setup() {
     // Onboard LED
@@ -320,10 +320,11 @@ MoveData calculateMovement() {
     movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
-    if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
+    if (goalData.status != GoalStatus::invisible && FACE_GOAL && slaveData.hasBallTSOP) {
         // We have the ball and we can see the goal
-        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
-        
+        // facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
+        movement.angle = goalData.angle > 180 ? goalData.angle * 0.5 + 180 : goalData.angle + 0.5;
+
         // angle = 0;
         //
         // // angle = goalData.angle > 0 ? 270 : 90;
@@ -382,44 +383,54 @@ void updatePixy() {
 // }
 
 void loop() {
-    // Slaves
+    // // Slaves
     LinePosition linePosition = slaveLightSensor.getLinePosition();
+    uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
+    uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
-    int orbitAngle = slaveTSOP.getOrbitAngle();
-    int orbitSpeed = slaveTSOP.getOrbitSpeed();
-    bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
-    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
+    debug.appSendLightSensors(first16Bit, second16Bit);
 
-    // Sensors
-    imu.update();
-    updatePixy();
-
-    // Debug
-    #if DEBUG_APP_IMU
-    debug.appSendIMU(imu.heading);
-    #endif
-
-    #if DEBUG_APP_LIGHTSENSORS
-    debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
-    #endif
-
-    // Movement
-    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    MoveData movement = calculateMovement();
-
-    if (previousPosition != position) {
-        // debug.appSendString(robotPositionString(position));
-        previousPosition = position;
-
-        Serial5.println(linePositionString(linePosition) + ", " + robotPositionString(position));
-    }
-
-    debug.toggleGreen(lightGate.hasBall());
-
+    //
+    // int orbitAngle = slaveTSOP.getOrbitAngle();
+    // int orbitSpeed = slaveTSOP.getOrbitSpeed();
+    // bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
+    // slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
+    //
+    // // Sensors
+    // imu.update();
+    // updatePixy();
+    //
+    // // Debug
+    // #if DEBUG_APP_IMU
+    // debug.appSendIMU(imu.heading);
+    // #endif
+    //
+    // #if DEBUG_APP_LIGHTSENSORS
+    // debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
+    // #endif
+    //
+    // // Movement
+    // position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    // MoveData movement = calculateMovement();
+    //
+    // if (previousPosition != position) {
+    //     // debug.appSendString(robotPositionString(position));
+    //     previousPosition = position;
+    //
+    //     // Serial5.println(linePositionString(linePosition) + ", " + robotPositionString(position));
+    // }
+    //
+    // debug.toggleGreen(lightGate.hasBall());
+    //
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
+    //
+    // motors.move(movement);
 
-    motors.move(movement);
+    String text = Bluetooth::receive().string;
+    if (text != "") {
+        Serial.println(text);
+    }
 }

@@ -94,7 +94,7 @@ void LightSensorArray::calculatePostion() {
             } else {
                 // Two Quadrants diagonal
                 if (data.lsQuadFrontRight + data.lsQuadBackLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
-                    if (data.lsLeftFrontRight + data.lsFront + data.lsRightBackLeft + data.lsBack) {
+                    if (data.lsLeftFrontRight + data.lsFront + data.lsRightBackLeft + data.lsBack == data.lsTotal) {
                         position = LinePosition::centreVertical;
                     } else if (data.lsLeftFrontRight + data.lsFront + data.lsCentreFrontRight + data.lsLeftBackLeft + data.lsCentreBackLeft + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontLeft;

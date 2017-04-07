@@ -43,14 +43,14 @@ void calculateOrbit() {
     int tsopStrength = tsops.getStrength();
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-         orbitMovement.angle = (int)round(tsopAngle < 180 ? ((double)tsopAngle * 0.5) : (180 + (double)tsopAngle * 0.5));
+         orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (180 + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
     } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(90 * nearFactor + (1 + nearFactor) * tsopAngle * 0.5);
+            orbitMovement.angle = (int)round(90 * nearFactor + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + tsopAngle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
         } else {
             double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (1 + nearFactor) * (360 - tsopAngle) * 0.5));
+            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - tsopAngle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
@@ -62,6 +62,10 @@ void calculateOrbit() {
         } else {
             orbitMovement.angle = tsopAngle;
         }
+    }
+
+    if (tsopAngle == -1) {
+        orbitMovement.angle = -1;
     }
 
     orbitMovement.speed = MAX_ORBIT_SPEED;

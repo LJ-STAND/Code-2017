@@ -123,7 +123,7 @@ void LightSensorArray::calculatePostion() {
                         position = LinePosition::bigCornerBackRight;
                     } else if (data.lsQuadBackRight + data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerBackLeft;
-                    } else if (data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
+                    } else if (data.lsQuadBackLeft + data.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontLeft;
                     } else if (data.lsQuadFrontLeft + data.lsQuadFrontRight + data.lsQuadBackRight + data.lsFront + data.lsRight + data.lsBack + data.lsLeft == data.lsTotal) {
                         position = LinePosition::bigCornerFrontRight;

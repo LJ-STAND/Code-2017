@@ -397,12 +397,12 @@ void loop() {
     // slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
     //
     // // Sensors
-    // imu.update();
+    imu.update();
     // updatePixy();
     //
     // // Debug
     // #if DEBUG_APP_IMU
-    // debug.appSendIMU(imu.heading);
+    debug.appSendIMU(imu.heading);
     // #endif
     //
     // #if DEBUG_APP_LIGHTSENSORS
@@ -429,8 +429,7 @@ void loop() {
     //
     // motors.move(movement);
 
-    String text = Bluetooth::receive().string;
-    if (text != "") {
-        Serial.println(text);
-    }
+    Bluetooth::send(linePositionString(linePosition));
+    // String recieved = Bluetooth::receive().string;
+    // Bluetooth::send(Bluetooth::receive().string);
 }

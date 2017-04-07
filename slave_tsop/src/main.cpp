@@ -68,6 +68,8 @@ void calculateOrbit() {
         orbitMovement.angle = -1;
     }
 
+    orbitMovement.angle = 0;
+
     orbitMovement.speed = MAX_ORBIT_SPEED;
 }
 

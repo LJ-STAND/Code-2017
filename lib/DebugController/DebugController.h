@@ -41,11 +41,6 @@ public:
     void appSendIMU(double angle);
     void appSendString(String string);
     void appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit);
-
-private:
-    Timer bluetoothTimer = Timer(BLUETOOTH_DELAY);
-
-    void sendBluetoothIfCan(String data, BluetoothDataType dataCode = BluetoothDataType::info);
 };
 
 #endif

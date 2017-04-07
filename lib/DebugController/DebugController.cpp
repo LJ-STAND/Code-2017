@@ -7,8 +7,6 @@ void DebugController::init() {
     pinMode(LED_BLUE, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
-
-    bluetoothTimer.update();
 }
 
 void DebugController::setLEDBrightness(int orange, int white, int yellow, int blue, int green, int red) {
@@ -125,14 +123,12 @@ void DebugController::BBC() {
     delay(400);
 }
 
-
-
 void DebugController::appSendIMU(double angle) {
-    sendBluetoothIfCan(angle, BluetoothDataType::compass);\
+    Bluetooth::send(angle, BluetoothDataType::compass);
 }
 
 void DebugController::appSendString(String string) {
-    sendBluetoothIfCan(string);
+    Bluetooth::send(string);
 }
 
 void DebugController::flashAllLEDs(int n, int delayTime) {
@@ -170,10 +166,4 @@ void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16
     }
 
     Bluetooth::send(sendString, BluetoothDataType::lightSensor);
-}
-
-void DebugController::sendBluetoothIfCan(String data, BluetoothDataType dataCode) {
-    if (bluetoothTimer.timeHasPassed()) {
-        Bluetooth::send(data, dataCode);
-    }
 }

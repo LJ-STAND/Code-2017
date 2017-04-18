@@ -6,15 +6,30 @@ void Slave::init(int csPin) {
     spi.enableCS(cs, CS_ActiveLOW);
 }
 
-uint16_t Slave::txrx(uint16_t command) {
-    dataOut[0] = command;
+uint16_t Slave::txrx(uint16_t data) {
+    dataOut[0] = data;
+    spi.txrx16(dataOut, dataIn, 1, CTAR_0, cs);
+    return dataIn[0];
+}
 
-    // Three transfers to ensure the recieved data is what was requested
-    for (int i = 0; i < 3; i++) {
-        spi.txrx16(dataOut, dataIn, 1, CTAR_0, cs);
+uint16_t Slave::transaction(SlaveCommand command, SPITransactionType transactionType, uint16_t data) {
+    txrx(SPITransactionType::start);
+    txrx(transactionType);
+    txrx(command);
+
+    uint16_t received;
+
+    if (transactionType == SPITransactionType::send) {
+        txrx(data);
+    } else if (transactionType == SPITransactionType::receive) {
+        received = txrx();
+    } else {
+        txrx();
     }
 
-    return dataIn[0];
+    txrx(SPITransactionType::end);
+
+    return received;
 }
 
 void SlaveLightSensor::init() {
@@ -22,15 +37,19 @@ void SlaveLightSensor::init() {
 }
 
 LinePosition SlaveLightSensor::getLinePosition() {
-    return static_cast<LinePosition>(txrx(SlaveCommands::linePosition));
+    return static_cast<LinePosition>(transaction(SlaveCommand::linePosition, SPITransactionType::receive));
 }
 
 uint16_t SlaveLightSensor::getFirst16Bit() {
-    return txrx(SlaveCommands::lightSensorsFirst16Bit);
+    return transaction(SlaveCommand::lightSensorsFirst16Bit, SPITransactionType::receive);
 }
 
 uint16_t SlaveLightSensor::getSecond16Bit() {
-    return txrx(SlaveCommands::lightSensorsSecond16Bit);
+    return transaction(SlaveCommand::lightSensorsSecond16Bit, SPITransactionType::receive);
+}
+
+void SlaveLightSensor::sendHeading(double heading) {
+    transaction(SlaveCommand::sendCompass, SPITransactionType::send, (uint16_t)heading);
 }
 
 void SlaveTSOP::init() {
@@ -38,13 +57,13 @@ void SlaveTSOP::init() {
 }
 
 int SlaveTSOP::getOrbitAngle() {
-    return txrx(SlaveCommands::orbitAngle);
+    return transaction(SlaveCommand::orbitAngle, SPITransactionType::receive);
 }
 
 int SlaveTSOP::getOrbitSpeed() {
-    return txrx(SlaveCommands::orbitSpeed);
+    return transaction(SlaveCommand::orbitSpeed, SPITransactionType::receive);
 }
 
 bool SlaveTSOP::getHasBallTSOP() {
-    return (bool)txrx(SlaveCommands::hasBallTSOP);
+    return (bool)transaction(SlaveCommand::hasBallTSOP, SPITransactionType::receive);
 }

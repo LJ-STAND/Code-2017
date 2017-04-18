@@ -388,9 +388,8 @@ void loop() {
     uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
     uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
-    debug.appSendLightSensors(first16Bit, second16Bit);
+    Serial.println(String(first16Bit) + ", " + String(second16Bit));
 
-    //
     // int orbitAngle = slaveTSOP.getOrbitAngle();
     // int orbitSpeed = slaveTSOP.getOrbitSpeed();
     // bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
@@ -402,11 +401,11 @@ void loop() {
     //
     // // Debug
     // #if DEBUG_APP_IMU
-    debug.appSendIMU(imu.heading);
+    // debug.appSendIMU(imu.heading);
     // #endif
     //
     // #if DEBUG_APP_LIGHTSENSORS
-    // debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
+    // debug.appSendLightSensors(first16Bit, second16Bit);
     // #endif
     //
     // // Movement
@@ -414,10 +413,8 @@ void loop() {
     // MoveData movement = calculateMovement();
     //
     // if (previousPosition != position) {
-    //     // debug.appSendString(robotPositionString(position));
+    //     debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
     //     previousPosition = position;
-    //
-    //     // Serial5.println(linePositionString(linePosition) + ", " + robotPositionString(position));
     // }
     //
     // debug.toggleGreen(lightGate.hasBall());
@@ -429,7 +426,5 @@ void loop() {
     //
     // motors.move(movement);
 
-    Bluetooth::send(linePositionString(linePosition));
-    // String recieved = Bluetooth::receive().string;
-    // Bluetooth::send(Bluetooth::receive().string);
+    slaveLightSensor.sendHeading(imu.heading);
 }

@@ -15,8 +15,12 @@
 
 T3SPI spi;
 
-volatile uint16_t dataIn[DATA_LENGTH_TSOP];
-volatile uint16_t dataOut[DATA_LENGTH_TSOP];
+volatile uint16_t dataIn[1];
+volatile uint16_t dataOut[1];
+
+SPITransactionState transactionState = SPITransactionState::noTransaction;
+SPITransactionType currentTransactionType;
+SlaveCommand currentCommand;
 
 TSOPArray tsops;
 MoveData orbitMovement;
@@ -84,27 +88,69 @@ void loop() {
 }
 
 void spi0_isr() {
-    spi.rxtx16(dataIn, dataOut, DATA_LENGTH_TSOP);
-    int spiRequest = dataIn[0];
+    switch (transactionState) {
+        case SPITransactionState::noTransaction: {
+            spi.rxtx16(dataIn, dataOut, 1);
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::start) {
+                transactionState = SPITransactionState::beginning;
+            }
 
-    switch (spiRequest) {
-        case SlaveCommands::orbitAngle: {
-            dataOut[0] = (uint16_t)(orbitMovement.angle != -1 ? orbitMovement.angle : TSOP_NO_BALL);
             break;
         }
 
-        case SlaveCommands::orbitSpeed: {
-            dataOut[0] = (uint16_t)orbitMovement.speed;
+        case SPITransactionState::beginning: {
+            spi.rxtx16(dataIn, dataOut, 1);
+            currentTransactionType = static_cast<SPITransactionType>(dataIn[0]);
+            transactionState = SPITransactionState::type;
+
             break;
         }
 
-        case SlaveCommands::hasBallTSOP: {
-            dataOut[0] = (uint16_t)tsops.hasBall();
+        case SPITransactionState::type: {
+            spi.rxtx16(dataIn, dataOut, 1);
+            currentCommand = static_cast<SlaveCommand>(dataIn[0]);
+            transactionState = SPITransactionState::command;
+
+            if (currentTransactionType == SPITransactionType::receive) {
+                switch (currentCommand) {
+                    case SlaveCommand::orbitAngle: {
+                        dataOut[0] = (uint16_t)(orbitMovement.angle != -1 ? orbitMovement.angle : TSOP_NO_BALL);
+                        break;
+                    }
+
+                    case SlaveCommand::orbitSpeed: {
+                        dataOut[0] = (uint16_t)orbitMovement.speed;
+                        break;
+                    }
+
+                    case SlaveCommand::hasBallTSOP: {
+                        dataOut[0] = (uint16_t)tsops.hasBall();
+                        break;
+                    }
+
+                    default: {
+                        dataOut[0] = 0;
+                    }
+                }
+            }
+
             break;
         }
 
-        default: {
-            dataOut[0] = 0;
+        case SPITransactionState::command: {
+            spi.rxtx16(dataIn, dataOut, 1);
+            transactionState = SPITransactionState::data;
+
+            break;
+        }
+
+        case SPITransactionState::data: {
+            spi.rxtx16(dataIn, dataOut, 1);
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::end) {
+                transactionState = SPITransactionState::noTransaction;
+            }
+
+            break;
         }
     }
 }

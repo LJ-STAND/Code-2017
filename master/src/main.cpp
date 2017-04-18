@@ -390,41 +390,40 @@ void loop() {
 
     Serial.println(String(first16Bit) + ", " + String(second16Bit));
 
-    // int orbitAngle = slaveTSOP.getOrbitAngle();
-    // int orbitSpeed = slaveTSOP.getOrbitSpeed();
-    // bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
-    // slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
-    //
-    // // Sensors
+    int orbitAngle = slaveTSOP.getOrbitAngle();
+    int orbitSpeed = slaveTSOP.getOrbitSpeed();
+    bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
+    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
+
+    // Sensors
     imu.update();
     // updatePixy();
-    //
-    // // Debug
-    // #if DEBUG_APP_IMU
-    // debug.appSendIMU(imu.heading);
-    // #endif
-    //
-    // #if DEBUG_APP_LIGHTSENSORS
-    // debug.appSendLightSensors(first16Bit, second16Bit);
-    // #endif
-    //
-    // // Movement
-    // position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    // MoveData movement = calculateMovement();
-    //
-    // if (previousPosition != position) {
-    //     debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
-    //     previousPosition = position;
-    // }
-    //
-    // debug.toggleGreen(lightGate.hasBall());
-    //
+
+    // Debug
+    #if DEBUG_APP_IMU
+        debug.appSendIMU(imu.heading);
+    #endif
+
+    #if DEBUG_APP_LIGHTSENSORS
+        debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
+    #endif
+
+    // Movement
+    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    MoveData movement = calculateMovement();
+
+    if (previousPosition != position) {
+        debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
+        previousPosition = position;
+    }
+
+    debug.toggleGreen(lightGate.hasBall());
+
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
-    //
-    // motors.move(movement);
 
     slaveLightSensor.sendHeading(imu.heading);
+    motors.move(movement);
 }

@@ -87,11 +87,6 @@ void setup() {
     imu.init();
     imu.calibrate();
 
-    // imu.begin();
-    // imu.setSensors(INV_XYZ_GYRO);
-    // imu.setGyroFSR(2000);
-    // imu.dmpBegin(DMP_FEATURE_GYRO_CAL | DMP_FEATURE_SEND_CAL_GYRO | DMP_FEATURE_6X_LP_QUAT);
-
     debug.toggleBlue(true);
 
     // Light Gate
@@ -135,49 +130,52 @@ MoveData calculateLineAvoidSingleLine(RobotPositionSize size, bool isCorner, int
 
     if (isCorner) {
         switch (size) {
-            case RobotPositionSize::small: {
+            case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     movement.speed = 0;
                 }
+
                 break;
-            }
-            case RobotPositionSize::big: {
+
+            case RobotPositionSize::big:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     movement.angle = mod(direction + 180, 360);
                 }
+
                 break;
-            }
-            case RobotPositionSize::over: {
+
+            case RobotPositionSize::over:
                 movement.angle = mod(direction + 180, 360);
-            }
+                break;
         }
     } else {
         switch (size) {
-            case RobotPositionSize::small: {
+            case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
                     movement.speed = 0;
                 }
+
                 break;
-            }
-            case RobotPositionSize::big: {
+
+            case RobotPositionSize::big:
                 if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
                     movement.angle = mod(direction + 180, 360);
                 }
+
                 break;
-            }
-            case RobotPositionSize::over: {
+
+            case RobotPositionSize::over:
                 movement.angle = mod(direction + 180, 360);
                 break;
-            }
         }
     }
+
     return movement;
 }
 
 MoveData calculateLineAvoid(MoveData movement) {
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL && AVOID_LINE) {
         movement = calculateLineAvoidSingleLine(getRobotPositionSize(position), getRobotPositionIsCorner(position), getRobotPositionDirection(position), slaveData.orbitAngle, movement);
-
     }
 
     return movement;
@@ -240,18 +238,8 @@ void updatePixy() {
     }
 }
 
-// void updateIMU() {
-//     if (imu.fifoAvailable()) {
-//         if (imu.dmpUpdateFifo() == INV_SUCCESS) {
-//             imu.computeEulerAngles();
-//
-//             Serial.println(imu.yaw);
-//         }
-//     }
-// }
-
 void loop() {
-    // // Slaves
+    // Slaves
     LinePosition linePosition = slaveLightSensor.getLinePosition();
     uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
     uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
@@ -265,6 +253,8 @@ void loop() {
 
     // Sensors
     imu.update();
+    slaveLightSensor.sendHeading(imu.heading);
+
     // updatePixy();
 
     // Debug
@@ -292,6 +282,5 @@ void loop() {
         ledOn = !ledOn;
     }
 
-    slaveLightSensor.sendHeading(imu.heading);
     motors.move(movement);
 }

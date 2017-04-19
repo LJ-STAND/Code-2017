@@ -37,7 +37,7 @@ enum RobotPositionSize {
     over
 };
 
-RobotPositionSize robotPositionGetSize(RobotPosition posiiton) {
+RobotPositionSize getRobotPositionSize(RobotPosition posiiton) {
     switch (position) {
         case RobotPosition::smallOnFrontLine:
         case RobotPosition::smallOnLeftLine:
@@ -75,7 +75,7 @@ RobotPositionSize robotPositionGetSize(RobotPosition posiiton) {
     }
 }
 
-int robotPositionGetDirection(RobotPosition posiiton) {
+int getRobotPositionDirection(RobotPosition posiiton) {
     switch (position) {
         case RobotPosition::smallOnFrontLine:
         case RobotPosition::bigOnFrontLine:

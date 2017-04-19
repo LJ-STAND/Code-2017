@@ -37,6 +37,138 @@ enum RobotPositionSize {
     over
 };
 
+RobotPositionSize robotPositionGetSize(RobotPosition posiiton) {
+    switch (position) {
+        case RobotPosition::smallOnFrontLine:
+        case RobotPosition::smallOnLeftLine:
+        case RobotPosition::smallOnBackLine:
+        case RobotPosition::smallOnCornerFrontLeft:
+        case RobotPosition::smallOnCornerBackLeft:
+        case RobotPosition::smallOnCornerBackRight:
+        case RobotPosition::smallOnCornerFrontRight:
+            return RobotPositionSize::small;
+            break;
+
+        case RobotPosition::bigOnFrontLine:
+        case RobotPosition::bigOnLeftLine:
+        case RobotPosition::bigOnBackLine:
+        case RobotPosition::bigOnCornerFrontLeft:
+        case RobotPosition::bigOnCornerBackLeft:
+        case RobotPosition::bigOnCornerBackRight:
+        case RobotPosition::bigOnCornerFrontRight:
+            return RobotPositionSize::big;
+            break;
+
+        case RobotPosition::overFrontLine:
+        case RobotPosition::overLeftLine:
+        case RobotPosition::overBackLine:
+        case RobotPosition::overCornerFrontLeft:
+        case RobotPosition::overCornerBackLeft:
+        case RobotPosition::overCornerBackRight:
+        case RobotPosition::overCornerFrontRight:
+            return RobotPositionSize::over;
+            break;
+
+        default:
+            return RobotPositionSize::small;
+            break;
+    }
+}
+
+int robotPositionGetDirection(RobotPosition posiiton) {
+    switch (position) {
+        case RobotPosition::smallOnFrontLine:
+        case RobotPosition::bigOnFrontLine:
+        case RobotPosition::overFrontLine:
+            return 0;
+            break;
+
+        case RobotPosition::smallOnLeftLine:
+        case RobotPosition::bigOnLeftLine:
+        case RobotPosition::overLeftLine:
+            return 270;
+            break;
+
+        case RobotPosition::smallOnBackLine:
+        case RobotPosition::bigOnBackLine:
+        case RobotPosition::overBackLine:
+            return 180;
+            break;
+
+        case RobotPosition::smallOnRightLine:
+        case RobotPosition::bigOnRightLine:
+        case RobotPosition::overRightLine:
+            return 90;
+            break;
+
+        case RobotPosition::smallOnCornerFrontLeft:
+        case RobotPosition::bigOnCornerFrontLeft:
+        case RobotPosition::overCornerFrontLeft:
+            return 315;
+            break;
+
+        case RobotPosition::smallOnCornerBackLeft:
+        case RobotPosition::bigOnCornerBackLeft:
+        case RobotPosition::overCornerBackLeft:
+            return 225;
+            break;
+
+        case RobotPosition::smallOnCornerFrontRight:
+        case RobotPosition::bigOnCornerFrontRight:
+        case RobotPosition::overCornerFrontRight:
+            return 45;
+            break;
+
+        case RobotPosition::smallOnCornerBackRight:
+        case RobotPosition::bigOnCornerBackRight:
+        case RobotPosition::overCornerBackRight:
+            return 135;
+            break;
+
+        default:
+            return 0;
+            break;
+    }
+}
+
+bool robotPositionIsCorner(RobotPosition position) {
+    switch (position) {
+        case RobotPosition::smallOnFrontLine:
+        case RobotPosition::bigOnFrontLine:
+        case RobotPosition::overFrontLine:
+        case RobotPosition::smallOnLeftLine:
+        case RobotPosition::bigOnLeftLine:
+        case RobotPosition::overLeftLine:
+        case RobotPosition::smallOnBackLine:
+        case RobotPosition::bigOnBackLine:
+        case RobotPosition::overBackLine:
+        case RobotPosition::smallOnRightLine:
+        case RobotPosition::bigOnRightLine:
+        case RobotPosition::overRightLine:
+            return false;
+            break;
+
+        case RobotPosition::smallOnCornerFrontLeft:
+        case RobotPosition::bigOnCornerFrontLeft:
+        case RobotPosition::overCornerFrontLeft:
+        case RobotPosition::smallOnCornerBackLeft:
+        case RobotPosition::bigOnCornerBackLeft:
+        case RobotPosition::overCornerBackLeft:
+        case RobotPosition::smallOnCornerFrontRight:
+        case RobotPosition::bigOnCornerFrontRight:
+        case RobotPosition::overCornerFrontRight:
+        case RobotPosition::smallOnCornerBackRight:
+        case RobotPosition::bigOnCornerBackRight:
+        case RobotPosition::overCornerBackRight:
+            return true;
+            break;
+
+        default:
+            return 0;
+            break;
+    }
+}
+
 String robotPositionString(RobotPosition position) {
     switch (position) {
         case RobotPosition::smallOnFrontLine: {

@@ -130,8 +130,8 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-MoveData lineAvoidanceSetter(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
-    // Direction is a heading (the angle perpendicular to the line the robot would be on if the specified RobotPosition was calculated)
+MoveData calculateLineAvoidSingleLine(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
+    // Direction is a heading (the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found)
 
     if (isCorner) {
         switch (size) {

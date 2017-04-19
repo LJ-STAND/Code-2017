@@ -1,84 +1,57 @@
 #include "LightSensorArray.h"
 
 LightSensorArray::LightSensorArray() {
-    ls0 = LightSensor(LS_0);
-    ls1 = LightSensor(LS_1);
-    ls2 = LightSensor(LS_2);
-    ls3 = LightSensor(LS_3);
-    ls4 = LightSensor(LS_4);
-    ls5 = LightSensor(LS_5);
-    ls6 = LightSensor(LS_6);
-    ls7 = LightSensor(LS_7);
-    ls8 = LightSensor(LS_8);
-    ls9 = LightSensor(LS_9);
-    ls10 = LightSensor(LS_10);
-    ls11 = LightSensor(LS_11);
-    ls12 = LightSensor(LS_12);
-    ls13 = LightSensor(LS_13);
-    ls14 = LightSensor(LS_14);
-    ls15 = LightSensor(LS_15);
-    ls16 = LightSensor(LS_16);
-    ls17 = LightSensor(LS_17);
-    ls18 = LightSensor(LS_18);
-    ls19 = LightSensor(LS_19);
-    ls20 = LightSensor(LS_20);
-    ls21 = LightSensor(LS_21);
-    ls22 = LightSensor(LS_22);
-    ls23 = LightSensor(LS_23);
+    sensors[0] = LightSensor(LS_0);
+    sensors[1] = LightSensor(LS_1);
+    sensors[2] = LightSensor(LS_2);
+    sensors[3] = LightSensor(LS_3);
+    sensors[4] = LightSensor(LS_4);
+    sensors[5] = LightSensor(LS_5);
+    sensors[6] = LightSensor(LS_6);
+    sensors[7] = LightSensor(LS_7);
+    sensors[8] = LightSensor(LS_8);
+    sensors[9] = LightSensor(LS_9);
+    sensors[10] = LightSensor(LS_10);
+    sensors[11] = LightSensor(LS_11);
+    sensors[12] = LightSensor(LS_12);
+    sensors[13] = LightSensor(LS_13);
+    sensors[14] = LightSensor(LS_14);
+    sensors[15] = LightSensor(LS_15);
+    sensors[16] = LightSensor(LS_16);
+    sensors[17] = LightSensor(LS_17);
+    sensors[18] = LightSensor(LS_18);
+    sensors[19] = LightSensor(LS_19);
+    sensors[20] = LightSensor(LS_20);
+    sensors[21] = LightSensor(LS_21);
+    sensors[22] = LightSensor(LS_22);
+    sensors[23] = LightSensor(LS_23);
 }
 
 void LightSensorArray::init() {
-    ls0.init();
-    ls1.init();
-    ls2.init();
-    ls3.init();
-    ls4.init();
-    ls5.init();
-    ls6.init();
-    ls7.init();
-    ls8.init();
-    ls9.init();
-    ls10.init();
-    ls11.init();
-    ls12.init();
-    ls13.init();
-    ls14.init();
-    ls15.init();
-    ls16.init();
-    ls17.init();
-    ls18.init();
-    ls19.init();
-    ls20.init();
-    ls21.init();
-    ls22.init();
-    ls23.init();
-
-    sensors = {
-        ls0,
-        ls1,
-        ls2,
-        ls3,
-        ls4,
-        ls5,
-        ls6,
-        ls7,
-        ls8,
-        ls9,
-        ls10,
-        ls11,
-        ls12,
-        ls13,
-        ls14,
-        ls15,
-        ls16,
-        ls17,
-        ls18,
-        ls19,
-        ls20,
-        ls21,
-        ls22,
-        ls23
-    }
+    sensors[0].init();
+    sensors[1].init();
+    sensors[2].init();
+    sensors[3].init();
+    sensors[4].init();
+    sensors[5].init();
+    sensors[6].init();
+    sensors[7].init();
+    sensors[8].init();
+    sensors[9].init();
+    sensors[10].init();
+    sensors[11].init();
+    sensors[12].init();
+    sensors[13].init();
+    sensors[14].init();
+    sensors[15].init();
+    sensors[16].init();
+    sensors[17].init();
+    sensors[18].init();
+    sensors[19].init();
+    sensors[20].init();
+    sensors[21].init();
+    sensors[22].init();
+    sensors[23].init();
 }
 
 void LightSensorArray::read() {

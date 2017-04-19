@@ -7,6 +7,7 @@
 #include <LightSensor.h>
 #include <LinePosition.h>
 #include <Bits.h>
+#include <LJSTANDCommon.h>
 
 class LightSensorArray {
 public:
@@ -25,34 +26,9 @@ public:
     LightSensorData data;
 
     LinePosition position;
-
-    LightSensor ls0;
-    LightSensor ls1;
-    LightSensor ls2;
-    LightSensor ls3;
-    LightSensor ls4;
-    LightSensor ls5;
-    LightSensor ls6;
-    LightSensor ls7;
-    LightSensor ls8;
-    LightSensor ls9;
-    LightSensor ls10;
-    LightSensor ls11;
-    LightSensor ls12;
-    LightSensor ls13;
-    LightSensor ls14;
-    LightSensor ls15;
-    LightSensor ls16;
-    LightSensor ls17;
-    LightSensor ls18;
-    LightSensor ls19;
-    LightSensor ls20;
-    LightSensor ls21;
-    LightSensor ls22;
-    LightSensor ls23;
+    LightSensor sensors[24];
 
 private:
-    LightSensor sensors[24];
     int arrayOffset = 0;
 };
 

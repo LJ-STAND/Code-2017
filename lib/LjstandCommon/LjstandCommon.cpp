@@ -16,6 +16,14 @@ double doubleMod(double value, double maxValue) {
     return fmod((value + maxValue), maxValue);
 }
 
+bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck) {
+    if (angleBoundCounterClockwise < angleBoundClockwise) {
+        return (angleBoundCounterClockwise < angleCheck && angleCheck < angleBoundClockwise);
+    } else {
+        return (angleBoundCounterClockwise < angleCheck || angleCheck < angleBoundClockwise);
+    }
+}
+
 // int maxInt(int array[]) {
 //     int bestvalue = array[0];
 //     for (int i = 1; i < ARRAYLENGTH(array); i++) {

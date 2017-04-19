@@ -130,33 +130,44 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-bool isInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck) {
-    if (angleBoundCounterClockwise < angleBoundClockwise) {
-        return (angleBoundCounterClockwise < angleCheck && angleCheck < angleBoundClockwise);
-    } else {
-        return (angleBoundCounterClockwise < angleCheck || angleCheck < angleBoundClockwise);
-    }
-}
-
-MoveData lineAvoidanceSetter(RobotPositionSize size, int direction, int orbitAngle, bool isCorner, MoveData movement) {
-    // Direction is a heading
+MoveData lineAvoidanceSetter(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
+    // Direction is a heading (the angle perpendicular to the line the robot would be on if the specified RobotPosition was calculated)
 
     if (isCorner) {
-        // TODO
-    } else {
         switch (size) {
             case RobotPositionSize::small: {
-                if (isInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle) {
+                if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     movement.speed = 0;
                 }
+                break;
             }
             case RobotPositionSize::big: {
-                if (isInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle) {
+                if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     movement.angle = mod(direction + 180, 360);
                 }
+                break;
             }
             case RobotPositionSize::over: {
                 movement.angle = mod(direction + 180, 360);
+            }
+        }
+    } else {
+        switch (size) {
+            case RobotPositionSize::small: {
+                if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
+                    movement.speed = 0;
+                }
+                break;
+            }
+            case RobotPositionSize::big: {
+                if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
+                    movement.angle = mod(direction + 180, 360);
+                }
+                break;
+            }
+            case RobotPositionSize::over: {
+                movement.angle = mod(direction + 180, 360);
+                break;
             }
         }
     }
@@ -169,7 +180,7 @@ MoveData calculateLineAvoid(MoveData movement) {
 
         // Front
         if (position == RobotPosition::smallOnFrontLine) {
-            movement = lineAvoidanceSetter(RobotPositionSize::small, 0, orbitAngle, movement);
+            movement = lineAvoidanceSetter(RobotPositionSize::small, false, 0, orbitAngle, movement);
         }
 
         if (position == RobotPosition::bigOnFrontLine) {

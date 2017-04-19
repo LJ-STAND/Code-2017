@@ -28,6 +28,7 @@ int mod(int x, int m);
 
 double doubleMod(double value, double maxValue);
 
+bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck);
 // int maxInt(int array[]);
 
 // int sum(int array[]);

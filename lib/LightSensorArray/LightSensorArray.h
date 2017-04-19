@@ -20,6 +20,8 @@ public:
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
 
+    void updateHeading(int heading);
+
     LightSensorData data;
 
     LinePosition position;
@@ -48,6 +50,10 @@ public:
     LightSensor ls21;
     LightSensor ls22;
     LightSensor ls23;
+
+private:
+    LightSensor sensors[24];
+    int arrayOffset = 0;
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

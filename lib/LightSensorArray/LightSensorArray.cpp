@@ -52,10 +52,62 @@ void LightSensorArray::init() {
     ls21.init();
     ls22.init();
     ls23.init();
+
+    sensors = {
+        ls0,
+        ls1,
+        ls2,
+        ls3,
+        ls4,
+        ls5,
+        ls6,
+        ls7,
+        ls8,
+        ls9,
+        ls10,
+        ls11,
+        ls12,
+        ls13,
+        ls14,
+        ls15,
+        ls16,
+        ls17,
+        ls18,
+        ls19,
+        ls20,
+        ls21,
+        ls22,
+        ls23
+    }
 }
 
 void LightSensorArray::read() {
-    data = LightSensorData(ls0.isOnWhite(), ls1.isOnWhite(), ls2.isOnWhite(), ls3.isOnWhite(), ls4.isOnWhite(), ls5.isOnWhite(), ls6.isOnWhite(), ls7.isOnWhite(), ls8.isOnWhite(), ls9.isOnWhite(), ls10.isOnWhite(), ls11.isOnWhite(), ls12.isOnWhite(), ls13.isOnWhite(), ls14.isOnWhite(), ls15.isOnWhite(), ls16.isOnWhite(), ls17.isOnWhite(), ls18.isOnWhite(), ls19.isOnWhite(), ls20.isOnWhite(), ls21.isOnWhite(), ls22.isOnWhite(), ls23.isOnWhite());
+    bool sensor0isOnWhite = sensors[mod(0 - arrayOffset, 24)].isOnWhite();
+    bool sensor1isOnWhite = sensors[mod(1 - arrayOffset, 24)].isOnWhite();
+    bool sensor2isOnWhite = sensors[mod(2 - arrayOffset, 24)].isOnWhite();
+    bool sensor3isOnWhite = sensors[mod(3 - arrayOffset, 24)].isOnWhite();
+    bool sensor4isOnWhite = sensors[mod(4 - arrayOffset, 24)].isOnWhite();
+    bool sensor5isOnWhite = sensors[mod(5 - arrayOffset, 24)].isOnWhite();
+    bool sensor6isOnWhite = sensors[mod(6 - arrayOffset, 24)].isOnWhite();
+    bool sensor7isOnWhite = sensors[mod(7 - arrayOffset, 24)].isOnWhite();
+    bool sensor8isOnWhite = sensors[mod(8 - arrayOffset, 24)].isOnWhite();
+    bool sensor9isOnWhite = sensors[mod(9 - arrayOffset, 24)].isOnWhite();
+    bool sensor10isOnWhite = sensors[mod(10 - arrayOffset, 24)].isOnWhite();
+    bool sensor11isOnWhite = sensors[mod(11 - arrayOffset, 24)].isOnWhite();
+    bool sensor12isOnWhite = sensors[mod(12 - arrayOffset, 24)].isOnWhite();
+    bool sensor13isOnWhite = sensors[mod(13 - arrayOffset, 24)].isOnWhite();
+    bool sensor14isOnWhite = sensors[mod(14 - arrayOffset, 24)].isOnWhite();
+    bool sensor15isOnWhite = sensors[mod(15 - arrayOffset, 24)].isOnWhite();
+    bool sensor16isOnWhite = sensors[mod(16 - arrayOffset, 24)].isOnWhite();
+    bool sensor17isOnWhite = sensors[mod(17 - arrayOffset, 24)].isOnWhite();
+    bool sensor18isOnWhite = sensors[mod(18 - arrayOffset, 24)].isOnWhite();
+    bool sensor19isOnWhite = sensors[mod(19 - arrayOffset, 24)].isOnWhite();
+    bool sensor20isOnWhite = sensors[mod(20 - arrayOffset, 24)].isOnWhite();
+    bool sensor21isOnWhite = sensors[mod(21 - arrayOffset, 24)].isOnWhite();
+    bool sensor22isOnWhite = sensors[mod(22 - arrayOffset, 24)].isOnWhite();
+    bool sensor23isOnWhite = sensors[mod(23 - arrayOffset, 24)].isOnWhite();
+
+    data = LightSensorData(sensor0isOnWhite, sensor1isOnWhite, sensor2isOnWhite, sensor3isOnWhite, sensor4isOnWhite, sensor5isOnWhite, sensor6isOnWhite, sensor7isOnWhite, sensor8isOnWhite, sensor9isOnWhite, sensor10isOnWhite, sensor11isOnWhite, sensor12isOnWhite, sensor13isOnWhite, sensor14isOnWhite, sensor15isOnWhite, sensor16isOnWhite, sensor17isOnWhite, sensor18isOnWhite, sensor19isOnWhite, sensor20isOnWhite, sensor21isOnWhite, sensor22isOnWhite, sensor23isOnWhite);
 }
 
 void LightSensorArray::calculatePostion() {
@@ -178,4 +230,8 @@ uint16_t LightSensorArray::getSecond16Bit() {
     bitsUnion.bits.b7 = data.ls23;
 
     return bitsUnion.bit16;
+}
+
+void LightSensorArray::updateHeading(int heading) {
+    arrayOffset = (int)round((double)heading / 15.0);
 }

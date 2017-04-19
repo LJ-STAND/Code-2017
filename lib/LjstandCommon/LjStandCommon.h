@@ -1,11 +1,10 @@
 /* Library of common functions and macros.
  */
 
-#include <Arduino.h>
-#include <LinePosition.h>
-
 #ifndef LJSTANDCOMMON_H
 #define LJSTANDCOMMON_H
+
+#include <Arduino.h>
 
 #define TO_RADIANS 0.01745329251994329576923690768489
 
@@ -50,7 +49,5 @@ int sign(double value);
 double degreesToRadians(double degrees);
 
 double doubleAbs(double value);
-
-String linePositionString(LinePosition position);
 
 #endif  // LJSTANDCOMMON_H

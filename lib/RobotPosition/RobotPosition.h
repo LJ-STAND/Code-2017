@@ -171,130 +171,105 @@ bool getRobotPositionIsCorner(RobotPosition position) {
 
 String robotPositionString(RobotPosition position) {
     switch (position) {
-        case RobotPosition::smallOnFrontLine: {
+        case RobotPosition::smallOnFrontLine:
             return "Small on front line";
             break;
-        }
 
-        case RobotPosition::bigOnFrontLine: {
+        case RobotPosition::bigOnFrontLine:
             return "Big on front line";
             break;
-        }
 
-        case RobotPosition::overFrontLine: {
+        case RobotPosition::overFrontLine:
             return "Over front line";
             break;
-        }
 
-        case RobotPosition::smallOnRightLine: {
+        case RobotPosition::smallOnRightLine:
             return "Small on right line";
             break;
-        }
 
-        case RobotPosition::bigOnRightLine: {
+        case RobotPosition::bigOnRightLine:
             return "Big on right line";
             break;
-        }
 
-        case RobotPosition::overRightLine: {
+        case RobotPosition::overRightLine:
             return "Over right line";
             break;
-        }
 
-        case RobotPosition::smallOnBackLine: {
+        case RobotPosition::smallOnBackLine:
             return "Small on back line";
             break;
-        }
 
-        case RobotPosition::bigOnBackLine: {
+        case RobotPosition::bigOnBackLine:
             return "Big on back line";
             break;
-        }
 
-        case RobotPosition::overBackLine: {
+        case RobotPosition::overBackLine:
             return "Over back line";
             break;
-        }
 
-        case RobotPosition::smallOnLeftLine: {
+        case RobotPosition::smallOnLeftLine:
             return "Small on left line";
             break;
-        }
 
-        case RobotPosition::bigOnLeftLine: {
+        case RobotPosition::bigOnLeftLine:
             return "Big on left line";
             break;
-        }
 
-        case RobotPosition::overLeftLine: {
+        case RobotPosition::overLeftLine:
             return "Over left line";
             break;
-        }
 
-        case RobotPosition::smallOnCornerFrontRight: {
+        case RobotPosition::smallOnCornerFrontRight:
             return "Small on corner front right";
             break;
-        }
 
-        case RobotPosition::bigOnCornerFrontRight: {
+        case RobotPosition::bigOnCornerFrontRight:
             return "Big on corner front right";
             break;
-        }
 
-        case RobotPosition::overCornerFrontRight: {
+        case RobotPosition::overCornerFrontRight:
             return "Over corner front right";
             break;
-        }
 
-        case RobotPosition::smallOnCornerBackRight: {
+        case RobotPosition::smallOnCornerBackRight:
             return "Small on corner back right";
             break;
-        }
 
-        case RobotPosition::bigOnCornerBackRight: {
+        case RobotPosition::bigOnCornerBackRight:
             return "Big on corner back right";
             break;
-        }
 
-        case RobotPosition::overCornerBackRight: {
+        case RobotPosition::overCornerBackRight:
             return "Over corner back right";
             break;
-        }
 
-        case RobotPosition::smallOnCornerBackLeft: {
+        case RobotPosition::smallOnCornerBackLeft:
             return "Small on corner back left";
             break;
-        }
 
-        case RobotPosition::bigOnCornerBackLeft: {
+        case RobotPosition::bigOnCornerBackLeft:
             return "Big on corner back left";
             break;
-        }
 
-        case RobotPosition::overCornerBackLeft: {
+        case RobotPosition::overCornerBackLeft:
             return "Over corner back left";
             break;
-        }
 
-        case RobotPosition::smallOnCornerFrontLeft: {
+        case RobotPosition::smallOnCornerFrontLeft:
             return "Small on corner front left ";
             break;
-        }
 
-        case RobotPosition::bigOnCornerFrontLeft: {
+        case RobotPosition::bigOnCornerFrontLeft:
             return "Big on corner front left";
             break;
-        }
 
-        case RobotPosition::overCornerFrontLeft: {
+        case RobotPosition::overCornerFrontLeft:
             return "Over corner front left";
             break;
-        }
 
-        case RobotPosition::field: {
+        case RobotPosition::field:
             return "Field";
             break;
-        }
     }
 }
 

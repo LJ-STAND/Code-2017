@@ -93,68 +93,60 @@ void loop() {
 
 void spi0_isr() {
     switch (transactionState) {
-        case SPITransactionState::noTransaction: {
+        case SPITransactionState::noTransaction:
             spi.rxtx16(dataIn, dataOut, 1);
             if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::start) {
                 transactionState = SPITransactionState::beginning;
             }
 
             break;
-        }
 
-        case SPITransactionState::beginning: {
+        case SPITransactionState::beginning:
             spi.rxtx16(dataIn, dataOut, 1);
             currentTransactionType = static_cast<SPITransactionType>(dataIn[0]);
             transactionState = SPITransactionState::type;
 
             break;
-        }
 
-        case SPITransactionState::type: {
+        case SPITransactionState::type:
             spi.rxtx16(dataIn, dataOut, 1);
             currentCommand = static_cast<SlaveCommand>(dataIn[0]);
             transactionState = SPITransactionState::command;
 
             if (currentTransactionType == SPITransactionType::receive) {
                 switch (currentCommand) {
-                    case SlaveCommand::orbitAngle: {
+                    case SlaveCommand::orbitAngle:
                         dataOut[0] = (uint16_t)(orbitMovement.angle != -1 ? orbitMovement.angle : TSOP_NO_BALL);
                         break;
-                    }
 
-                    case SlaveCommand::orbitSpeed: {
+                    case SlaveCommand::orbitSpeed:
                         dataOut[0] = (uint16_t)orbitMovement.speed;
                         break;
-                    }
 
-                    case SlaveCommand::hasBallTSOP: {
+                    case SlaveCommand::hasBallTSOP:
                         dataOut[0] = (uint16_t)tsops.hasBall();
                         break;
-                    }
 
-                    default: {
+                    default:
                         dataOut[0] = 0;
-                    }
+                        break;
                 }
             }
 
             break;
-        }
 
-        case SPITransactionState::command: {
+        case SPITransactionState::command:
             spi.rxtx16(dataIn, dataOut, 1);
             transactionState = SPITransactionState::data;
 
             break;
-        }
 
-        case SPITransactionState::data: {
+        case SPITransactionState::data:
             spi.rxtx16(dataIn, dataOut, 1);
             if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::end) {
                 transactionState = SPITransactionState::noTransaction;
             }
 
             break;
-        }
     }
 }

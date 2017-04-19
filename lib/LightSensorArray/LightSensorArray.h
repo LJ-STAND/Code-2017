@@ -18,13 +18,13 @@ public:
     void read();
     void calculatePostion();
     LinePosition getLinePosition();
+
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
 
     void updateHeading(int heading);
 
     LightSensorData data;
-
     LinePosition position;
     LightSensor sensors[24];
 

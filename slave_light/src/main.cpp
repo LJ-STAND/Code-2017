@@ -118,7 +118,7 @@ void loop() {
 
 void spi0_isr() {
     switch (transactionState) {
-        case SPITransactionState::noTransaction: {
+        case SPITransactionState::noTransaction:
             spi.rxtx16(dataIn, dataOut, 1);
             Serial.println("Start: " + String(dataIn[0]));
 
@@ -127,69 +127,60 @@ void spi0_isr() {
             }
 
             break;
-        }
 
-        case SPITransactionState::beginning: {
+        case SPITransactionState::beginning:
             spi.rxtx16(dataIn, dataOut, 1);
             Serial.println("Type: " + String(dataIn[0]));
             currentTransactionType = static_cast<SPITransactionType>(dataIn[0]);
             transactionState = SPITransactionState::type;
 
             break;
-        }
 
-        case SPITransactionState::type: {
+        case SPITransactionState::type:
             spi.rxtx16(dataIn, dataOut, 1);
             Serial.println("Command: " + String(dataIn[0]));
             currentCommand = static_cast<SlaveCommand>(dataIn[0]);
 
             if (currentTransactionType == SPITransactionType::receive) {
                 switch (currentCommand) {
-                    case SlaveCommand::linePosition: {
+                    case SlaveCommand::linePosition:
                         dataOut[0] = (uint16_t)lightSensorArray.getLinePosition();
                         break;
-                    }
 
-                    case SlaveCommand::lightSensorsFirst16Bit: {
+                    case SlaveCommand::lightSensorsFirst16Bit:
                         dataOut[0] = lightSensorArray.getFirst16Bit();
                         break;
-                    }
 
-                    case SlaveCommand::lightSensorsSecond16Bit: {
+                    case SlaveCommand::lightSensorsSecond16Bit:
                         dataOut[0] = lightSensorArray.getSecond16Bit();
                         break;
-                    }
 
-                    default: {
+                    default:
                         dataOut[0] = 0;
                         break;
-                    }
                 }
             }
 
             transactionState = SPITransactionState::command;
 
             break;
-        }
 
-        case SPITransactionState::command: {
+        case SPITransactionState::command:
             spi.rxtx16(dataIn, dataOut, 1);
             Serial.println("Data: " + String(dataIn[0]) + ", " + String(dataOut[0]));
             if (currentTransactionType == SPITransactionType::send) {
                 switch (currentCommand) {
-                    case SlaveCommand::sendCompass: {
+                    case SlaveCommand::sendCompass:
                         heading = dataIn[0];
                         break;
-                    }
                 }
             }
 
             transactionState = SPITransactionState::data;
 
             break;
-        }
 
-        case SPITransactionState::data: {
+        case SPITransactionState::data:
             spi.rxtx16(dataIn, dataOut, 1);
             Serial.println("End: " + String(dataIn[0]));
             if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::end) {
@@ -197,6 +188,5 @@ void spi0_isr() {
             }
 
             break;
-        }
     }
 }

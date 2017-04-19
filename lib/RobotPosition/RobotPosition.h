@@ -31,6 +31,12 @@ enum RobotPosition {
     field // 24
 };
 
+enum RobotPositionSize {
+    small,
+    big,
+    over
+};
+
 String robotPositionString(RobotPosition position) {
     switch (position) {
         case RobotPosition::smallOnFrontLine: {

@@ -130,15 +130,46 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
+bool isInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck) {
+    if (angleBoundCounterClockwise < angleBoundClockwise) {
+        return (angleBoundCounterClockwise < angleCheck && angleCheck < angleBoundClockwise);
+    } else {
+        return (angleBoundCounterClockwise < angleCheck || angleCheck < angleBoundClockwise);
+    }
+}
+
+MoveData lineAvoidanceSetter(RobotPositionSize size, int direction, int orbitAngle, bool isCorner, MoveData movement) {
+    // Direction is a heading
+
+    if (isCorner) {
+        // TODO
+    } else {
+        switch (size) {
+            case RobotPositionSize::small: {
+                if (isInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle) {
+                    movement.speed = 0;
+                }
+            }
+            case RobotPositionSize::big: {
+                if (isInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle) {
+                    movement.angle = mod(direction + 180, 360);
+                }
+            }
+            case RobotPositionSize::over: {
+                movement.angle = mod(direction + 180, 360);
+            }
+        }
+    }
+    return movement;
+}
+
 MoveData calculateLineAvoid(MoveData movement) {
     if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL && AVOID_LINE) {
         int orbitAngle = slaveData.orbitAngle;
 
         // Front
         if (position == RobotPosition::smallOnFrontLine) {
-            if (270 - LS_MOVEMENT_ANGLE_BUFFER < orbitAngle || orbitAngle < 90 + LS_MOVEMENT_ANGLE_BUFFER) {
-                movement.speed = 0;
-            }
+            movement = lineAvoidanceSetter(RobotPositionSize::small, 0, orbitAngle, movement);
         }
 
         if (position == RobotPosition::bigOnFrontLine) {

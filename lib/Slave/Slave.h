@@ -9,12 +9,14 @@
 enum SPITransactionType: int {
     start,
     end,
+    commandDelay,
+    commandDelay2,
     send,
     receive
 };
 
 enum SlaveCommand: int {
-    linePosition = 4,
+    linePosition = 6,
     lightSensorsFirst16Bit,
     lightSensorsSecond16Bit,
     orbitAngle,
@@ -29,6 +31,8 @@ enum SPITransactionState: int {
     beginning,
     type,
     command,
+    cmdDelay,
+    cmdDelay2,
     data
 };
 

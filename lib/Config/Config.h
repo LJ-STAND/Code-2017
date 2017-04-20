@@ -105,6 +105,7 @@
 
 #define PIXY_UPDATE_TIME 30000
 
+#define PIXY_ENABLED true
 #define FACE_GOAL true
 
 // Sonars
@@ -118,8 +119,8 @@
 
 // Debug
 
-#define DEBUG_APP_IMU false
-#define DEBUG_APP_LIGHTSENSORS false
+#define DEBUG_APP_IMU true
+#define DEBUG_APP_LIGHTSENSORS true
 
 #define LED_BLINK_TIME_MASTER 100000
 #define LED_BLINK_TIME_SLAVE_TSOP 300000

@@ -47,54 +47,11 @@ void setup() {
 }
 
 void debug() {
-    Serial.print(lightSensorArray.sensors[0].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[1].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[2].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[3].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[4].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[5].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[6].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[7].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[8].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[9].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[10].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[11].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[12].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[13].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[14].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[15].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[16].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[17].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[18].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[19].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[20].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[21].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[22].isOnWhite());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.sensors[23].isOnWhite());
-    Serial.print(", ");
+    for (int i = 0; i < 24; i++) {
+        Serial.print(lightSensorArray.sensors[i].isOnWhite());
+        Serial.print(", ");
+    }
+
     Serial.print(linePositionString(lightSensorArray.getLinePosition()));
     Serial.println();
 }
@@ -103,8 +60,6 @@ void loop() {
     lightSensorArray.read();
     lightSensorArray.calculatePostion();
     LinePosition position = lightSensorArray.getLinePosition();
-
-    // debug();
 
     if (position != previousPosition) {
         previousPosition = position;
@@ -120,7 +75,6 @@ void spi0_isr() {
     switch (transactionState) {
         case SPITransactionState::noTransaction:
             spi.rxtx16(dataIn, dataOut, 1);
-            Serial.println("Start: " + String(dataIn[0]));
 
             if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::start) {
                 transactionState = SPITransactionState::beginning;
@@ -130,7 +84,6 @@ void spi0_isr() {
 
         case SPITransactionState::beginning:
             spi.rxtx16(dataIn, dataOut, 1);
-            Serial.println("Type: " + String(dataIn[0]));
             currentTransactionType = static_cast<SPITransactionType>(dataIn[0]);
             transactionState = SPITransactionState::type;
 
@@ -138,7 +91,6 @@ void spi0_isr() {
 
         case SPITransactionState::type:
             spi.rxtx16(dataIn, dataOut, 1);
-            Serial.println("Command: " + String(dataIn[0]));
             currentCommand = static_cast<SlaveCommand>(dataIn[0]);
 
             if (currentTransactionType == SPITransactionType::receive) {
@@ -167,11 +119,27 @@ void spi0_isr() {
 
         case SPITransactionState::command:
             spi.rxtx16(dataIn, dataOut, 1);
-            Serial.println("Data: " + String(dataIn[0]) + ", " + String(dataOut[0]));
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay) {
+                transactionState = SPITransactionState::cmdDelay;
+            }
+
+            break;
+
+        case SPITransactionState::cmdDelay:
+            spi.rxtx16(dataIn, dataOut, 1);
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay2) {
+                transactionState = SPITransactionState::cmdDelay2;
+            }
+
+            break;
+
+        case SPITransactionState::cmdDelay2:
+            spi.rxtx16(dataIn, dataOut, 1);
             if (currentTransactionType == SPITransactionType::send) {
                 switch (currentCommand) {
                     case SlaveCommand::sendCompass:
                         heading = dataIn[0];
+                        lightSensorArray.updateHeading(heading);
                         break;
                 }
             }
@@ -182,7 +150,6 @@ void spi0_isr() {
 
         case SPITransactionState::data:
             spi.rxtx16(dataIn, dataOut, 1);
-            Serial.println("End: " + String(dataIn[0]));
             if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::end) {
                 transactionState = SPITransactionState::noTransaction;
             }

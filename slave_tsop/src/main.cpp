@@ -111,7 +111,6 @@ void spi0_isr() {
         case SPITransactionState::type:
             spi.rxtx16(dataIn, dataOut, 1);
             currentCommand = static_cast<SlaveCommand>(dataIn[0]);
-            transactionState = SPITransactionState::command;
 
             if (currentTransactionType == SPITransactionType::receive) {
                 switch (currentCommand) {
@@ -133,10 +132,29 @@ void spi0_isr() {
                 }
             }
 
+            transactionState = SPITransactionState::command;
+
             break;
 
         case SPITransactionState::command:
             spi.rxtx16(dataIn, dataOut, 1);
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay) {
+                transactionState = SPITransactionState::cmdDelay;
+            }
+
+            break;
+
+        case SPITransactionState::cmdDelay:
+            spi.rxtx16(dataIn, dataOut, 1);
+            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay2) {
+                transactionState = SPITransactionState::cmdDelay2;
+            }
+
+            break;
+
+        case SPITransactionState::cmdDelay2:
+            spi.rxtx16(dataIn, dataOut, 1);
+
             transactionState = SPITransactionState::data;
 
             break;

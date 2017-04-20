@@ -28,30 +28,9 @@ LightSensorArray::LightSensorArray() {
 }
 
 void LightSensorArray::init() {
-    sensors[0].init();
-    sensors[1].init();
-    sensors[2].init();
-    sensors[3].init();
-    sensors[4].init();
-    sensors[5].init();
-    sensors[6].init();
-    sensors[7].init();
-    sensors[8].init();
-    sensors[9].init();
-    sensors[10].init();
-    sensors[11].init();
-    sensors[12].init();
-    sensors[13].init();
-    sensors[14].init();
-    sensors[15].init();
-    sensors[16].init();
-    sensors[17].init();
-    sensors[18].init();
-    sensors[19].init();
-    sensors[20].init();
-    sensors[21].init();
-    sensors[22].init();
-    sensors[23].init();
+    for (int i = 0; i < 24; i++) {
+        sensors[i].init();
+    }
 }
 
 void LightSensorArray::read() {

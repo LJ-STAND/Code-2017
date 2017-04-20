@@ -243,48 +243,51 @@ void updatePixy() {
 }
 
 void loop() {
-    // Slaves
+    // -- Slaves -- //
+    // Light Slave
     LinePosition linePosition = slaveLightSensor.getLinePosition();
     uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
     uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
-    // Serial.println(String(first16Bit) + ", " + String(second16Bit));
-
+    // TSOP Slave
     int orbitAngle = slaveTSOP.getOrbitAngle();
     int orbitSpeed = slaveTSOP.getOrbitSpeed();
     bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
+
     slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
 
-    // Sensors
+    // -- Sensors -- //
+    // IMU
     imu.update();
     slaveLightSensor.sendHeading(imu.heading);
 
-    // updatePixy();
+    // Pixy
+    #if PIXY_ENABLED
+        updatePixy();
+    #endif
 
-    // Debug
+    // -- Debug -- //
+    // IMU
     #if DEBUG_APP_IMU
         debug.appSendIMU(imu.heading);
     #endif
 
+    // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
-        debug.appSendLightSensors(slaveLightSensor.getFirst16Bit(), slaveLightSensor.getSecond16Bit());
+        debug.appSendLightSensors(first16Bit, second16Bit);
     #endif
 
-    // Movement
-    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    MoveData movement = calculateMovement();
-
-    if (previousPosition != position) {
-        // debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
-        previousPosition = position;
-    }
-
-    debug.toggleGreen(lightGate.hasBall());
-
+    // LED
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
 
+    // -- Movement -- //
+    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+    previousPosition = position;
+    Serial.println(robotPositionString(position));
+
+    MoveData movement = calculateMovement();
     motors.move(movement);
 }

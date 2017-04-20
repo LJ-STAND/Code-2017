@@ -18,6 +18,13 @@ uint16_t Slave::transaction(SlaveCommand command, SPITransactionType transaction
     txrx(transactionType);
     txrx(command);
 
+    for (int i = 0; i < 5; i++) {
+        // 5 delay commands to ensure correct data is recieved
+        txrx(SPITransactionType::commandDelay);
+    }
+
+    txrx(SPITransactionType::commandDelay2);
+
     uint16_t received;
 
     if (transactionType == SPITransactionType::send) {

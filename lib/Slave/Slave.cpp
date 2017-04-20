@@ -9,6 +9,7 @@ void Slave::init(int csPin) {
 uint16_t Slave::txrx(uint16_t data) {
     dataOut[0] = data;
     spi.txrx16(dataOut, dataIn, 1, CTAR_0, cs);
+    delayMicroseconds(SPI_DELAY);
     return dataIn[0];
 }
 

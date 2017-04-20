@@ -4,6 +4,7 @@
 #include <t3spi.h>
 #include <Pins.h>
 #include <LinePosition.h>
+#include <Config.h>
 
 enum SPITransactionType: int {
     start,

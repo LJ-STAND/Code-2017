@@ -6,6 +6,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// SPI
+
+#define SPI_DELAY 10
+
 // Light Sensors
 
 #define LS_CALIBRATION_COUNT 10

@@ -248,7 +248,7 @@ void loop() {
     uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
     uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
-    Serial.println(String(first16Bit) + ", " + String(second16Bit));
+    // Serial.println(String(first16Bit) + ", " + String(second16Bit));
 
     int orbitAngle = slaveTSOP.getOrbitAngle();
     int orbitSpeed = slaveTSOP.getOrbitSpeed();
@@ -275,7 +275,7 @@ void loop() {
     MoveData movement = calculateMovement();
 
     if (previousPosition != position) {
-        debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
+        // debug.appSendString(linePositionString(linePosition) + ", " + robotPositionString(position));
         previousPosition = position;
     }
 

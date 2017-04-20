@@ -5,7 +5,6 @@
 */
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 #include <t3spi.h>
 #include <DebugController.h>
 #include <i2c_t3.h>
@@ -25,8 +24,6 @@
 #include <Sonar.h>
 #include <Slave.h>
 #include <Timer.h>
-#include <EEPROM.h>
-#include <SparkFunMPU9250-DMP.h>
 
 T3SPI spi;
 DebugController debug;

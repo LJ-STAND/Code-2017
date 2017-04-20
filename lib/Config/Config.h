@@ -105,7 +105,7 @@
 
 #define PIXY_UPDATE_TIME 30000
 
-#define PIXY_ENABLED true
+#define PIXY_ENABLED false
 #define FACE_GOAL true
 
 // Sonars

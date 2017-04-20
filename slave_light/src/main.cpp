@@ -10,7 +10,6 @@
 #include <LinePosition.h>
 #include <Pins.h>
 #include <Slave.h>
-#include <EEPROM.h>
 #include <Timer.h>
 #include <LJSTANDCommon.h>
 

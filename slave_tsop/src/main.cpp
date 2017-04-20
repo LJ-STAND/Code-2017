@@ -10,7 +10,6 @@
 #include <Config.h>
 #include <MoveData.h>
 #include <Slave.h>
-#include <EEPROM.h>
 #include <Timer.h>
 
 T3SPI spi;

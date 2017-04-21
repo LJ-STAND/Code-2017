@@ -122,8 +122,8 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-MoveData calculateLineAvoidSingleLine(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
-    // Direction is a heading (the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found)
+MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
+    // Direction is the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found.
 
     if (isCorner) {
         switch (size) {
@@ -172,15 +172,6 @@ MoveData calculateLineAvoidSingleLine(RobotPositionSize size, bool isCorner, int
     }
 
     return movement;
-}
-
-MoveData calculateLineAvoid(MoveData movement) {
-    if (position != RobotPosition::field && slaveData.orbitAngle != TSOP_NO_BALL && AVOID_LINE) {
-        movement = calculateLineAvoidSingleLine(getRobotPositionSize(position), getRobotPositionIsCorner(position), getRobotPositionDirection(position), slaveData.orbitAngle, movement);
-    }
-
-    return movement;
-}
 
 MoveData calculateMovement() {
     MoveData movement;
@@ -203,7 +194,9 @@ MoveData calculateMovement() {
         facingDirection = 0;
     }
 
-    movement = calculateLineAvoid(movement);
+    if (position != RobotPosition::field && AVOID_LINE) {
+        movement = calculateLineAvoid(getRobotPositionSize(position), getRobotPositionIsCorner(position), getRobotPositionDirection(position), slaveData.orbitAngle, movement);
+    }
 
     movement.rotation = calculateRotationCorrection();
 

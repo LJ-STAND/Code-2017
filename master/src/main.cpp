@@ -172,6 +172,7 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
     }
 
     return movement;
+}
 
 MoveData calculateMovement() {
     MoveData movement;

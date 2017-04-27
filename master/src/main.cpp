@@ -137,14 +137,14 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
             case RobotPositionSize::big:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = BIG_LINE_ORBIT_SPEED;
+                    movement.speed = BIG_LINE_SPEED;
                 }
 
                 break;
 
             case RobotPositionSize::over:
                 movement.angle = mod(direction + 180 - imu.heading, 360);
-                movement.speed = OVER_LINE_ORBIT_SPEED;
+                movement.speed = OVER_LINE_SPEED;
                 break;
         }
     } else {
@@ -159,14 +159,14 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
             case RobotPositionSize::big:
                 if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
                     movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = BIG_LINE_ORBIT_SPEED;
+                    movement.speed = BIG_LINE_SPEED;
                 }
 
                 break;
 
             case RobotPositionSize::over:
                 movement.angle = mod(direction + 180 - imu.heading, 360);
-                movement.speed = OVER_LINE_ORBIT_SPEED;
+                movement.speed = OVER_LINE_SPEED;
                 break;
         }
     }

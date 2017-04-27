@@ -21,6 +21,8 @@
 
 #define AVOID_LINE true
 
+#define LINE_SENSOR_ROTATION true
+
 // Light Gate
 
 #define LIGHT_GATE_CALIBRATION_COUNT 10
@@ -89,10 +91,9 @@
 
 #define ORBIT_BALL_FORWARD_ANGLE_TIGHTENER 0.5
 
-#define MIN_ORBIT_SPEED 255
-#define MAX_ORBIT_SPEED 255
+#define MAX_ORBIT_SPEED 220
 #define OVER_LINE_ORBIT_SPEED 255
-#define BIG_LINE_ORBIT_SPEED 255
+#define BIG_LINE_ORBIT_SPEED 50
 
 #define BALL_FRONT_BUFFER 10
 
@@ -105,8 +106,8 @@
 
 #define PIXY_UPDATE_TIME 30000
 
-#define PIXY_ENABLED true
-#define FACE_GOAL true
+#define PIXY_ENABLED false
+#define FACE_GOAL false
 
 // Sonars
 

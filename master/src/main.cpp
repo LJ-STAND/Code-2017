@@ -129,7 +129,7 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
         switch (size) {
             case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
-                    movement.angle = mod(direction + 180 - imu.heading, 360);
+                    // movement.angle = mod(direction + 180 - imu.heading, 360);
                     movement.speed = 0;
                 }
 
@@ -152,7 +152,7 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
         switch (size) {
             case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
-                    movement.angle = mod(direction + 180 - imu.heading, 360);
+                    // movement.angle = mod(direction + 180 - imu.heading, 360);
                     movement.speed = 0;
                 }
 
@@ -252,7 +252,10 @@ void loop() {
     // -- Sensors -- //
     // IMU
     imu.update();
-    slaveLightSensor.sendHeading(imu.heading);
+
+    #if LINE_SENSOR_ROTATION
+        slaveLightSensor.sendHeading(imu.heading);
+    #endif
 
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
 
@@ -278,7 +281,6 @@ void loop() {
     // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
         debug.appSendLightSensors(first16Bit, second16Bit);
-
     #endif
 
     // LED

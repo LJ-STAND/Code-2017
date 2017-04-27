@@ -129,7 +129,8 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
         switch (size) {
             case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
-                    movement.speed = 0;
+                    movement.angle = mod(direction + 180 - imu.heading, 360);
+                    movement.speed = SMALL_LINE_ORBIT_SPEED;
                 }
 
                 break;
@@ -151,7 +152,8 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
         switch (size) {
             case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
-                    movement.speed = 0;
+                    movement.angle = mod(direction + 180 - imu.heading, 360);
+                    movement.speed = SMALL_LINE_ORBIT_SPEED;
                 }
 
                 break;
@@ -172,16 +174,17 @@ MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction
     }
 
     return movement;
+}
 
 MoveData calculateMovement() {
     MoveData movement;
     movement.angle = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitAngle : 0;
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
-    if (goalData.status != GoalStatus::invisible && FACE_GOAL && slaveData.hasBallTSOP) {
+    if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
         // We have the ball and we can see the goal
-        // facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
-        movement.angle = goalData.angle > 180 ? goalData.angle * 0.5 + 180 : goalData.angle + 0.5;
+        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
+        // movement.angle = goalData.angle > 180 ? goalData.angle * 0.5 + 180 : goalData.angle + 0.5;
 
         // angle = 0;
         //
@@ -251,6 +254,16 @@ void loop() {
     imu.update();
     slaveLightSensor.sendHeading(imu.heading);
 
+    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
+
+    if (position != previousPosition) {
+        #if DEBUG_APP_LIGHTSENSORS
+            debug.appSendString(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+        #endif
+
+        previousPosition = position;
+    }
+
     // Pixy
     #if PIXY_ENABLED
         updatePixy();
@@ -265,6 +278,7 @@ void loop() {
     // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
         debug.appSendLightSensors(first16Bit, second16Bit);
+
     #endif
 
     // LED
@@ -274,9 +288,6 @@ void loop() {
     }
 
     // -- Movement -- //
-    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-    previousPosition = position;
-    Serial.println(robotPositionString(position));
 
     MoveData movement = calculateMovement();
     motors.move(movement);

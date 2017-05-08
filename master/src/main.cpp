@@ -122,8 +122,11 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-MoveData calculateLineAvoid(RobotPositionSize size, bool isCorner, int direction, int orbitAngle, MoveData movement) {
+MoveData calculateLineAvoid(RobotPosition position) {
     // Direction is the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found.
+    RobotPositionSize size = getRobotPositionSize(position);
+    bool isCorner = getRobotPositionIsCorner(position);
+    int direction = getRobotPositionDirection(position);
 
     if (isCorner) {
         switch (size) {
@@ -198,7 +201,7 @@ MoveData calculateMovement() {
     }
 
     if (position != RobotPosition::field && AVOID_LINE) {
-        movement = calculateLineAvoid(getRobotPositionSize(position), getRobotPositionIsCorner(position), getRobotPositionDirection(position), slaveData.orbitAngle, movement);
+        movement = calculateLineAvoid(position, slaveData.orbitAngle, movement);
     }
 
     movement.rotation = calculateRotationCorrection();

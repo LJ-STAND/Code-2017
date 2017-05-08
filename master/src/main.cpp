@@ -122,7 +122,7 @@ int calculateRotationCorrection() {
     return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
 }
 
-MoveData calculateLineAvoid(RobotPosition position) {
+MoveData calculateLineAvoid(RobotPosition position, int orbitAngle, MoveData movement) {
     // Direction is the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found.
     RobotPositionSize size = getRobotPositionSize(position);
     bool isCorner = getRobotPositionIsCorner(position);
@@ -239,6 +239,12 @@ void updatePixy() {
 }
 
 void loop() {
+    // -- Bluetooth --//
+    // BluetoothData data = Bluetooth::receive();
+    // if (data.type == BluetoothDataType::settings && data.value == 9) {
+    //     Bluetooth::send(String(DEBUG_APP_IMU) + String(DEBUG_APP_LIGHTSENSORS) + String(false /*DEBUG_APP_TSOPS*/),BluetoothDataType::settings);
+    // }
+
     // -- Slaves -- //
     // Light Slave
     LinePosition linePosition = slaveLightSensor.getLinePosition();

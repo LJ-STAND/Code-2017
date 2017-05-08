@@ -73,7 +73,7 @@
 #define MOTOR_BACK_LEFT_PWM 23
 #define MOTOR_BACK_LEFT_SB 24
 #define MOTOR_BACK_LEFT_ANGLE 230
-#define MOTOR_BACK_LEF_REVERSED true
+#define MOTOR_BACK_LEFT_REVERSED true
 
 // Communication
 

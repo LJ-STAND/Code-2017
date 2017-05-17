@@ -23,6 +23,7 @@ enum SlaveCommand: int {
     orbitSpeed,
     hasBallTSOP,
     tsopAngle,
+    tsopStrength,
     sendCompass
 };
 

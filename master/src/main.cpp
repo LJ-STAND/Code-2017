@@ -47,6 +47,10 @@ GoalData goalData;
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 
+double compassPreviousAngle = 0;
+long compassPreviousTime;
+double compassDiff = 0;
+
 bool ledOn;
 
 int facingDirection = 0;
@@ -83,6 +87,7 @@ void setup() {
     // IMU
     imu.init();
     imu.calibrate();
+    compassPreviousTime = micros();
 
     debug.toggleBlue(true);
 
@@ -107,19 +112,16 @@ void setup() {
 
 int calculateRotationCorrection() {
     int correctionRotation;
-    int rotation = (mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360);
+    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * CORRECTION_ROTATION_MULTIPLIER_P + compassDiff * CORRECTION_ROTATION_MULTIPLIER_D;
 
-    if (abs(rotation) < IMU_THRESHOLD) {
+    if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
         correctionRotation = 0;
-    } else if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
-        correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MINIMUM : -CORRECTION_ROTATION_MINIMUM);
     } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM) {
         correctionRotation = rotation;
     } else {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }
-
-    return correctionRotation * CORRECTION_ROTATION_MULTIPLIER;
+    return correctionRotation;
 }
 
 MoveData calculateLineAvoid(RobotPosition position, int orbitAngle, MoveData movement) {
@@ -238,6 +240,19 @@ void updatePixy() {
     }
 }
 
+void updateCompass() {
+    imu.update();
+    long currentTime = micros();
+    compassDiff = (imu.heading - compassPreviousAngle)/(currentTime - compassPreviousTime);
+    if (compassDiff > 180) {
+        compassDiff -= 360;
+    } else if (compassDiff < -180) {
+        compassDiff += 360;
+    }
+    compassPreviousAngle = imu.heading;
+    compassPreviousTime = currentTime;
+}
+
 void loop() {
     // -- Bluetooth --//
     // BluetoothData data = Bluetooth::receive();
@@ -260,7 +275,7 @@ void loop() {
 
     // -- Sensors -- //
     // IMU
-    imu.update();
+    updateCompass();
 
     #if LINE_SENSOR_ROTATION
         slaveLightSensor.sendHeading(imu.heading);

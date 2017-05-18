@@ -8,13 +8,15 @@ typedef struct SlaveData {
     int orbitAngle;
     int orbitSpeed;
     bool hasBallTSOP;
+    int tsopAngle;
 
     SlaveData() {}
-    SlaveData(LinePosition position, int angle, int speed, bool hasBall) {
+    SlaveData(LinePosition position, int angle, int speed, bool hasBall, int ballAngle) {
         linePosition = position;
         orbitAngle = angle;
         orbitSpeed = speed;
         hasBallTSOP = hasBall;
+        tsopAngle = ballAngle;
     }
 } SlaveData;
 

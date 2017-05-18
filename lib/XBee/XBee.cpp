@@ -1,5 +1,9 @@
 #include "XBee.h"
 
+void XBee::init() {
+    Serial.begin(9600);
+}
+
 void XBee::tx(uint8_t data) {
     Serial.write(data);
 }
@@ -18,14 +22,14 @@ void XBee::send(XBeeCommands command, uint16_t data) {
 
 XBeeData XBee::receive() {
     if (Serial.available() > XBEE_TRANSACTION_LENGTH) {
-        start = rx();
-        command = rx();
-        high = rx();
-        low = rx();
-        data = (high << 8) | low;
+        int start = rx();
+        int command = rx();
+        int high = rx();
+        int low = rx();
+        int data = (high << 8) | low;
 
-        return (XBeeData) {command, data, true};
+        return (XBeeData) {static_cast<XBeeCommands>(command), data, true};
     } else {
-        return (XBeeData) {0, 0, false};
+        return (XBeeData) {XBeeCommands::xbeeEnd, 0, false};
     }
 }

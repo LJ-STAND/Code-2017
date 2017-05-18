@@ -24,7 +24,9 @@
 #include <Sonar.h>
 #include <Slave.h>
 #include <Timer.h>
+#include <XBee.h>
 
+// XBee xbee;
 T3SPI spi;
 DebugController debug;
 MotorArray motors;
@@ -46,7 +48,9 @@ GoalData goalData;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
+Timer xbeeTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);
 
+bool xbeeConnected = false;
 bool ledOn;
 
 int facingDirection = 0;
@@ -79,6 +83,9 @@ void setup() {
     slaveTSOP.init();
 
     debug.toggleYellow(true);
+
+    // XBee
+    // xbee.init();
 
     // IMU
     imu.init();
@@ -133,7 +140,11 @@ MoveData calculateLineAvoid(RobotPosition position, int orbitAngle, MoveData mov
             case RobotPositionSize::small:
                 if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
                     // movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = 0;
+                    // if (!angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), slaveData.tsopAngle)) {
+                    //     movement.angle =
+                    // } else {
+                        movement.speed = 0;
+                    // }
                 }
 
                 break;
@@ -185,17 +196,10 @@ MoveData calculateMovement() {
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
     if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
-        // We have the ball and we can see the goal
-        facingDirection = mod(imu.heading + (int)((double)goalData.angle * 0.5), 360);
-        // movement.angle = goalData.angle > 180 ? goalData.angle * 0.5 + 180 : goalData.angle + 0.5;
-
-        // angle = 0;
-        //
-        // // angle = goalData.angle > 0 ? 270 : 90;
-        // rotation += (int)(((double)goalData.angle / 75.0) * GOAL_ROTATION_MULTIPLIER);
-        // speed = 255;
-        //
-        // // Serial.println(String(goalData.angle) + ", " + String(angle) + ", " + String(rotation));
+        int goalAngle = mod(imu.heading + goalData.angle, 360);
+        goalAngle = mod(goalAngle + 180, 360) - 180;
+        facingDirection = (1 - ((abs(mod(slaveData.tsopAngle + 180, 360) - 180) / (180)))) * goalAngle;
+        facingDirection = mod(facingDirection, 360);
     } else {
         facingDirection = 0;
     }
@@ -255,8 +259,9 @@ void loop() {
     int orbitAngle = slaveTSOP.getOrbitAngle();
     int orbitSpeed = slaveTSOP.getOrbitSpeed();
     bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
+    int tsopAngle = slaveTSOP.getTSOPAngle();
 
-    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP);
+    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP, tsopAngle);
 
     // -- Sensors -- //
     // IMU

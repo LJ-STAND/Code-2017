@@ -127,9 +127,11 @@ void spi0_isr() {
 
                     case SlaveCommand::tsopAngle:
                         dataOut[0] = (uint16_t)tsops.getAngle();
+                        break;
 
                     case SlaveCommand::tsopStrength:
                         dataOut[0] = (uint16_t)tsops.getStrength();
+                        break;
 
                     default:
                         dataOut[0] = 0;

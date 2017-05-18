@@ -2,6 +2,7 @@
 #define XBEE_H
 
 #include <Config.h>
+#include <Arduino.h>
 
 enum XBeeCommands: int {
     xbeeStart,
@@ -17,6 +18,7 @@ typedef struct XBeeData {
 } XBeeData;
 
 class XBee {
+    void init();
     void tx(uint8_t data);
     int rx();
 

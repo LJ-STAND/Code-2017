@@ -75,3 +75,7 @@ int SlaveTSOP::getOrbitSpeed() {
 bool SlaveTSOP::getHasBallTSOP() {
     return (bool)transaction(SlaveCommand::hasBallTSOP, SPITransactionType::receive);
 }
+
+int SlaveTSOP::getTSOPAngle() {
+    return transaction(SlaveCommand::tsopAngle, SPITransactionType::receive);
+}

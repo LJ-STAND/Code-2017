@@ -79,3 +79,7 @@ bool SlaveTSOP::getHasBallTSOP() {
 int SlaveTSOP::getTSOPAngle() {
     return transaction(SlaveCommand::tsopAngle, SPITransactionType::receive);
 }
+
+int SlaveTSOP::getTSOPStrength() {
+    return transaction(SlaveCommand::tsopStrength, SPITransactionType::receive);
+}

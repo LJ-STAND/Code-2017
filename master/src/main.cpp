@@ -199,9 +199,21 @@ MoveData calculateMovement() {
 
     if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
         int goalAngle = mod(imu.heading + goalData.angle, 360);
-        goalAngle = mod(goalAngle + 180, 360) - 180;
-        facingDirection = (1 - ((abs(mod(slaveData.tsopAngle + 180, 360) - 180) / (180)))) * goalAngle;
-        facingDirection = mod(facingDirection, 360);
+
+        if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.hasBallTSOP) {
+            facingDirection = goalAngle;
+            debug.setBlueBrightness(255);
+        } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
+            goalAngle = mod(goalAngle + 180, 360) - 180;
+
+            double strengthFactor = (double)(tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+
+            debug.setBlueBrightness((int)(strengthFactor * 255));
+
+            facingDirection = mod(strengthFactor * goalAngle, 360);
+        } else {
+            facingDirection = 0;
+        }
     } else {
         facingDirection = 0;
     }
@@ -219,9 +231,19 @@ void updatePixy() {
     if (pixyTimer.timeHasPassed()) {
         uint16_t blocks = pixy.getBlocks();
 
-        if (blocks > 1) {
+        Block goalBlock;
+        int foundBlocks = 0;
+
+        for (int i = 0; i < blocks; i++) {
+            if (pixy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA) {
+                goalBlock = pixy.blocks[i];
+                foundBlocks += 1;
+            }
+        }
+
+        if (foundBlocks > 1) {
             goalData.status = GoalStatus::blocked;
-        } else if (blocks > 0) {
+        } else if (foundBlocks > 0) {
             goalData.status = GoalStatus::visible;
         } else {
             goalData.status = GoalStatus::invisible;
@@ -229,10 +251,10 @@ void updatePixy() {
 
         if (goalData.status != GoalStatus::invisible) {
             debug.toggleRed(true);
-            double height = pixy.blocks[0].height;
+            double height = goalBlock.height;
             goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
 
-            double middleGoalPoint = (double)pixy.blocks[0].x;
+            double middleGoalPoint = (double)goalBlock.x;
             double goalDiffMiddleFOV = middleGoalPoint - 160;
 
             goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
@@ -247,12 +269,14 @@ void updatePixy() {
 void updateCompass() {
     imu.update();
     long currentTime = micros();
-    compassDiff = (imu.heading - compassPreviousAngle)/(currentTime - compassPreviousTime);
+    compassDiff = (imu.heading - compassPreviousAngle) / (currentTime - compassPreviousTime);
+
     if (compassDiff > 180) {
         compassDiff -= 360;
     } else if (compassDiff < -180) {
         compassDiff += 360;
     }
+
     compassPreviousAngle = imu.heading;
     compassPreviousTime = currentTime;
 }
@@ -275,8 +299,11 @@ void loop() {
     int orbitSpeed = slaveTSOP.getOrbitSpeed();
     bool hasBallTSOP = slaveTSOP.getHasBallTSOP();
     int tsopAngle = slaveTSOP.getTSOPAngle();
+    int tsopStrength = slaveTSOP.getTSOPStrength();
 
-    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP, tsopAngle);
+    debug.toggleYellow(hasBallTSOP);
+
+    slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP, tsopAngle, tsopStrength);
 
     // -- Sensors -- //
     // IMU

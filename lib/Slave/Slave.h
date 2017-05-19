@@ -65,6 +65,7 @@ public:
     int getOrbitSpeed();
     bool getHasBallTSOP();
     int getTSOPAngle();
+    int getTSOPStrength();
 };
 
 #endif // SLAVE_H

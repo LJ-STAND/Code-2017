@@ -19,9 +19,6 @@ enum SlaveCommand: int {
     linePosition = 6,
     lightSensorsFirst16Bit,
     lightSensorsSecond16Bit,
-    orbitAngle,
-    orbitSpeed,
-    hasBallTSOP,
     tsopAngle,
     tsopStrength,
     sendCompass
@@ -61,9 +58,6 @@ public:
 class SlaveTSOP: public Slave {
 public:
     void init();
-    int getOrbitAngle();
-    int getOrbitSpeed();
-    bool getHasBallTSOP();
     int getTSOPAngle();
     int getTSOPStrength();
 };

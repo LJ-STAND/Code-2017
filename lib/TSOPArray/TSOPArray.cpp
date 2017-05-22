@@ -216,13 +216,9 @@ void TSOPArray::calculateStrength(int n) {
 }
 
 int TSOPArray::getAngle() {
-    return angle;
+    return angle == -1 ? TSOP_NO_BALL : angle;
 }
 
 int TSOPArray::getStrength() {
     return strength;
-}
-
-bool TSOPArray::hasBall() {
-    return ((angle < BALL_FRONT_BUFFER || angle > 360 - BALL_FRONT_BUFFER) && strength > TSOP_HAS_BALL_STRENGTH);
 }

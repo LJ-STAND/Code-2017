@@ -27,8 +27,6 @@ public:
     int getAngle();
     int getStrength();
 
-    bool hasBall();
-
     int values[TSOP_NUM] = {0};
     int filteredValues[TSOP_NUM] = {0};
     int sortedFilteredValues[TSOP_NUM] = {0};

@@ -22,7 +22,6 @@ SPITransactionType currentTransactionType;
 SlaveCommand currentCommand;
 
 TSOPArray tsops;
-MoveData orbitMovement;
 
 Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_TSOP);
 bool ledOn;
@@ -41,47 +40,12 @@ void setup() {
     digitalWrite(LED_BUILTIN, HIGH);
 }
 
-void calculateOrbit() {
-    int tsopAngle = tsops.getAngle();
-    int tsopStrength = tsops.getStrength();
-
-    if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-         orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (180 + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
-    } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
-        if (tsopAngle < 180) {
-            double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(90 * nearFactor + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + tsopAngle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
-        } else {
-            double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - tsopAngle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
-        }
-    } else {
-        if (tsopStrength > ORBIT_SHORT_STRENGTH) {
-            orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
-        } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
-            double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
-            double angleFactor = strengthFactor * 90;
-            orbitMovement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
-        } else {
-            orbitMovement.angle = tsopAngle;
-        }
-    }
-
-    if (tsopAngle == -1) {
-        orbitMovement.angle = -1;
-    }
-
-    orbitMovement.speed = MAX_ORBIT_SPEED;
-}
-
 void loop() {
     tsops.updateOnce();
 
     if (tsops.tsopCounter > TSOP_LOOP_COUNT) {
         tsops.finishRead();
         tsops.unlock();
-
-        calculateOrbit();
     }
 
     if (ledTimer.timeHasPassed()) {
@@ -113,18 +77,6 @@ void spi0_isr() {
 
             if (currentTransactionType == SPITransactionType::receive) {
                 switch (currentCommand) {
-                    case SlaveCommand::orbitAngle:
-                        dataOut[0] = (uint16_t)(orbitMovement.angle != -1 ? orbitMovement.angle : TSOP_NO_BALL);
-                        break;
-
-                    case SlaveCommand::orbitSpeed:
-                        dataOut[0] = (uint16_t)orbitMovement.speed;
-                        break;
-
-                    case SlaveCommand::hasBallTSOP:
-                        dataOut[0] = (uint16_t)tsops.hasBall();
-                        break;
-
                     case SlaveCommand::tsopAngle:
                         dataOut[0] = (uint16_t)tsops.getAngle();
                         break;

@@ -64,18 +64,6 @@ void SlaveTSOP::init() {
     Slave::init(MASTER_CS_TSOP);
 }
 
-int SlaveTSOP::getOrbitAngle() {
-    return transaction(SlaveCommand::orbitAngle, SPITransactionType::receive);
-}
-
-int SlaveTSOP::getOrbitSpeed() {
-    return transaction(SlaveCommand::orbitSpeed, SPITransactionType::receive);
-}
-
-bool SlaveTSOP::getHasBallTSOP() {
-    return (bool)transaction(SlaveCommand::hasBallTSOP, SPITransactionType::receive);
-}
-
 int SlaveTSOP::getTSOPAngle() {
     return transaction(SlaveCommand::tsopAngle, SPITransactionType::receive);
 }

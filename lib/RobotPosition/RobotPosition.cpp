@@ -5,6 +5,7 @@ RobotPositionSize getRobotPositionSize(RobotPosition position) {
         case RobotPosition::smallOnFrontLine:
         case RobotPosition::smallOnLeftLine:
         case RobotPosition::smallOnBackLine:
+        case RobotPosition::smallOnRightLine:
         case RobotPosition::smallOnCornerFrontLeft:
         case RobotPosition::smallOnCornerBackLeft:
         case RobotPosition::smallOnCornerBackRight:
@@ -15,6 +16,7 @@ RobotPositionSize getRobotPositionSize(RobotPosition position) {
         case RobotPosition::bigOnFrontLine:
         case RobotPosition::bigOnLeftLine:
         case RobotPosition::bigOnBackLine:
+        case RobotPosition::bigOnRightLine:
         case RobotPosition::bigOnCornerFrontLeft:
         case RobotPosition::bigOnCornerBackLeft:
         case RobotPosition::bigOnCornerBackRight:
@@ -25,6 +27,7 @@ RobotPositionSize getRobotPositionSize(RobotPosition position) {
         case RobotPosition::overFrontLine:
         case RobotPosition::overLeftLine:
         case RobotPosition::overBackLine:
+        case RobotPosition::overRightLine:
         case RobotPosition::overCornerFrontLeft:
         case RobotPosition::overCornerBackLeft:
         case RobotPosition::overCornerBackRight:

@@ -358,7 +358,8 @@ void loop() {
 
     if (position != previousPosition) {
         #if DEBUG_APP_LIGHTSENSORS
-            debug.appSendString(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+            // debug.appSendString(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+            Bluetooth::send(position, BluetoothDataType::btRobotPosition);
         #endif
 
         previousPosition = position;

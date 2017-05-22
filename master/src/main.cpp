@@ -48,7 +48,6 @@ GoalData goalData;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
-Timer xbeeTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);
 
 double compassPreviousAngle = 0;
 long compassPreviousTime;
@@ -285,7 +284,7 @@ void updateCompass() {
 }
 
 void loop() {
-    // -- Bluetooth --//
+    // -- Bluetooth -- //
     // BluetoothData data = Bluetooth::receive();
     // if (data.type == BluetoothDataType::settings && data.value == 9) {
     //     Bluetooth::send(String(DEBUG_APP_IMU) + String(DEBUG_APP_LIGHTSENSORS) + String(false /*DEBUG_APP_TSOPS*/),BluetoothDataType::settings);
@@ -307,6 +306,9 @@ void loop() {
     debug.toggleYellow(hasBallTSOP);
 
     slaveData = SlaveData(linePosition, orbitAngle, orbitSpeed, hasBallTSOP, tsopAngle, tsopStrength);
+
+    // -- XBee -- //
+    // xbee.update();
 
     // -- Sensors -- //
     // IMU

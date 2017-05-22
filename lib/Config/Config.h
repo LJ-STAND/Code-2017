@@ -138,5 +138,8 @@
 
 #define XBEE_TRANSACTION_LENGTH 5
 #define XBEE_LOST_COMMUNICATION_TIME 1000000
+#define NUM_SEND 2
+
+#define XBeeSerial Serial4
 
 #endif // CONFIG_H

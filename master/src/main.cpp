@@ -54,10 +54,10 @@ double compassPreviousAngle = 0;
 long compassPreviousTime;
 double compassDiff = 0;
 
+double facingDirection = 0;
+
 bool xbeeConnected = false;
 bool ledOn;
-
-int facingDirection = 0;
 
 void setup() {
     // Onboard LED
@@ -128,6 +128,7 @@ int calculateRotationCorrection() {
     } else {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }
+
     return correctionRotation;
 }
 
@@ -198,25 +199,27 @@ MoveData calculateMovement() {
     movement.speed = slaveData.orbitAngle != TSOP_NO_BALL ? slaveData.orbitSpeed : 0;
 
     if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
-        int goalAngle = mod(imu.heading + goalData.angle, 360);
+        int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
+
+        double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
+        double strengthFactor = (double)(tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
 
         if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.hasBallTSOP) {
-            facingDirection = goalAngle;
-            debug.setBlueBrightness(255);
+            facingDirection = angleFactor * goalAngle;
+
+            debug.setBlueBrightness((int)(angleFactor * 255));
         } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
-            goalAngle = mod(goalAngle + 180, 360) - 180;
+            facingDirection = strengthFactor * angleFactor * goalAngle;
 
-            double strengthFactor = (double)(tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
-
-            debug.setBlueBrightness((int)(strengthFactor * 255));
-
-            facingDirection = mod(strengthFactor * goalAngle, 360);
+            debug.setBlueBrightness((int)(strengthFactor * angleFactor * 255));
         } else {
             facingDirection = 0;
         }
     } else {
         facingDirection = 0;
     }
+
+    facingDirection = mod(facingDirection, 360);
 
     if (position != RobotPosition::field && AVOID_LINE) {
         movement = calculateLineAvoid(position, slaveData.orbitAngle, movement);

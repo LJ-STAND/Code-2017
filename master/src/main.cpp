@@ -116,8 +116,8 @@ void setup() {
     sonarLeft.init(SONAR_LEFT_ADDRESS);
 
     debug.toggleAllLEDs(true);
-    delay(500);
-    debug.flashAllLEDs(1, 200);
+    delay(100);
+    debug.toggleAllLEDs(false);
 }
 
 int calculateRotationCorrection() {
@@ -353,8 +353,6 @@ void loop() {
     // TSOP Slave
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
-
-    debug.toggleYellow(true);
 
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 

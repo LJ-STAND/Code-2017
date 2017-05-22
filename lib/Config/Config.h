@@ -19,7 +19,7 @@
 #define LS_MOVEMENT_ANGLE_BUFFER_CORNER 0
 #define LS_MOVEMENT_SMALL_MULTIPLIER 0.5
 
-#define AVOID_LINE false
+#define AVOID_LINE true
 
 #define LINE_SENSOR_ROTATION true
 

@@ -15,6 +15,8 @@ void XBee::update(int ballAngle, int ballStrength) {
     isConnected = data.received && !connectedTimer.timeHasPassed();
 
     if (data.received) {
+        connectedTimer.update();
+
         switch (data.command) {
             case XBeeCommands::ballAngle:
                 otherBallAngle = data.data;

@@ -25,6 +25,7 @@
 #include <Slave.h>
 #include <Timer.h>
 #include <XBee.h>
+#include <MovingAverage.h>
 
 // XBee xbee;
 T3SPI spi;
@@ -48,6 +49,9 @@ GoalData goalData;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
+Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
+
+MovingAverage goalTSOPStrengthAverage = MovingAverage(20);
 
 double compassPreviousAngle = 0;
 long compassPreviousTime;
@@ -112,8 +116,8 @@ void setup() {
     sonarLeft.init(SONAR_LEFT_ADDRESS);
 
     debug.toggleAllLEDs(true);
-    delay(500);
-    debug.flashAllLEDs(3, 200);
+    delay(100);
+    debug.toggleAllLEDs(false);
 }
 
 int calculateRotationCorrection() {
@@ -236,20 +240,26 @@ MoveData calculateOrbit() {
 MoveData calculateMovement() {
     MoveData movement = calculateOrbit();
 
+    goalTSOPStrengthAverage.update(slaveData.tsopStrength);
+
     if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
+        int averagedStrength = goalTSOPStrengthAverage.average();
+
         int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
 
         double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
-        double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+        double strengthFactor = (double)(averagedStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
 
-        if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH) {
+        Serial.println(String(angleFactor) + ", " + String(strengthFactor));
+
+        if (averagedStrength > FACE_GOAL_SHORT_STRENGTH) {
             facingDirection = angleFactor * goalAngle;
 
-            debug.setBlueBrightness((int)(angleFactor * 255));
-        } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
+            debug.setBlueBrightness((int)(angleFactor * (double)255));
+        } else if (averagedStrength > FACE_GOAL_BIG_STRENGTH) {
             facingDirection = strengthFactor * angleFactor * goalAngle;
 
-            debug.setBlueBrightness((int)(strengthFactor * angleFactor * 255));
+            debug.setBlueBrightness((int)(strengthFactor * angleFactor * (double)255));
         } else {
             facingDirection = 0;
         }
@@ -292,6 +302,8 @@ void updatePixy() {
         }
 
         if (goalData.status != GoalStatus::invisible) {
+            lastSeenGoalTimer.update();
+
             debug.toggleRed(true);
             double height = goalBlock.height;
             goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
@@ -302,8 +314,11 @@ void updatePixy() {
             goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
         } else {
             debug.toggleRed(false);
-            goalData.distance = 0;
-            goalData.angle = 0;
+
+            if (lastSeenGoalTimer.timeHasPassed()) {
+                goalData.angle = 0;
+                goalData.distance = 0;
+            }
         }
     }
 }
@@ -339,8 +354,6 @@ void loop() {
     // TSOP Slave
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
-
-    debug.toggleYellow(true);
 
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 

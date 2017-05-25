@@ -240,7 +240,7 @@ MoveData calculateMovement() {
         int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
 
         double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
-        double strengthFactor = (double)(tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+        double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
 
         if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH) {
             facingDirection = angleFactor * goalAngle;
@@ -258,6 +258,7 @@ MoveData calculateMovement() {
     }
 
     facingDirection = mod(facingDirection, 360);
+    Serial.println(facingDirection);
 
     if (position != RobotPosition::field && AVOID_LINE) {
         movement = calculateLineAvoid(position, movement);

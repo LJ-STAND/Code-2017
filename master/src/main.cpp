@@ -228,7 +228,7 @@ MoveData calculateOrbit() {
     orbitMovement.speed = MAX_ORBIT_SPEED;
 
     if (tsopAngle == TSOP_NO_BALL) {
-        // No Ball -> Don't move
+        // No Ball -> Don't move except rotating
         orbitMovement.angle = 0;
         orbitMovement.speed = 0;
     }
@@ -268,6 +268,7 @@ MoveData calculateMovement() {
     }
 
     facingDirection = mod(facingDirection, 360);
+    Serial.println(facingDirection);
 
     if (position != RobotPosition::field && AVOID_LINE) {
         movement = calculateLineAvoid(position, movement);
@@ -392,6 +393,10 @@ void loop() {
     // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
         debug.appSendLightSensors(first16Bit, second16Bit);
+    #endif
+
+    #if DEBUG_APP_TSOPS
+        debug.appSendTSOPs(slaveData.tsopAngle);
     #endif
 
     // LED

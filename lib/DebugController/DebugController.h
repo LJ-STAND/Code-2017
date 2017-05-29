@@ -39,6 +39,7 @@ public:
 
     void appSendTSOPs(int tsop, int strength);
     void appSendIMU(double angle);
+    void appSendTSOPs(double angle);
     void appSendString(String string);
     void appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit);
 };

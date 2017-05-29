@@ -250,7 +250,7 @@ MoveData calculateMovement() {
         double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
         double strengthFactor = (double)(averagedStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
 
-        Serial.println(String(angleFactor) + ", " + String(strengthFactor));
+        // Serial.println(String(angleFactor) + ", " + String(strengthFactor));
 
         if (averagedStrength > FACE_GOAL_SHORT_STRENGTH) {
             facingDirection = angleFactor * goalAngle;
@@ -371,7 +371,7 @@ void loop() {
 
     if (position != previousPosition) {
         #if DEBUG_APP_LIGHTSENSORS
-            // debug.appSendString(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+            Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
             Bluetooth::send(position, BluetoothDataType::btRobotPosition);
         #endif
 

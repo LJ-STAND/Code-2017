@@ -127,6 +127,10 @@ void DebugController::appSendIMU(double angle) {
     Bluetooth::send(angle, BluetoothDataType::compass);
 }
 
+void DebugController::appSendTSOPs(double angle) {
+    Bluetooth::send(angle, BluetoothDataType::tsop);
+}
+
 void DebugController::appSendString(String string) {
     Bluetooth::send(string);
 }

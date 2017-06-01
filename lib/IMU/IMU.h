@@ -2,8 +2,6 @@
 #define COMPASS_H
 
 #include <I2C.h>
-#include <Vector3D.h>
-#include <Vector2D.h>
 #include <LJSTANDCommon.h>
 #include <Config.h>
 

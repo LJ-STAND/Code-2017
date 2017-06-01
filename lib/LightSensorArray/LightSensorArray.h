@@ -5,6 +5,7 @@
 #include <Pins.h>
 #include <LightSensorData.h>
 #include <LightSensor.h>
+#include <LightSensorCluster.h>
 #include <LinePosition.h>
 #include <Bits.h>
 #include <LJSTANDCommon.h>
@@ -19,6 +20,9 @@ public:
     void calculatePostion();
     LinePosition getLinePosition();
 
+    void getClusters();
+    void calculatePositionClusters();
+
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
 
@@ -30,6 +34,7 @@ public:
 
 private:
     int arrayOffset = 0;
+    LightSensorCluster cluster1, cluster2, cluster3;
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

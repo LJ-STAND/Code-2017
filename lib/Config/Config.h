@@ -12,6 +12,8 @@
 
 // Light Sensors
 
+#define LS_NUM 24
+
 #define LS_CALIBRATION_COUNT 10
 #define LS_CALIBRATION_BUFFER 30
 

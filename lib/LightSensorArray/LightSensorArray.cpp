@@ -70,6 +70,10 @@ void LightSensorArray::getClusters() {
     }
 }
 
+void LightSensorArray::calculatePositionClusters() {
+    // TODO
+}
+
 void LightSensorArray::calculatePostion() {
     if (data.lsTotal == 0) {
         // No line

@@ -125,53 +125,53 @@ typedef struct LightSensorData {
     }
 
     bool isSensorOn(int n) {
-        if (n = 0) {
+        if (n == 0) {
             return ls0;
-        } else if (n = 1) {
+        } else if (n == 1) {
             return ls1;
-        } else if (n = 2) {
+        } else if (n == 2) {
             return ls2;
-        } else if (n = 3) {
+        } else if (n == 3) {
             return ls3;
-        } else if (n = 4) {
+        } else if (n == 4) {
             return ls4;
-        } else if (n = 5) {
+        } else if (n == 5) {
             return ls5;
-        } else if (n = 6) {
+        } else if (n == 6) {
             return ls6;
-        } else if (n = 7) {
+        } else if (n == 7) {
             return ls7;
-        } else if (n = 8) {
+        } else if (n == 8) {
             return ls8;
-        } else if (n = 9) {
+        } else if (n == 9) {
             return ls9;
-        } else if (n = 10) {
+        } else if (n == 10) {
             return ls10;
-        } else if (n = 11) {
+        } else if (n == 11) {
             return ls11;
-        } else if (n = 12) {
+        } else if (n == 12) {
             return ls12;
-        } else if (n = 13) {
+        } else if (n == 13) {
             return ls13;
-        } else if (n = 14) {
+        } else if (n == 14) {
             return ls14;
-        } else if (n = 15) {
+        } else if (n == 15) {
             return ls15;
-        } else if (n = 16) {
+        } else if (n == 16) {
             return ls16;
-        } else if (n = 17) {
+        } else if (n == 17) {
             return ls17;
-        } else if (n = 18) {
+        } else if (n == 18) {
             return ls18;
-        } else if (n = 19) {
+        } else if (n == 19) {
             return ls19;
-        } else if (n = 20) {
+        } else if (n == 20) {
             return ls20;
-        } else if (n = 21) {
+        } else if (n == 21) {
             return ls21;
-        } else if (n = 22) {
+        } else if (n == 22) {
             return ls22;
-        } else if (n = 23) {
+        } else if (n == 23) {
             return ls23;
         } else {
             return false;

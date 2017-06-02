@@ -3,16 +3,25 @@
 
 #include <Arduino.h>
 #include <LjstandCommon.h>
+#include <Config.h>
 
 class LightSensorCluster {
 public:
     LightSensorCluster() {}
     LightSensorCluster(double clusterCentre, int clusterLength);
 
+    void addCluster(LightSensorCluster cluster);
+
     void addSensorClockwise();
 
     int getQuadrants();
     Vector2D getCoordinates();
+
+    int getLeftSensor();
+    int getRightSensor();
+
+    double getCentre();
+    int getLength();
 
 private:
     double centre;

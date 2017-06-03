@@ -171,3 +171,7 @@ void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16
 
     Bluetooth::send(sendString, BluetoothDataType::lightSensor);
 }
+
+void DebugController::appSendOrbitAngle(double angle) {
+    Bluetooth::send(String(angle), BluetoothDataType::orbitAngle);    
+}

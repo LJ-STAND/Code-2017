@@ -27,7 +27,7 @@
 #include <XBee.h>
 #include <MovingAverage.h>
 
-// XBee xbee;
+XBee xbee;
 T3SPI spi;
 DebugController debug;
 MotorArray motors;
@@ -62,6 +62,8 @@ double facingDirection = 0;
 bool xbeeConnected = false;
 bool ledOn;
 
+int count = 0;
+
 void setup() {
     // Onboard LED
     pinMode(13, OUTPUT);
@@ -92,7 +94,7 @@ void setup() {
     debug.toggleYellow(true);
 
     // XBee
-    // xbee.init();
+    xbee.init();
 
     // IMU
     imu.init();
@@ -233,6 +235,10 @@ MoveData calculateOrbit() {
         orbitMovement.speed = 0;
     }
 
+    #if DEBUG_APP_TSOPS
+        debug.appSendOrbitAngle(orbitMovement.angle);
+    #endif
+
     return orbitMovement;
 }
 
@@ -250,8 +256,6 @@ MoveData calculateMovement() {
         double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
         double strengthFactor = (double)(averagedStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
 
-        // Serial.println(String(angleFactor) + ", " + String(strengthFactor));
-
         if (averagedStrength > FACE_GOAL_SHORT_STRENGTH) {
             facingDirection = angleFactor * goalAngle;
 
@@ -268,7 +272,6 @@ MoveData calculateMovement() {
     }
 
     facingDirection = mod(facingDirection, 360);
-    Serial.println(facingDirection);
 
     if (position != RobotPosition::field && AVOID_LINE) {
         movement = calculateLineAvoid(position, movement);
@@ -358,7 +361,9 @@ void loop() {
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 
     // -- XBee -- //
-    // xbee.update();
+    xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
+
+    Serial.println(xbee.otherBallAngle);
 
     // -- Sensors -- //
     // IMU

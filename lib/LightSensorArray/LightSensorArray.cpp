@@ -62,6 +62,18 @@ void LightSensorArray::read() {
     data = LightSensorData(sensor0isOnWhite, sensor1isOnWhite, sensor2isOnWhite, sensor3isOnWhite, sensor4isOnWhite, sensor5isOnWhite, sensor6isOnWhite, sensor7isOnWhite, sensor8isOnWhite, sensor9isOnWhite, sensor10isOnWhite, sensor11isOnWhite, sensor12isOnWhite, sensor13isOnWhite, sensor14isOnWhite, sensor15isOnWhite, sensor16isOnWhite, sensor17isOnWhite, sensor18isOnWhite, sensor19isOnWhite, sensor20isOnWhite, sensor21isOnWhite, sensor22isOnWhite, sensor23isOnWhite);
 }
 
+
+
+void LightSensorArray::getClusters() {
+    for (int i = 0; i < LS_NUM; i++) {
+        // TODO
+    }
+}
+
+void LightSensorArray::calculatePositionClusters() {
+    // TODO
+}
+
 void LightSensorArray::calculatePostion() {
     if (data.lsTotal == 0) {
         // No line

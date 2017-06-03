@@ -55,6 +55,8 @@ typedef struct LightSensorData {
 
     int lsTotal;
 
+    bool array[24];
+
 
     LightSensorData() {}
     LightSensorData(bool on0, bool on1, bool on2, bool on3, bool on4, bool on5, bool on6, bool on7, bool on8, bool on9, bool on10, bool on11, bool on12, bool on13, bool on14, bool on15, bool on16, bool on17, bool on18, bool on19, bool on20, bool on21, bool on22, bool on23) {
@@ -87,6 +89,7 @@ typedef struct LightSensorData {
     }
 
     void calculateQuadrants() {
+
         lsFront = (int) ls0;
         lsRight = (int) ls6; // 1
         lsBack = (int) ls12;
@@ -120,6 +123,61 @@ typedef struct LightSensorData {
 
         lsTotal = lsHalfFront + lsHalfBack + lsRight + lsLeft;
     }
+
+    bool isSensorOn(int n) {
+        if (n == 0) {
+            return ls0;
+        } else if (n == 1) {
+            return ls1;
+        } else if (n == 2) {
+            return ls2;
+        } else if (n == 3) {
+            return ls3;
+        } else if (n == 4) {
+            return ls4;
+        } else if (n == 5) {
+            return ls5;
+        } else if (n == 6) {
+            return ls6;
+        } else if (n == 7) {
+            return ls7;
+        } else if (n == 8) {
+            return ls8;
+        } else if (n == 9) {
+            return ls9;
+        } else if (n == 10) {
+            return ls10;
+        } else if (n == 11) {
+            return ls11;
+        } else if (n == 12) {
+            return ls12;
+        } else if (n == 13) {
+            return ls13;
+        } else if (n == 14) {
+            return ls14;
+        } else if (n == 15) {
+            return ls15;
+        } else if (n == 16) {
+            return ls16;
+        } else if (n == 17) {
+            return ls17;
+        } else if (n == 18) {
+            return ls18;
+        } else if (n == 19) {
+            return ls19;
+        } else if (n == 20) {
+            return ls20;
+        } else if (n == 21) {
+            return ls21;
+        } else if (n == 22) {
+            return ls22;
+        } else if (n == 23) {
+            return ls23;
+        } else {
+            return false;
+        }
+    }
+
 } LightSensorData;
 
 #endif // LIGHT_SENSOR_DATA_H

@@ -50,4 +50,15 @@ double degreesToRadians(double degrees);
 
 double doubleAbs(double value);
 
+struct Vector2D {
+    double x;
+    double y;
+};
+
+struct Vector3D {
+    double x;
+    double y;
+    double z;
+};
+
 #endif  // LJSTANDCOMMON_H

@@ -19,7 +19,7 @@ int LightSensorCluster::getQuadrants() {
      int leftSensor = getLeftSensor();
      int rightSensor = getRightSensor();
 
-     if (leftSensor < 6 && rightSensor < 6) {
+     if (0 < leftSensor && rightSensor < 6) {
          return 1;
      } else if (6 < leftSensor && rightSensor < 12) {
          return 2;
@@ -28,18 +28,24 @@ int LightSensorCluster::getQuadrants() {
      } else if (18 < leftSensor && 18 < rightSensor) {
          return 4;
      } else {
-         if (length == 1) {
-             if (centre == 0) {
-                 return 41;
-             } else if (centre == 6) {
-                 return 12;
-             } else if (centre == 12) {
-                 return 23;
-             } else {
-                 return 34;
-             }
+         if (0 < leftSensor && rightSensor < 12) {
+             return 12;
+         } else if (6 < leftSensor && rightSensor < 18) {
+             return 23;
+         } else if (12 < leftSensor && 18 <= rightSensor) {
+             return 34;
+         } else if ((18 < leftSensor || leftSensor == 0) && rightSensor < 6) {
+             return 41;
          } else {
-             // TODO
+             if (0 < leftSensor && rightSensor < 18) {
+                 return 123;
+             } else if (6 < leftSensor && 18 <= rightSensor) {
+                 return 234;
+             } else if (12 < leftSensor && rightSensor < 6) {
+                 return 341;
+             } else if ((18 < leftSensor || leftSensor == 0) && rightSensor < 12) {
+                 return 412;
+             }
          }
      }
 

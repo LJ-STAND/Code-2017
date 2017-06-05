@@ -206,8 +206,11 @@ MoveData calculateOrbit() {
     int tsopStrength = slaveData.tsopStrength;
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-         orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (180 + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
+        orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
+
+        debug.toggleLEDs(true, false, false, false, false, false);
     } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
+        debug.toggleLEDs(false, true, false, false, false, false);
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             orbitMovement.angle = (int)round(90 * nearFactor + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + tsopAngle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
@@ -217,12 +220,15 @@ MoveData calculateOrbit() {
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
+            debug.toggleLEDs(false, false, true, false, false, false);
             orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
         } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
+            debug.toggleLEDs(false, false, false, true, false, false);
             double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
             orbitMovement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
         } else {
+            debug.toggleLEDs(false, false, false, false, true, false);
             orbitMovement.angle = tsopAngle;
         }
     }
@@ -236,6 +242,7 @@ MoveData calculateOrbit() {
     }
 
     #if DEBUG_APP_TSOPS
+        Serial.println(String(tsopAngle) + ", " + String(orbitMovement.angle));
         debug.appSendOrbitAngle(orbitMovement.angle);
     #endif
 
@@ -358,12 +365,14 @@ void loop() {
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
 
+    // Serial.println(tsopStrength);
+
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 
     // -- XBee -- //
     xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
 
-    Serial.println(xbee.otherBallAngle);
+    // Serial.println(String(xbee.otherBallAngle) + ", " + String(xbee.otherBallStrength));
 
     // -- Sensors -- //
     // IMU

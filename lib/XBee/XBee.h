@@ -20,6 +20,7 @@ typedef struct XBeeData {
 } XBeeData;
 
 class XBee {
+public:
     int otherBallAngle;
     int otherBallStrength;
     bool isConnected;
@@ -32,7 +33,7 @@ private:
     int thisBallStrength;
 
     XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength};
-    int lastSentIndex = NUM_SEND - 1;
+    int sendIndex = 0;
 
     Timer connectedTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);
 

@@ -6,6 +6,7 @@
 #include <LJSTANDCommon.h>
 #include <MoveData.h>
 #include <Motor.h>
+#include <Config.h>
 
 class MotorArray {
 public:

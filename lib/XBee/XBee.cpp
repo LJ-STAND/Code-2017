@@ -46,8 +46,8 @@ void XBee::send(XBeeCommands command, uint16_t data) {
 }
 
 void XBee::sendNext() {
-    XBeeCommands toSendCommmand = toSend[mod(lastSentIndex + 1, NUM_SEND - 1)];
-    lastSentIndex += 1;
+    XBeeCommands toSendCommmand = toSend[sendIndex];
+    sendIndex = mod(sendIndex + 1, NUM_SEND);
 
     switch (toSendCommmand) {
         case XBeeCommands::ballAngle:
@@ -65,10 +65,16 @@ XBeeData XBee::receive() {
 
     if (XBeeSerial.available() > XBEE_TRANSACTION_LENGTH) {
         int start = rx();
+
+        if (start != XBeeCommands::xbeeStart) {
+            return nothingRecieved;
+        }
+
         int command = rx();
         int high = rx();
         int low = rx();
         int end = rx();
+
         int data = (high << 8) | low;
 
         if (start == XBeeCommands::xbeeStart && end == XBeeCommands::xbeeEnd) {

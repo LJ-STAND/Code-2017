@@ -12,7 +12,8 @@ enum BluetoothDataType: int {
     raw,
     btLinePosition,
     btRobotPosition,
-    settings
+    settings,
+    orbitAngle
 };
 
 typedef struct BluetoothData {

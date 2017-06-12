@@ -178,6 +178,61 @@ typedef struct LightSensorData {
         }
     }
 
+    void setSensor(int n, bool value) {
+        if (n == 0) {
+            ls0 = value;
+        } else if (n == 1) {
+            ls1 = value;
+        } else if (n == 2) {
+            ls2 = value;
+        } else if (n == 3) {
+            ls3 = value;
+        } else if (n == 4) {
+            ls4 = value;
+        } else if (n == 5) {
+            ls5 = value;
+        } else if (n == 6) {
+            ls6 = value;
+        } else if (n == 7) {
+            ls7 = value;
+        } else if (n == 8) {
+            ls8 = value;
+        } else if (n == 9) {
+            ls9 = value;
+        } else if (n == 10) {
+            ls10 = value;
+        } else if (n == 11) {
+            ls11 = value;
+        } else if (n == 12) {
+            ls12 = value;
+        } else if (n == 13) {
+            ls13 = value;
+        } else if (n == 14) {
+            ls14 = value;
+        } else if (n == 15) {
+            ls15 = value;
+        } else if (n == 16) {
+            ls16 = value;
+        } else if (n == 17) {
+            ls17 = value;
+        } else if (n == 18) {
+            ls18 = value;
+        } else if (n == 19) {
+            ls19 = value;
+        } else if (n == 20) {
+            ls20 = value;
+        } else if (n == 21) {
+            ls21 = value;
+        } else if (n == 22) {
+            ls22 = value;
+        } else if (n == 23) {
+            ls23 = value;
+        } else {
+            // This shouldn't happen.
+            return;
+        }
+    }
+
 } LightSensorData;
 
 #endif // LIGHT_SENSOR_DATA_H

@@ -64,10 +64,35 @@ void LightSensorArray::read() {
 
 
 
-void LightSensorArray::getClusters() {
+void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2 = false) {
+    bool cluster1Done, cluster2Done, cluster3Done = false;
     for (int i = 0; i < LS_NUM; i++) {
-        // TODO
+        if (cluster1Done) {
+            if (cluster2Done) {
+                if (cluster3Done) {
+                    if (!doneClusters2) {
+                        getClusters2();
+                    } else {
+                        cluster1 = LightSensorCluster(0.0, 0);
+                        cluster2 = LightSensorCluster(0.0, 0);
+                        cluster3 = LightSensorCluster(0.0, 0);
+                    }
+                } else {
+                    // TODO
+                }
+            } else {
+                // TODO
+            }
+        } else {
+            // TODO
+        }
     }
+}
+
+void LightSensorArray::getClusters2() {
+    LightSensorData newLightData = data;
+    // TODO
+    getClusters(newLightData, true);
 }
 
 void LightSensorArray::calculatePositionClusters() {

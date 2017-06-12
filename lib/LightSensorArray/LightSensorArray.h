@@ -20,7 +20,8 @@ public:
     void calculatePostion();
     LinePosition getLinePosition();
 
-    void getClusters();
+    void getClusters(LightSensorData lightData, bool doneClusters2);
+    void getClusters2();
     void calculatePositionClusters();
 
     uint16_t getFirst16Bit();

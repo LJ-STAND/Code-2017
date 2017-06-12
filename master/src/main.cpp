@@ -242,7 +242,6 @@ MoveData calculateOrbit() {
     }
 
     #if DEBUG_APP_TSOPS
-        Serial.println(String(tsopAngle) + ", " + String(orbitMovement.angle));
         debug.appSendOrbitAngle(orbitMovement.angle);
     #endif
 
@@ -364,8 +363,6 @@ void loop() {
     // TSOP Slave
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
-
-    // Serial.println(tsopStrength);
 
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 

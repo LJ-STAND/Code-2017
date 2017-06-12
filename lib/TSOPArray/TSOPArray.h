@@ -26,6 +26,7 @@ public:
     void calculateStrength(int n);
     int getAngle();
     int getStrength();
+    int getSimpleStrength();
 
     int values[TSOP_NUM] = {0};
     int filteredValues[TSOP_NUM] = {0};

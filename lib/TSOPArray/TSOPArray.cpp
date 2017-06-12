@@ -222,3 +222,7 @@ int TSOPArray::getAngle() {
 int TSOPArray::getStrength() {
     return strength;
 }
+
+int TSOPArray::getSimpleStrength() {
+    return simpleStrength;
+}

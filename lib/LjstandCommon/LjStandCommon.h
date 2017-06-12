@@ -50,6 +50,8 @@ double degreesToRadians(double degrees);
 
 double doubleAbs(double value);
 
+// void printArray(int *array, int length);
+
 struct Vector2D {
     double x;
     double y;
@@ -60,5 +62,7 @@ struct Vector3D {
     double y;
     double z;
 };
+
+
 
 #endif  // LJSTANDCOMMON_H

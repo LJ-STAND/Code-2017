@@ -35,7 +35,7 @@ public:
 
 private:
     int arrayOffset = 0;
-    LightSensorCluster cluster1, cluster2, cluster3;
+    LightSensorCluster cluster1, cluster2, cluster3 = LightSensorCluster(0.0, 0);
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

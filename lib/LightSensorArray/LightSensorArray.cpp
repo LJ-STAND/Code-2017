@@ -90,8 +90,12 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
 }
 
 void LightSensorArray::getClusters2() {
-    LightSensorData newLightData = data;
-    // TODO
+    LightSensorData newLightData = data; // I feel like this will break things
+    for (int i = 0; i < LS_NUM; i++) {
+        if (!data.getSensor(i) && data.getSensor(mod(i - 1, LS_NUM)) && data.getSensor(mod(i + 1, LS_NUM))) {
+            newLightData.setSensor(i, true);
+        }
+    }
     getClusters(newLightData, true);
 }
 

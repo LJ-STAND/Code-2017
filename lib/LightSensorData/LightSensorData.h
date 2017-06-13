@@ -124,7 +124,7 @@ typedef struct LightSensorData {
         lsTotal = lsHalfFront + lsHalfBack + lsRight + lsLeft;
     }
 
-    bool isSensorOn(int n) {
+    bool getSensor(int n) {
         if (n == 0) {
             return ls0;
         } else if (n == 1) {

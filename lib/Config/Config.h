@@ -112,8 +112,8 @@
 #define PIXY_UPDATE_TIME 30000
 #define LAST_SEEN_GOAL_TIME 3000000
 
-#define PIXY_ENABLED false
-#define FACE_GOAL false
+#define PIXY_ENABLED true
+#define FACE_GOAL true
 
 #define FACE_GOAL_SHORT_STRENGTH 110
 #define FACE_GOAL_BIG_STRENGTH 80

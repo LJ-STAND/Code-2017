@@ -177,15 +177,6 @@ void DebugController::appSendOrbitAngle(double angle) {
 }
 
 void DebugController::appSendPixy(double x, double y, double width, double height) {
-    String sendString = "";
-
-    strcpy(sendString, String(x));
-    strcat(sendString, ",");
-    strcat(sendString, String(y));
-    strcat(sendString, ",");
-    strcat(sendString, String(width));
-    strcat(sendString, ",");
-    strcat(sendString, String(height));
-
-    Bluetooth::send(sendString, BluetoothDataType::pixy);
+    String sendString = String(x) + "," + String(y) + "," + String(width) + "," + String(height);
+    Bluetooth::send(sendString, BluetoothDataType::goal);
 }

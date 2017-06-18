@@ -296,7 +296,7 @@ void updatePixy() {
         int foundBlocks = 0;
 
         for (int i = 0; i < blocks; i++) {
-            if (pivxy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA) {
+            if (pixy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA) {
                 goalBlock = pixy.blocks[i];
                 foundBlocks += 1;
             }

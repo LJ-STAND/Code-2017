@@ -63,7 +63,9 @@ void LightSensorArray::read() {
 }
 
 void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2) {
+    cluster1, cluster2, cluster = LightSensorCluster(0.0, 0);
     bool cluster1Done = false, cluster2Done = false, cluster3Done = false;
+    
     for (int i = 0; i < LS_NUM; i++) {
         Serial.println("Cluster 1 Done: " + String(cluster1Done));
         if (cluster1Done) {
@@ -88,7 +90,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                         }
                     } else {
                         if (cluster3.getLength() == 0) {
-                            break;
+                            // Blank
                         } else {
                             cluster3Done = true;
                         }
@@ -108,7 +110,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                     }
                 } else {
                     if (cluster2.getLength() == 0) {
-                        break;
+                        // Blank
                     } else {
                         cluster2Done = true;
                     }
@@ -126,7 +128,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                 }
             } else {
                 if (cluster1.getLength() == 0) {
-                    break;
+                    // Blank
                 } else {
                     cluster1Done = true;
                 }

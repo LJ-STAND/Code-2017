@@ -63,6 +63,7 @@ void LightSensorArray::read() {
 }
 
 void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2) {
+    cluster1, cluster2, cluster = LightSensorCluster(0.0, 0);
     bool cluster1Done, cluster2Done, cluster3Done = false;
     Serial.println(String(cluster1Done) + ", " + String(cluster2Done) + ", " + String(cluster3Done));
     for (int i = 0; i < LS_NUM; i++) {

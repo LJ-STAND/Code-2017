@@ -70,10 +70,11 @@ void loop() {
         ledOn = !ledOn;
     }
 
-    // Serial.print(lightSensorArray.cluster1.getCentre());
-    // Serial.print(", ");
-    // Serial.print(lightSensorArray.cluster1.getLength());
-    // Serial.println();
+    // Serial.println("Things:");
+    Serial.print(lightSensorArray.cluster1.getCentre());
+    Serial.print(", ");
+    Serial.print(lightSensorArray.cluster1.getLength());
+    Serial.println();
     // Serial.println(lightSensorArray.numClusters);
 }
 

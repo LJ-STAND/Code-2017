@@ -173,5 +173,10 @@ void DebugController::appSendLightSensors(uint16_t first16Bit, uint16_t second16
 }
 
 void DebugController::appSendOrbitAngle(double angle) {
-    Bluetooth::send(String(angle), BluetoothDataType::orbitAngle);    
+    Bluetooth::send(String(angle), BluetoothDataType::orbitAngle);
+}
+
+void DebugController::appSendPixy(double x, double y, double width, double height) {
+    String sendString = String(x) + "," + String(y) + "," + String(width) + "," + String(height);
+    Bluetooth::send(sendString, BluetoothDataType::goal);
 }

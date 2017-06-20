@@ -311,6 +311,14 @@ void updatePixy() {
             double height = goalBlock.height;
             goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
 
+            #if DEBUG_APP_PIXY
+                double width = goalBlock.width;
+                double x = goalBlock.x;
+                double y = goalBlock.y;
+
+                debug.appSendPixy(x, y, width, height);
+            #endif
+
             double middleGoalPoint = (double)goalBlock.x;
             double goalDiffMiddleFOV = middleGoalPoint - 160;
 

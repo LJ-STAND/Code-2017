@@ -64,10 +64,83 @@ void LightSensorArray::read() {
 
 
 
-void LightSensorArray::getClusters() {
+void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2 = false) {
+    bool cluster1Done, cluster2Done, cluster3Done = false;
     for (int i = 0; i < LS_NUM; i++) {
-        // TODO
+        if (cluster1Done) {
+            if (cluster2Done) {
+                if (cluster3Done) {
+                    if (!doneClusters2) {
+                        getClusters2();
+                    } else {
+                        cluster1 = LightSensorCluster(0.0, 0);
+                    }
+                } else {
+                    if (lightData.getSensor(i)) {
+                        if (cluster3.getLength() == 0) {
+                            cluster3 = LightSensorCluster((double)i, 1);
+                        } else {
+                            if (i == 23){
+                                cluster1.addCluster(cluster3);
+                                cluster3 = LightSensorCluster(0.0, 0);
+                            } else {
+                                cluster3.addSensorClockwise();
+                            }
+                        }
+                    } else {
+                        if (cluster3.getLength() == 0) {
+                            break;
+                        } else {
+                            cluster3Done = true;
+                        }
+                    }
+                }
+            } else {
+                if (lightData.getSensor(i)) {
+                    if (cluster2.getLength() == 0) {
+                        cluster2 = LightSensorCluster((double)i, 1);
+                    } else {
+                        if (i == 23){
+                            cluster1.addCluster(cluster2);
+                            cluster2 = LightSensorCluster(0.0, 0);
+                        } else {
+                            cluster2.addSensorClockwise();
+                        }
+                    }
+                } else {
+                    if (cluster2.getLength() == 0) {
+                        break;
+                    } else {
+                        cluster2Done = true;
+                    }
+                }
+            }
+        } else {
+            if (lightData.getSensor(i)) {
+                if (cluster1.getLength() == 0) {
+                    cluster1 = LightSensorCluster((double)i, 1);
+                } else {
+                    cluster1.addSensorClockwise();
+                }
+            } else {
+                if (cluster1.getLength() == 0) {
+                    break;
+                } else {
+                    cluster1Done = true;
+                }
+            }
+        }
     }
+}
+
+void LightSensorArray::getClusters2() {
+    LightSensorData newLightData = data; // I feel like this will break things
+    for (int i = 0; i < LS_NUM; i++) {
+        if (!data.getSensor(i) && data.getSensor(mod(i - 1, LS_NUM)) && data.getSensor(mod(i + 1, LS_NUM))) {
+            newLightData.setSensor(i, true);
+        }
+    }
+    getClusters(newLightData, true);
 }
 
 void LightSensorArray::calculatePositionClusters() {

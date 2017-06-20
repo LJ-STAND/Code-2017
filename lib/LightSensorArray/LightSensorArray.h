@@ -20,7 +20,8 @@ public:
     void calculatePostion();
     LinePosition getLinePosition();
 
-    void getClusters();
+    void getClusters(LightSensorData lightData, bool doneClusters2);
+    void getClusters2();
     void calculatePositionClusters();
 
     uint16_t getFirst16Bit();
@@ -34,7 +35,7 @@ public:
 
 private:
     int arrayOffset = 0;
-    LightSensorCluster cluster1, cluster2, cluster3;
+    LightSensorCluster cluster1, cluster2, cluster3 = LightSensorCluster(0.0, 0);
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

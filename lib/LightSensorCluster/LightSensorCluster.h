@@ -8,7 +8,10 @@
 class LightSensorCluster {
 public:
     LightSensorCluster() {}
+
+    // These constructors are very similar. Be careful when calling!
     LightSensorCluster(double clusterCentre, int clusterLength);
+    LightSensorCluster(int leftSensor, int rightSensor);
 
     void addCluster(LightSensorCluster cluster);
 
@@ -26,6 +29,7 @@ public:
 private:
     double centre;
     int length;
+    int leftSensor, rightSensor;
 };
 
 #endif // LIGHT_SENSOR_CLUSTER_H

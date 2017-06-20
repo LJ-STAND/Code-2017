@@ -74,6 +74,7 @@ void loop() {
     // Serial.print(", ");
     // Serial.print(lightSensorArray.cluster1.getLength());
     // Serial.println();
+    // Serial.println(lightSensorArray.numClusters);
 }
 
 void spi0_isr() {

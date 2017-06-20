@@ -47,11 +47,11 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.sensors[i].isOnWhite());
+        Serial.print(lightSensorArray.sensors[i].getValue());
         Serial.print(", ");
     }
-
-    Serial.print(linePositionString(lightSensorArray.getLinePosition()));
+    //
+    // Serial.print(linePositionString(lightSensorArray.getLinePosition()));
     Serial.println();
 }
 

@@ -408,7 +408,7 @@ void loop() {
 
     // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
-        debug.appSendLightSensors(first16Bit, second16Bit);
+        // debug.appSendLightSensors(first16Bit, second16Bit);
     #endif
 
     #if DEBUG_APP_TSOPS

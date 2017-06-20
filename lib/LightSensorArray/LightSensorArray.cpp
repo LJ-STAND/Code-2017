@@ -62,8 +62,6 @@ void LightSensorArray::read() {
     data = LightSensorData(sensor0isOnWhite, sensor1isOnWhite, sensor2isOnWhite, sensor3isOnWhite, sensor4isOnWhite, sensor5isOnWhite, sensor6isOnWhite, sensor7isOnWhite, sensor8isOnWhite, sensor9isOnWhite, sensor10isOnWhite, sensor11isOnWhite, sensor12isOnWhite, sensor13isOnWhite, sensor14isOnWhite, sensor15isOnWhite, sensor16isOnWhite, sensor17isOnWhite, sensor18isOnWhite, sensor19isOnWhite, sensor20isOnWhite, sensor21isOnWhite, sensor22isOnWhite, sensor23isOnWhite);
 }
 
-
-
 void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2 = false) {
     bool cluster1Done, cluster2Done, cluster3Done = false;
     for (int i = 0; i < LS_NUM; i++) {
@@ -131,6 +129,8 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
             }
         }
     }
+
+    numClusters = (int)cluster1Done + (int)cluster2Done + (int)cluster3Done;
 }
 
 void LightSensorArray::getClusters2() {
@@ -144,7 +144,41 @@ void LightSensorArray::getClusters2() {
 }
 
 void LightSensorArray::calculatePositionClusters() {
-    // TODO
+    int cluster1Quadrants = cluster1.getQuadrants();
+    int cluster2Quadrants = cluster2.getQuadrants();
+    int cluster3Quadrants = cluster3.getQuadrants();
+
+    if (numClusters == 0) {
+        position = LinePosition::none;
+    } else if (numClusters == 1) {
+        if (cluster1Quadrants == 41) {
+            position = LinePosition::front;
+        } else if (cluster1Quadrants == 12) {
+            position = LinePosition::right;
+        } else if (cluster1Quadrants == 23) {
+            position = LinePosition::back;
+        } else if (cluster1Quadrants == 34) {
+            position = LinePosition::left;
+        } else if (cluster1Quadrants == 1) {
+            position = LinePosition::smallCornerFrontRight;
+        } else if (cluster1Quadrants == 2) {
+            position = LinePosition::smallCornerBackRight;
+        } else if (cluster1Quadrants == 3) {
+            position = LinePosition::smallCornerBackLeft;
+        } else if (cluster1Quadrants == 4) {
+            position = LinePosition::smallCornerFrontLeft;
+        }
+    } else if (numClusters == 2) {
+        if ((cluster1Quadrants == 4 && cluster2Quadrants == 1) || (cluster1Quadrants == 1 && cluster2Quadrants == 4)) {
+            position = LinePosition::front;
+        } else if ((cluster1Quadrants == 1 && cluster2Quadrants == 2) || (cluster1Quadrants == 2 && cluster2Quadrants == 1)) {
+            position = LinePosition::right;
+        } else if ((cluster1Quadrants == 2 && cluster2Quadrants == 3) || (cluster1Quadrants == 3 && cluster2Quadrants == 2)) {
+            position = LinePosition::back;
+        } else if ((cluster1Quadrants == 3 && cluster2Quadrants == 4) || (cluster1Quadrants == 4 && cluster2Quadrants == 3)) {
+            position = LinePosition::left;
+        }
+    }
 }
 
 void LightSensorArray::calculatePostion() {

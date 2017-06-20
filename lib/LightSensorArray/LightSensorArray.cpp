@@ -96,7 +96,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                         }
                     } else {
                         if (cluster3.getLength() == 0) {
-                            break;
+                            // Blank
                         } else {
                             cluster3Done = true;
                         }
@@ -116,7 +116,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                     }
                 } else {
                     if (cluster2.getLength() == 0) {
-                        break;
+                        // Blank
                     } else {
                         cluster2Done = true;
                     }
@@ -132,7 +132,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                 }
             } else {
                 if (cluster1.getLength() == 0) {
-                    break;
+                    // Blank
                 } else {
                     cluster1Done = true;
                 }

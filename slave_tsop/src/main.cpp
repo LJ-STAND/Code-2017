@@ -11,6 +11,7 @@
 #include <MoveData.h>
 #include <Slave.h>
 #include <Timer.h>
+#include <MovingAverage.h>
 
 T3SPI spi;
 
@@ -22,6 +23,8 @@ SPITransactionType currentTransactionType;
 SlaveCommand currentCommand;
 
 TSOPArray tsops;
+
+MovingAverage tsopStrengthAverage = MovingAverage(20);
 
 Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_TSOP);
 bool ledOn;
@@ -46,6 +49,9 @@ void loop() {
     if (tsops.tsopCounter > TSOP_LOOP_COUNT) {
         tsops.finishRead();
         tsops.unlock();
+
+        tsopStrengthAverage.update(tsops.getStrength());
+        Serial.println((int)tsopStrengthAverage.average());
     }
 
     if (ledTimer.timeHasPassed()) {
@@ -82,7 +88,7 @@ void spi0_isr() {
                         break;
 
                     case SlaveCommand::tsopStrength:
-                        dataOut[0] = (uint16_t)tsops.getStrength();
+                        dataOut[0] = (uint16_t)tsopStrengthAverage.average();
                         break;
 
                     default:

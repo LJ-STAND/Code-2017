@@ -8,6 +8,7 @@ public:
     Timer(unsigned long duration);
     void update();
     bool timeHasPassed();
+    bool timeHasPassedNoUpdate();
 
 private:
     unsigned long timerDuration;

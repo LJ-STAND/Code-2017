@@ -2,7 +2,7 @@
 #define LIGHT_SENSOR_CLUSTER_H
 
 #include <Arduino.h>
-#include <LjstandCommon.h>
+#include <LJSTANDCommon.h>
 #include <Config.h>
 
 class LightSensorCluster {

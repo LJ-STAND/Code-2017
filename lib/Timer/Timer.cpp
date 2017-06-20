@@ -16,3 +16,7 @@ bool Timer::timeHasPassed() {
 
     return false;
 }
+
+bool Timer::timeHasPassedNoUpdate() {
+    return micros() - lastUpdate > timerDuration;
+}

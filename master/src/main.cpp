@@ -25,7 +25,6 @@
 #include <Slave.h>
 #include <Timer.h>
 #include <XBee.h>
-#include <MovingAverage.h>
 
 XBee xbee;
 T3SPI spi;
@@ -51,13 +50,12 @@ Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
 
-MovingAverage goalTSOPStrengthAverage = MovingAverage(20);
-
 double compassPreviousAngle = 0;
 long compassPreviousTime;
 double compassDiff = 0;
 
 double facingDirection = 0;
+double orbitAngleRelative = 0;
 
 bool xbeeConnected = false;
 bool ledOn;
@@ -123,8 +121,11 @@ void setup() {
 }
 
 int calculateRotationCorrection() {
+    double multiplierD = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
+    double multiplierP = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
+
     int correctionRotation;
-    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * CORRECTION_ROTATION_MULTIPLIER_P + compassDiff * CORRECTION_ROTATION_MULTIPLIER_D;
+    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
 
     if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
         correctionRotation = 0;
@@ -133,7 +134,6 @@ int calculateRotationCorrection() {
     } else {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }
-
     return correctionRotation;
 }
 
@@ -207,31 +207,27 @@ MoveData calculateOrbit() {
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
         orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
-
-        debug.toggleLEDs(true, false, false, false, false, false);
     } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
-        debug.toggleLEDs(false, true, false, false, false, false);
         if (tsopAngle < 180) {
             double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             orbitMovement.angle = (int)round(90 * nearFactor + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + tsopAngle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
         } else {
             double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - tsopAngle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
+            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (360 - tsopAngle)* ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - tsopAngle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
         }
     } else {
         if (tsopStrength > ORBIT_SHORT_STRENGTH) {
-            debug.toggleLEDs(false, false, true, false, false, false);
             orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
         } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
-            debug.toggleLEDs(false, false, false, true, false, false);
             double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
             orbitMovement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
         } else {
-            debug.toggleLEDs(false, false, false, false, true, false);
             orbitMovement.angle = tsopAngle;
         }
     }
+
+    orbitMovement.angle = mod(orbitMovement.angle + orbitAngleRelative, 360);
 
     orbitMovement.speed = MAX_ORBIT_SPEED;
 
@@ -248,36 +244,34 @@ MoveData calculateOrbit() {
     return orbitMovement;
 }
 
+void calculateGoalTracking() {
+    if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.tsopAngle < ORBIT_SMALL_ANGLE || slaveData.tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
+        orbitAngleRelative = 0;
+        debug.setGreenBrightness(255);
+    } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
+        double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+        double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
 
-MoveData calculateMovement() {
-    MoveData movement = calculateOrbit();
+        orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
+        debug.setGreenBrightness((int)((double)strengthFactor * 255));
+    } else {
+        orbitAngleRelative = (360 - imu.heading);
+        debug.setGreenBrightness(0);
+    }
 
-    goalTSOPStrengthAverage.update(slaveData.tsopStrength);
+    orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
 
-    if (goalData.status != GoalStatus::invisible && FACE_GOAL) {
-        int averagedStrength = goalTSOPStrengthAverage.average();
-
-        int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
-
-        double angleFactor = (1 - ((double)(abs(mod(slaveData.tsopAngle + 180, 360) - 180)) / (double)180));
-        double strengthFactor = (double)(averagedStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
-
-        if (averagedStrength > FACE_GOAL_SHORT_STRENGTH) {
-            facingDirection = angleFactor * goalAngle;
-
-            debug.setBlueBrightness((int)(angleFactor * (double)255));
-        } else if (averagedStrength > FACE_GOAL_BIG_STRENGTH) {
-            facingDirection = strengthFactor * angleFactor * goalAngle;
-
-            debug.setBlueBrightness((int)(strengthFactor * angleFactor * (double)255));
-        } else {
-            facingDirection = 0;
-        }
+    if (goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate()) {
+        facingDirection = mod(imu.heading + goalData.angle, 360);
     } else {
         facingDirection = 0;
     }
 
-    facingDirection = mod(facingDirection, 360);
+    // Serial.println(String(goalData.angle) + ", " + String(facingDirection));
+}
+
+MoveData calculateMovement() {
+    MoveData movement = calculateOrbit();
 
     if (position != RobotPosition::field && AVOID_LINE) {
         movement = calculateLineAvoid(position, movement);
@@ -324,7 +318,7 @@ void updatePixy() {
         } else {
             debug.toggleRed(false);
 
-            if (lastSeenGoalTimer.timeHasPassed()) {
+            if (lastSeenGoalTimer.timeHasPassedNoUpdate()) {
                 goalData.angle = 0;
                 goalData.distance = 0;
             }
@@ -356,18 +350,20 @@ void loop() {
 
     // -- Slaves -- //
     // Light Slave
-    LinePosition linePosition = slaveLightSensor.getLinePosition();
-    uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
-    uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
+    // LinePosition linePosition = slaveLightSensor.getLinePosition();
+    // uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
+    // uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
     // TSOP Slave
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
 
-    slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
+    slaveData = SlaveData(LinePosition::none, tsopAngle, tsopStrength);
+
+    Serial.println(slaveData.tsopStrength);
 
     // -- XBee -- //
-    xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
+    // xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
 
     // Serial.println(String(xbee.otherBallAngle) + ", " + String(xbee.otherBallStrength));
 
@@ -383,7 +379,7 @@ void loop() {
 
     if (position != previousPosition) {
         #if DEBUG_APP_LIGHTSENSORS
-            Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+            // Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
             Bluetooth::send(position, BluetoothDataType::btRobotPosition);
         #endif
 
@@ -393,6 +389,7 @@ void loop() {
     // Pixy
     #if PIXY_ENABLED
         updatePixy();
+        calculateGoalTracking();
     #endif
 
     // -- Debug -- //

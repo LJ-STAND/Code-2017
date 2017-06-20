@@ -62,9 +62,18 @@ void LightSensorArray::read() {
     data = LightSensorData(sensor0isOnWhite, sensor1isOnWhite, sensor2isOnWhite, sensor3isOnWhite, sensor4isOnWhite, sensor5isOnWhite, sensor6isOnWhite, sensor7isOnWhite, sensor8isOnWhite, sensor9isOnWhite, sensor10isOnWhite, sensor11isOnWhite, sensor12isOnWhite, sensor13isOnWhite, sensor14isOnWhite, sensor15isOnWhite, sensor16isOnWhite, sensor17isOnWhite, sensor18isOnWhite, sensor19isOnWhite, sensor20isOnWhite, sensor21isOnWhite, sensor22isOnWhite, sensor23isOnWhite);
 }
 
-void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2 = false) {
+void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2) {
     bool cluster1Done, cluster2Done, cluster3Done = false;
+    Serial.println(String(cluster1Done) + ", " + String(cluster2Done) + ", " + String(cluster3Done));
     for (int i = 0; i < LS_NUM; i++) {
+        if (cluster1Done) {
+            Serial.println("1");
+        }
+
+        if (cluster2Done) {
+            Serial.println("2");
+        }
+        Serial.println("inside " + String(i) + ", " + String(cluster1Done) + ", " + String(cluster2Done) + ", " + String(cluster3Done));
         if (cluster1Done) {
             if (cluster2Done) {
                 if (cluster3Done) {
@@ -119,6 +128,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
                     cluster1 = LightSensorCluster((double)i, 1);
                 } else {
                     cluster1.addSensorClockwise();
+                    Serial.println(cluster1.getLength());
                 }
             } else {
                 if (cluster1.getLength() == 0) {
@@ -177,6 +187,8 @@ void LightSensorArray::calculatePositionClusters() {
             position = LinePosition::back;
         } else if ((cluster1Quadrants == 3 && cluster2Quadrants == 4) || (cluster1Quadrants == 4 && cluster2Quadrants == 3)) {
             position = LinePosition::left;
+        } else if ((false)) {
+
         }
     }
 }

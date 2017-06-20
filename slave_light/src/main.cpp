@@ -47,7 +47,7 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.sensors[i].getValue());
+        Serial.print(lightSensorArray.sensors[i].isOnWhite());
         Serial.print(", ");
     }
     //
@@ -57,7 +57,8 @@ void debug() {
 
 void loop() {
     lightSensorArray.read();
-    lightSensorArray.calculatePostion();
+    // lightSensorArray.calculatePostion();
+    lightSensorArray.getClusters(lightSensorArray.data);
     LinePosition position = lightSensorArray.getLinePosition();
 
     if (position != previousPosition) {
@@ -68,6 +69,11 @@ void loop() {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
+
+    // Serial.print(lightSensorArray.cluster1.getCentre());
+    // Serial.print(", ");
+    // Serial.print(lightSensorArray.cluster1.getLength());
+    // Serial.println();
 }
 
 void spi0_isr() {

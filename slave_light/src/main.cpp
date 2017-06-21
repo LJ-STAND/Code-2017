@@ -70,12 +70,7 @@ void loop() {
         ledOn = !ledOn;
     }
 
-    // Serial.println("Things:");
-    Serial.print(lightSensorArray.cluster1.getCentre());
-    Serial.print(", ");
-    Serial.print(lightSensorArray.cluster1.getLength());
-    Serial.println();
-    // Serial.println(lightSensorArray.numClusters);
+    Serial.println(String(lightSensorArray.cluster1.getCentre()) + ", " + String(lightSensorArray.cluster1.getLength()) + ", " + String(lightSensorArray.cluster2.getCentre()) + ", " + String(lightSensorArray.cluster2.getLength()) + ", " + String(lightSensorArray.cluster3.getCentre()) + ", " + String(lightSensorArray.cluster3.getLength()));
 }
 
 void spi0_isr() {

@@ -29,7 +29,23 @@ public:
 private:
     double centre;
     int length;
-    int leftSensor, rightSensor;
+    int leftSensor;
+    int rightSensor;
+
+    void updateLeftRight() {
+        leftSensor = mod(centre - ((length - 1) / 2.0), LS_NUM);
+        rightSensor = mod(centre + ((length - 1) / 2.0), LS_NUM);
+    }
+
+    void updateLengthCentre() {
+        if (leftSensor > rightSensor) {
+            centre = doubleMod((-(LS_NUM - leftSensor) + rightSensor) / 2.0, LS_NUM);
+            length = (LS_NUM - (leftSensor - rightSensor)) + 1;
+        } else {
+            centre = (leftSensor + rightSensor) / 2.0;
+            length = (rightSensor - leftSensor) + 1;
+        }
+    }
 };
 
 #endif // LIGHT_SENSOR_CLUSTER_H

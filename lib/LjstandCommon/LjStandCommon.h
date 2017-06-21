@@ -4,7 +4,7 @@
 #ifndef LJSTANDCOMMON_H
 #define LJSTANDCOMMON_H
 
-#include <Arduino.h>
+#include <math.h>
 
 #define TO_RADIANS 0.01745329251994329576923690768489
 
@@ -25,7 +25,7 @@
 
 int mod(int x, int m);
 
-double doubleMod(double value, double maxValue);
+double doubleMod(double x, double max);
 
 bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck);
 // int maxInt(int array[]);

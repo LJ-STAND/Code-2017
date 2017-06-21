@@ -4,20 +4,14 @@ LightSensorCluster::LightSensorCluster(double clusterCentre, int clusterLength) 
     centre = clusterCentre;
     length = clusterLength;
 
-    leftSensor = mod(centre - (length - 1) / 2.0, LS_NUM);
-    rightSensor = mod(centre + (length - 1) / 2.0, LS_NUM);
+    updateLeftRight();
 }
 
 LightSensorCluster::LightSensorCluster(int left, int right) {
-    if (left > 12 && right < 12) {
-        centre = mod((right + mod(left + 12, LS_NUM))/ 2.0 - 6, LS_NUM);
-    } else {
-        centre = (right + left) / 2.0;
-    }
-    length = (mod(right - left, LS_NUM)) / 2.0 + 1;
-
     leftSensor = left;
     rightSensor = right;
+
+    updateLengthCentre();
 }
 
 int LightSensorCluster::getQuadrants() {
@@ -67,25 +61,25 @@ int LightSensorCluster::getQuadrants() {
 }
 
 void LightSensorCluster::addSensorClockwise() {
-    LightSensorCluster newCluster = LightSensorCluster((double)mod(getRightSensor() + 1, LS_NUM), 1);
-    addCluster(newCluster);
+    rightSensor = mod(rightSensor + 1, LS_NUM);
+
+    updateLengthCentre();
 }
 
 void LightSensorCluster::addCluster(LightSensorCluster cluster) {
     int leftOther = cluster.getLeftSensor();
     int rightOther = cluster.getRightSensor();
-    int lengthOther = cluster.getLength();
 
     if (mod(rightSensor + 1, LS_NUM) == leftOther) {
-        centre = LightSensorCluster(leftSensor, rightOther).getCentre();
+        rightSensor = rightOther;
     } else if (mod(rightOther + 1, LS_NUM) == leftSensor) {
-        centre = LightSensorCluster(leftOther, rightSensor).getCentre();
+        leftSensor = leftOther;
     } else {
         // We're adding two non-adjacent clusters so we just do not apply any changes to the cluster.
         return;
     }
 
-    length += lengthOther;
+    updateLengthCentre();
 }
 
 int LightSensorCluster::getLeftSensor() {
@@ -94,10 +88,14 @@ int LightSensorCluster::getLeftSensor() {
 }
 
 int LightSensorCluster::getRightSensor() {
-    // Note: left is the counterclockwise boundary because its easier to write.
+    // Note: right is the clockwise boundary because its easier to write.
     return rightSensor;
 }
 
-double LightSensorCluster::getCentre() {return centre;}
+double LightSensorCluster::getCentre() {
+    return centre;
+}
 
-int LightSensorCluster::getLength() {return length;}
+int LightSensorCluster::getLength() {
+    return length;
+}

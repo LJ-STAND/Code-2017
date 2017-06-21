@@ -1,4 +1,4 @@
-#include <LJSTANDCommon.h>
+#include "LJSTANDCommon.h"
 
 // int len(int array[]){
 //     return ARRAYLENGTH(array);
@@ -12,8 +12,9 @@ int mod(int x, int m) {
     return r < 0 ? r + m : r;
 }
 
-double doubleMod(double value, double maxValue) {
-    return fmod((value + maxValue), maxValue);
+double doubleMod(double x, double m) {
+    double r = fmod(x, m);
+    return r < 0 ? r + m : r;
 }
 
 bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck) {

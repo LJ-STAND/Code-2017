@@ -32,10 +32,12 @@ public:
     LightSensorData data;
     LinePosition position;
     LightSensor sensors[24];
-    LightSensorCluster cluster1, cluster2, cluster3 = LightSensorCluster(0.0, 0);
+    LightSensorCluster cluster1 = LightSensorCluster(0.0, 0);
+    LightSensorCluster cluster2 = LightSensorCluster(0.0, 0);
+    LightSensorCluster cluster3 = LightSensorCluster(0.0, 0);
 
     int numClusters = 0;
-
+    
 private:
     int arrayOffset = 0;
 };

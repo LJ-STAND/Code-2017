@@ -50,14 +50,14 @@ void debug() {
         Serial.print(lightSensorArray.sensors[i].isOnWhite());
         Serial.print(", ");
     }
-    //
-    // Serial.print(linePositionString(lightSensorArray.getLinePosition()));
+
+    Serial.print(linePositionString(lightSensorArray.getLinePosition()));
     Serial.println();
 }
 
 void loop() {
     lightSensorArray.read();
-    // lightSensorArray.calculatePostion();
+    lightSensorArray.calculatePositionClusters();
     lightSensorArray.getClusters(lightSensorArray.data);
     LinePosition position = lightSensorArray.getLinePosition();
 
@@ -70,7 +70,7 @@ void loop() {
         ledOn = !ledOn;
     }
 
-    Serial.println(String(lightSensorArray.cluster1.getCentre()) + ", " + String(lightSensorArray.cluster1.getLength()) + ", " + String(lightSensorArray.cluster2.getCentre()) + ", " + String(lightSensorArray.cluster2.getLength()) + ", " + String(lightSensorArray.cluster3.getCentre()) + ", " + String(lightSensorArray.cluster3.getLength()));
+    debug();
 }
 
 void spi0_isr() {

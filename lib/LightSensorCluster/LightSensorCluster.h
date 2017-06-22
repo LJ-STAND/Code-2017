@@ -26,6 +26,8 @@ public:
     double getCentre();
     int getLength();
 
+    double getAngle();
+
 private:
     double centre;
     int length;

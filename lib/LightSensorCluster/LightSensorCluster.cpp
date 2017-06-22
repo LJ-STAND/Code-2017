@@ -99,3 +99,7 @@ double LightSensorCluster::getCentre() {
 int LightSensorCluster::getLength() {
     return length;
 }
+
+double LightSensorCluster::getAngle() {
+    return centre / 24.0 * 360;
+}

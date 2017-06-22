@@ -17,7 +17,7 @@ public:
     void init();
 
     void read();
-    void calculatePostion();
+    void calculatePosition();
     LinePosition getLinePosition();
 
     void getClusters(LightSensorData lightData, bool doneClusters2 = false);
@@ -37,7 +37,7 @@ public:
     LightSensorCluster cluster3 = LightSensorCluster(0.0, 0);
 
     int numClusters = 0;
-    
+
 private:
     int arrayOffset = 0;
 };

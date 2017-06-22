@@ -75,10 +75,12 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
         if (cluster1Done) {
             if (cluster2Done) {
                 if (cluster3Done) {
-                    if (!doneClusters2) {
-                        getClusters2();
-                    } else {
-                        cluster1 = LightSensorCluster(0.0, 0);
+                    if (lightData.getSensor(i)) {
+                        if (!doneClusters2) {
+                            getClusters2();
+                        } else {
+                            cluster1 = LightSensorCluster(0.0, 0);
+                        }
                     }
                 } else {
                     if (lightData.getSensor(i)) {
@@ -137,7 +139,7 @@ void LightSensorArray::getClusters(LightSensorData lightData, bool doneClusters2
         }
     }
 
-    numClusters = (int)cluster1Done + (int)cluster2Done + (int)cluster3Done;
+    numClusters = (int)(cluster1.getLength() != 0) + (int)(cluster2.getLength() != 0) + (int)(cluster3.getLength() != 0);
 }
 
 void LightSensorArray::getClusters2() {
@@ -151,46 +153,61 @@ void LightSensorArray::getClusters2() {
 }
 
 void LightSensorArray::calculatePositionClusters() {
-    int cluster1Quadrants = cluster1.getQuadrants();
-    int cluster2Quadrants = cluster2.getQuadrants();
-    int cluster3Quadrants = cluster3.getQuadrants();
-
     if (numClusters == 0) {
         position = LinePosition::none;
-    } else if (numClusters == 1) {
-        if (cluster1Quadrants == 41) {
-            position = LinePosition::front;
-        } else if (cluster1Quadrants == 12) {
-            position = LinePosition::right;
-        } else if (cluster1Quadrants == 23) {
-            position = LinePosition::back;
-        } else if (cluster1Quadrants == 34) {
-            position = LinePosition::left;
-        } else if (cluster1Quadrants == 1) {
-            position = LinePosition::smallCornerFrontRight;
-        } else if (cluster1Quadrants == 2) {
-            position = LinePosition::smallCornerBackRight;
-        } else if (cluster1Quadrants == 3) {
-            position = LinePosition::smallCornerBackLeft;
-        } else if (cluster1Quadrants == 4) {
-            position = LinePosition::smallCornerFrontLeft;
-        }
-    } else if (numClusters == 2) {
-        if ((cluster1Quadrants == 4 && cluster2Quadrants == 1) || (cluster1Quadrants == 1 && cluster2Quadrants == 4)) {
-            position = LinePosition::front;
-        } else if ((cluster1Quadrants == 1 && cluster2Quadrants == 2) || (cluster1Quadrants == 2 && cluster2Quadrants == 1)) {
-            position = LinePosition::right;
-        } else if ((cluster1Quadrants == 2 && cluster2Quadrants == 3) || (cluster1Quadrants == 3 && cluster2Quadrants == 2)) {
-            position = LinePosition::back;
-        } else if ((cluster1Quadrants == 3 && cluster2Quadrants == 4) || (cluster1Quadrants == 4 && cluster2Quadrants == 3)) {
-            position = LinePosition::left;
-        } else if ((false)) {
+    } else {
+        double cluster1Angle = cluster1.getAngle();
+        double cluster2Angle = cluster2.getAngle();
+        double cluster3Angle = cluster3.getAngle();
 
+        LightSensorCluster totalCluster;
+
+        if (numClusters == 1) {
+            totalCluster = cluster1;
+        } else if (numClusters == 2) {
+            totalCluster = angleBetween(cluster1Angle, cluster2Angle) <= 180 ? LightSensorCluster(cluster1.getLeftSensor(), cluster2.getRightSensor()) : LightSensorCluster(cluster2.getLeftSensor(), cluster1.getRightSensor());
+        } else {
+            double angleDiff12 = angleBetween(cluster1Angle, cluster2Angle);
+            double angleDiff23 = angleBetween(cluster2Angle, cluster3Angle);
+            double angleDiff31 = angleBetween(cluster3Angle, cluster1Angle);
+
+            double biggestAngle = max(angleDiff12, max(angleDiff23, angleDiff31));
+
+            if (angleDiff12 == biggestAngle) {
+                totalCluster = LightSensorCluster(cluster2.getLeftSensor(), cluster1.getRightSensor());
+            } else if (angleDiff23 == biggestAngle) {
+                totalCluster = LightSensorCluster(cluster3.getLeftSensor(), cluster2.getRightSensor());
+            } else {
+                totalCluster = LightSensorCluster(cluster1.getLeftSensor(), cluster3.getRightSensor());
+            }
+        }
+
+        double angle = totalCluster.getAngle();
+        int size = totalCluster.getLength();
+
+        if (angle >= 360 - LINE_SIDE_ANGLE_THRESHOLD || angle <= LINE_SIDE_ANGLE_THRESHOLD) {
+            position = LinePosition::front;
+        } else if (angle >= 90 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 90 + LINE_SIDE_ANGLE_THRESHOLD) {
+            position = LinePosition::right;
+        } else if (angle >= 180 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 180 + LINE_SIDE_ANGLE_THRESHOLD) {
+            position = LinePosition::back;
+        } else if (angle >= 270 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 270 + LINE_SIDE_ANGLE_THRESHOLD) {
+            position = LinePosition::left;
+        } else {
+            if (angle > LINE_SIDE_ANGLE_THRESHOLD && angle < 90 - LINE_SIDE_ANGLE_THRESHOLD) {
+                position = size < LS_NUM / 4 ? LinePosition::smallCornerFrontRight : LinePosition::bigCornerFrontRight;
+            } else if (angle > 90 + LINE_SIDE_ANGLE_THRESHOLD && angle < 180 - LINE_SIDE_ANGLE_THRESHOLD) {
+                position = size < LS_NUM / 4 ? LinePosition::smallCornerBackRight : LinePosition::bigCornerBackRight;
+            } else if (angle > 180 + LINE_SIDE_ANGLE_THRESHOLD && angle < 270 - LINE_SIDE_ANGLE_THRESHOLD) {
+                position = size < LS_NUM / 4 ? LinePosition::smallCornerBackLeft : LinePosition::bigCornerBackLeft;
+            } else {
+                position = size < LS_NUM / 4 ? LinePosition::smallCornerFrontLeft : LinePosition::bigCornerFrontLeft;
+            }
         }
     }
 }
 
-void LightSensorArray::calculatePostion() {
+void LightSensorArray::calculatePosition() {
     if (data.lsTotal == 0) {
         // No line
         position = LinePosition::none;

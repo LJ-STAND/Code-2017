@@ -25,6 +25,14 @@ bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise
     }
 }
 
+double angleBetween(double angleCounterClockwise, double angleClockwise) {
+    if (angleCounterClockwise < angleClockwise) {
+        return angleClockwise - angleCounterClockwise;
+    } else {
+        return angleClockwise + (360 - angleCounterClockwise);
+    }
+}
+
 // int maxInt(int array[]) {
 //     int bestvalue = array[0];
 //     for (int i = 1; i < ARRAYLENGTH(array); i++) {

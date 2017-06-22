@@ -25,6 +25,7 @@
 #include <Slave.h>
 #include <Timer.h>
 #include <XBee.h>
+#include <PlayMode.h>
 
 XBee xbee;
 T3SPI spi;
@@ -46,6 +47,8 @@ RobotPosition position;
 RobotPosition previousPosition = RobotPosition::field;
 GoalData goalData;
 
+PlayMode mode = PlayMode::attack;
+
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
@@ -57,10 +60,7 @@ double compassDiff = 0;
 double facingDirection = 0;
 double orbitAngleRelative = 0;
 
-bool xbeeConnected = false;
 bool ledOn;
-
-int count = 0;
 
 void setup() {
     // Onboard LED
@@ -80,6 +80,9 @@ void setup() {
     Serial.begin(9600);
     Bluetooth::init();
 
+    // XBee
+    xbee.init();
+
     debug.toggleWhite(true);
 
     // SPI
@@ -90,9 +93,6 @@ void setup() {
     slaveTSOP.init();
 
     debug.toggleYellow(true);
-
-    // XBee
-    xbee.init();
 
     // IMU
     imu.init();
@@ -118,6 +118,10 @@ void setup() {
     debug.toggleAllLEDs(true);
     delay(100);
     debug.toggleAllLEDs(false);
+}
+
+double defaultDirection() {
+    return mode == PlayMode::attack ? 0 : 180;
 }
 
 int calculateRotationCorrection() {
@@ -202,7 +206,11 @@ MoveData calculateLineAvoid(RobotPosition position, MoveData movement) {
 MoveData calculateOrbit() {
     MoveData orbitMovement;
 
+    // int tsopAngle = mod(slaveData.tsopAngle - orbitAngleRelative, 360);
     int tsopAngle = slaveData.tsopAngle;
+
+    Serial.println(tsopAngle);
+
     int tsopStrength = slaveData.tsopStrength;
 
     if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
@@ -227,7 +235,7 @@ MoveData calculateOrbit() {
         }
     }
 
-    orbitMovement.angle = mod(orbitMovement.angle + orbitAngleRelative, 360);
+    // orbitMovement.angle = mod(orbitMovement.angle + orbitAngleRelative, 360);
 
     orbitMovement.speed = MAX_ORBIT_SPEED;
 
@@ -245,26 +253,27 @@ MoveData calculateOrbit() {
 }
 
 void calculateGoalTracking() {
-    if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.tsopAngle < ORBIT_SMALL_ANGLE || slaveData.tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-        orbitAngleRelative = 0;
-        debug.setGreenBrightness(255);
-    } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
-        double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
-        double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
-
-        orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
-        debug.setGreenBrightness((int)((double)strengthFactor * 255));
-    } else {
-        orbitAngleRelative = (360 - imu.heading);
-        debug.setGreenBrightness(0);
-    }
-
-    orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
-
     if (goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate()) {
         facingDirection = mod(imu.heading + goalData.angle, 360);
+
+        if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.tsopAngle < ORBIT_SMALL_ANGLE || slaveData.tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
+            orbitAngleRelative = 0;
+            debug.setGreenBrightness(255);
+        } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
+            double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+            double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
+
+            orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
+            debug.setGreenBrightness((int)((double)strengthFactor * 255));
+        } else {
+            orbitAngleRelative = -imu.heading;
+            debug.setGreenBrightness(0);
+        }
+
+        orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
     } else {
-        facingDirection = 0;
+        facingDirection = defaultDirection();
+        orbitAngleRelative = 0;
     }
 
     // Serial.println(String(goalData.angle) + ", " + String(facingDirection));
@@ -305,18 +314,14 @@ void updatePixy() {
         }
 
         if (goalData.status != GoalStatus::invisible) {
+            debug.toggleRed(true);
+
             lastSeenGoalTimer.update();
 
-            debug.toggleRed(true);
-            double height = goalBlock.height;
-            goalData.distance = (int)((height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
+            goalData.distance = (int)(((double)goalBlock.height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
 
             #if DEBUG_APP_PIXY
-                double width = goalBlock.width;
-                double x = goalBlock.x;
-                double y = goalBlock.y;
-
-                debug.appSendPixy(x, y, width, height);
+                debug.appSendPixy(goalBlock.x, goalBlock.y, goalBlock.width, goalBlock.height);
             #endif
 
             double middleGoalPoint = (double)goalBlock.x;
@@ -324,13 +329,13 @@ void updatePixy() {
 
             goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
         } else {
-            debug.toggleRed(false);
-
             if (lastSeenGoalTimer.timeHasPassedNoUpdate()) {
                 goalData.angle = 0;
                 goalData.distance = 0;
             }
         }
+
+        debug.toggleRed(goalData.status != GoalStatus::invisible);
     }
 }
 
@@ -349,26 +354,35 @@ void updateCompass() {
     compassPreviousTime = currentTime;
 }
 
-void loop() {
-    // -- Bluetooth -- //
-    // BluetoothData data = Bluetooth::receive();
-    // if (data.type == BluetoothDataType::settings && data.value == 9) {
-    //     Bluetooth::send(String(DEBUG_APP_IMU) + String(DEBUG_APP_LIGHTSENSORS) + String(false /*DEBUG_APP_TSOPS*/),BluetoothDataType::settings);
-    // }
+void calculatePlayMode() {
+    if (xbee.isConnected) {
+        if (abs(xbee.otherBallAngle - 180) - abs(slaveData.tsopAngle - 180) > 90) {
+            mode = PlayMode::attack;
+        } else {
+            mode = PlayMode::defend;
+        }
+    } else {
+        mode = PlayMode::attack;
+    }
+}
 
+void loop() {
     // -- Slaves -- //
     // Light Slave
-    // LinePosition linePosition = slaveLightSensor.getLinePosition();
-    // uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
-    // uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
+    LinePosition linePosition = slaveLightSensor.getLinePosition();
+
+    #if DEBUG_APP_LIGHTSENSORS
+        uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
+        uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
+    #endif
 
     // TSOP Slave
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
 
-    slaveData = SlaveData(LinePosition::none, tsopAngle, tsopStrength);
+    Serial.println(tsopStrength);
 
-    Serial.println(slaveData.tsopStrength);
+    slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 
     // -- XBee -- //
     // xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
@@ -379,15 +393,14 @@ void loop() {
     // IMU
     updateCompass();
 
-    #if LINE_SENSOR_ROTATION
-        slaveLightSensor.sendHeading(imu.heading);
-    #endif
+    slaveLightSensor.sendHeading(imu.heading);
 
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
 
     if (position != previousPosition) {
+        // Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+
         #if DEBUG_APP_LIGHTSENSORS
-            // Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
             Bluetooth::send(position, BluetoothDataType::btRobotPosition);
         #endif
 
@@ -408,7 +421,7 @@ void loop() {
 
     // Light Sensors
     #if DEBUG_APP_LIGHTSENSORS
-        // debug.appSendLightSensors(first16Bit, second16Bit);
+        debug.appSendLightSensors(first16Bit, second16Bit);
     #endif
 
     #if DEBUG_APP_TSOPS
@@ -422,7 +435,5 @@ void loop() {
     }
 
     // -- Movement -- //
-
-    MoveData movement = calculateMovement();
-    motors.move(movement);
+    motors.move(calculateMovement());
 }

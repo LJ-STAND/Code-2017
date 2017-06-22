@@ -24,7 +24,7 @@ SlaveCommand currentCommand;
 
 TSOPArray tsops;
 
-MovingAverage tsopStrengthAverage = MovingAverage(20);
+MovingAverage tsopStrengthAverage = MovingAverage(10);
 
 Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_TSOP);
 bool ledOn;
@@ -51,7 +51,7 @@ void loop() {
         tsops.unlock();
 
         tsopStrengthAverage.update(tsops.getStrength());
-        Serial.println((int)tsopStrengthAverage.average());
+        Serial.println(tsopStrengthAverage.average());
     }
 
     if (ledTimer.timeHasPassed()) {
@@ -88,7 +88,7 @@ void spi0_isr() {
                         break;
 
                     case SlaveCommand::tsopStrength:
-                        dataOut[0] = (uint16_t)tsopStrengthAverage.average();
+                        dataOut[0] = (uint16_t)tsops.getStrength();
                         break;
 
                     default:

@@ -57,8 +57,8 @@ void debug() {
 
 void loop() {
     lightSensorArray.read();
-    lightSensorArray.calculatePositionClusters();
     lightSensorArray.getClusters(lightSensorArray.data);
+    lightSensorArray.calculatePositionClusters();
     LinePosition position = lightSensorArray.getLinePosition();
 
     if (position != previousPosition) {
@@ -69,8 +69,6 @@ void loop() {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
-
-    debug();
 }
 
 void spi0_isr() {

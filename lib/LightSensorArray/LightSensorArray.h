@@ -3,10 +3,8 @@
 
 #include <Arduino.h>
 #include <Pins.h>
-#include <LightSensorData.h>
 #include <LightSensor.h>
 #include <LightSensorCluster.h>
-#include <LinePosition.h>
 #include <Bits.h>
 #include <LJSTANDCommon.h>
 
@@ -17,24 +15,21 @@ public:
     void init();
 
     void read();
-    void calculatePosition();
-    LinePosition getLinePosition();
 
-    void getClusters(LightSensorData lightData, bool doneClusters2 = false);
-    void getClusters2();
-    void calculatePositionClusters();
+    void calculateClusters(bool doneFillInSensors = false);
+    void fillInSensors();
+    void calculateLine();
 
-    double getAngle();
-    double getSize();
+    double getLineAngle();
+    double getLineSize();
 
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
 
-    void updateHeading(int heading);
+    LightSensor sensors[LS_NUM];
+    bool data[LS_NUM];
+    bool filledInData[LS_NUM];
 
-    LightSensorData data;
-    LinePosition position;
-    LightSensor sensors[24];
     LightSensorCluster cluster1 = LightSensorCluster(0.0, 0);
     LightSensorCluster cluster2 = LightSensorCluster(0.0, 0);
     LightSensorCluster cluster3 = LightSensorCluster(0.0, 0);
@@ -42,7 +37,13 @@ public:
     int numClusters = 0;
 
 private:
-    int arrayOffset = 0;
+    void resetClusters() {
+        cluster1 = LightSensorCluster(0.0, 0);
+        cluster2 = LightSensorCluster(0.0, 0);
+        cluster3 = LightSensorCluster(0.0, 0);
+    }
+
+    int lsPins[LS_NUM] = {LS_0, LS_1, LS_2, LS_3, LS_4, LS_5, LS_6, LS_7, LS_8, LS_9, LS_10, LS_11, LS_12, LS_13, LS_14, LS_15, LS_16, LS_17, LS_18, LS_19, LS_20, LS_21, LS_22, LS_23};
 
     double angle;
     double size;

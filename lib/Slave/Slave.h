@@ -16,12 +16,12 @@ enum SPITransactionType: int {
 };
 
 enum SlaveCommand: int {
-    linePosition = 6,
+    lineAngle = 6,
+    lineSize,
     lightSensorsFirst16Bit,
     lightSensorsSecond16Bit,
     tsopAngle,
-    tsopStrength,
-    sendCompass
+    tsopStrength
 };
 
 enum SPITransactionState: int {
@@ -49,10 +49,10 @@ private:
 class SlaveLightSensor: public Slave {
 public:
     void init();
-    LinePosition getLinePosition();
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
-    void sendHeading(double heading);
+    double getLineAngle();
+    double getLineSize();
 };
 
 class SlaveTSOP: public Slave {

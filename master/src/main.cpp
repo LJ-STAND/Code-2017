@@ -9,13 +9,9 @@
 #include <DebugController.h>
 #include <i2c_t3.h>
 #include <Config.h>
-#include <SlaveData.h>
 #include <Bluetooth.h>
 #include <MotorArray.h>
 #include <IMU.h>
-#include <LinePosition.h>
-#include <RobotPosition.h>
-#include <CalculateRobotPosition.h>
 #include <MoveData.h>
 #include <Pins.h>
 #include <LightGate.h>
@@ -26,6 +22,8 @@
 #include <Timer.h>
 #include <XBee.h>
 #include <PlayMode.h>
+#include <BallData.h>
+#include <LineData.h>
 
 XBee xbee;
 T3SPI spi;
@@ -41,13 +39,13 @@ Sonar sonarLeft;
 
 SlaveLightSensor slaveLightSensor;
 SlaveTSOP slaveTSOP;
-SlaveData slaveData;
 
-RobotPosition position;
-RobotPosition previousPosition = RobotPosition::field;
+LineData lineData;
+BallData ballData;
+MoveData moveData;
 GoalData goalData;
 
-PlayMode mode = PlayMode::attack;
+PlayMode playMode = PlayMode::attack;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
@@ -121,7 +119,7 @@ void setup() {
 }
 
 double defaultDirection() {
-    return mode == PlayMode::attack ? 0 : 180;
+    return playMode == PlayMode::attack ? 0 : 180;
 }
 
 int calculateRotationCorrection() {
@@ -138,129 +136,72 @@ int calculateRotationCorrection() {
     } else {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }
+
     return correctionRotation;
 }
 
-MoveData calculateLineAvoid(RobotPosition position, MoveData movement) {
-    // Direction is the angle the robot would be moving at if it was moving directly towards a line on the field in such a way that the specified RobotPosition was found.
-    RobotPositionSize size = getRobotPositionSize(position);
-    bool isCorner = getRobotPositionIsCorner(position);
-    int direction = getRobotPositionDirection(position);
-    int orbitAngle = movement.angle;
-
-    if (isCorner) {
-        switch (size) {
-            case RobotPositionSize::small:
-                if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
-                    // movement.angle = mod(direction + 180 - imu.heading, 360);
-                    // if (!angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), slaveData.tsopAngle)) {
-                    //     movement.angle =
-                    // } else {
-                        movement.speed = 0;
-                    // }
+void calculateLineAvoid() {
+    if (!lineData.onField) {
+        if (lineData.size > 1) {
+            moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
+            moveData.speed = lineData.size / 3.0 * 255;
+        } else {
+            if (mod(lineData.angle, 90) > 30 && mod(lineData.angle, 90) < 60) {
+                if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
+                    moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
+                    moveData.speed = lineData.size < 0.5 ? 0 : lineData.size / 3.0 * 255;
                 }
-
-                break;
-
-            case RobotPositionSize::big:
-                if (angleIsInside(mod(direction - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(direction + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), orbitAngle)) {
-                    movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = BIG_LINE_SPEED;
+            } else {
+                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), moveData.angle)) {
+                    moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
+                    moveData.speed = lineData.size < 0.5 ? 0 : lineData.size / 3.0 * 255;
                 }
-
-                break;
-
-            case RobotPositionSize::over:
-                movement.angle = mod(direction + 180 - imu.heading, 360);
-                movement.speed = OVER_LINE_SPEED;
-                break;
-        }
-    } else {
-        switch (size) {
-            case RobotPositionSize::small:
-                if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
-                    // movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = 0;
-                }
-
-                break;
-
-            case RobotPositionSize::big:
-                if (angleIsInside(mod(direction - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), mod(direction + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), orbitAngle)) {
-                    movement.angle = mod(direction + 180 - imu.heading, 360);
-                    movement.speed = BIG_LINE_SPEED;
-                }
-
-                break;
-
-            case RobotPositionSize::over:
-                movement.angle = mod(direction + 180 - imu.heading, 360);
-                movement.speed = OVER_LINE_SPEED;
-                break;
+            }
         }
     }
-
-    return movement;
 }
 
-MoveData calculateOrbit() {
-    MoveData orbitMovement;
-
-    // int tsopAngle = mod(slaveData.tsopAngle - orbitAngleRelative, 360);
-    int tsopAngle = slaveData.tsopAngle;
-
-    // Serial.println(tsopAngle);
-
-    int tsopStrength = slaveData.tsopStrength;
-
-    if (tsopAngle < ORBIT_SMALL_ANGLE || tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
-        orbitMovement.angle = (int)round(tsopAngle < 180 ? (tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - tsopAngle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
-    } else if (tsopAngle < ORBIT_BIG_ANGLE || tsopAngle > 360 - ORBIT_BIG_ANGLE) {
-        if (tsopAngle < 180) {
-            double nearFactor = (double)(tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(90 * nearFactor + tsopAngle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + tsopAngle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
+void calculateOrbit() {
+    if (ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
+        moveData.angle = (int)round(ballData.angle < 180 ? (ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - ballData.angle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
+    } else if (ballData.angle < ORBIT_BIG_ANGLE || ballData.angle > 360 - ORBIT_BIG_ANGLE) {
+        if (ballData.angle < 180) {
+            double nearFactor = (double)(ballData.angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
+            moveData.angle = (int)round(90 * nearFactor + ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + ballData.angle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
         } else {
-            double nearFactor = (double)(360 - tsopAngle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            orbitMovement.angle = (int)round(360 - (90 * nearFactor + (360 - tsopAngle)* ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - tsopAngle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
+            double nearFactor = (double)(360 - ballData.angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
+            moveData.angle = (int)round(360 - (90 * nearFactor + (360 - ballData.angle)* ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - ballData.angle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
         }
     } else {
-        if (tsopStrength > ORBIT_SHORT_STRENGTH) {
-            orbitMovement.angle =  tsopAngle + (tsopAngle < 180 ? 90 : -90);
-        } else if (tsopStrength > ORBIT_BIG_STRENGTH) {
-            double strengthFactor = (double)(tsopStrength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
+        if (ballData.strength > ORBIT_SHORT_STRENGTH) {
+            moveData.angle =  ballData.angle + (ballData.angle < 180 ? 90 : -90);
+        } else if (ballData.strength > ORBIT_BIG_STRENGTH) {
+            double strengthFactor = (double)(ballData.strength - ORBIT_BIG_STRENGTH) / (double)(ORBIT_SHORT_STRENGTH - ORBIT_BIG_STRENGTH);
             double angleFactor = strengthFactor * 90;
-            orbitMovement.angle = tsopAngle + (tsopAngle < 180 ? angleFactor : -angleFactor);
+            moveData.angle = ballData.angle + (ballData.angle < 180 ? angleFactor : -angleFactor);
         } else {
-            orbitMovement.angle = tsopAngle;
+            moveData.angle = ballData.angle;
         }
     }
 
-    // orbitMovement.angle = mod(orbitMovement.angle + orbitAngleRelative, 360);
+    moveData.speed = MAX_ORBIT_SPEED;
 
-    orbitMovement.speed = MAX_ORBIT_SPEED;
-
-    if (tsopAngle == TSOP_NO_BALL) {
+    if (ballData.angle == TSOP_NO_BALL) {
         // No Ball -> Don't move except rotating
-        orbitMovement.angle = 0;
-        orbitMovement.speed = 0;
+        moveData.angle = 0;
+        moveData.speed = 0;
     }
-
-    #if DEBUG_APP_TSOPS
-        debug.appSendOrbitAngle(orbitMovement.angle);
-    #endif
-
-    return orbitMovement;
 }
 
 void calculateGoalTracking() {
     if (goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate()) {
         facingDirection = mod(imu.heading + goalData.angle, 360);
 
-        if (slaveData.tsopStrength > FACE_GOAL_SHORT_STRENGTH || slaveData.tsopAngle < ORBIT_SMALL_ANGLE || slaveData.tsopAngle > 360 - ORBIT_SMALL_ANGLE) {
+        if (ballData.strength > FACE_GOAL_SHORT_STRENGTH || ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
             orbitAngleRelative = 0;
             debug.setGreenBrightness(255);
-        } else if (slaveData.tsopStrength > FACE_GOAL_BIG_STRENGTH) {
-            double strengthFactor = (double)(slaveData.tsopStrength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+        } else if (ballData.strength > FACE_GOAL_BIG_STRENGTH) {
+            double strengthFactor = (double)(ballData.strength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
             double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
 
             orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
@@ -275,20 +216,16 @@ void calculateGoalTracking() {
         facingDirection = defaultDirection();
         orbitAngleRelative = 0;
     }
-
-    // Serial.println(String(goalData.angle) + ", " + String(facingDirection));
 }
 
-MoveData calculateMovement() {
-    MoveData movement = calculateOrbit();
+void calculateMovement() {
+    calculateOrbit();
 
-    if (position != RobotPosition::field && AVOID_LINE) {
-        movement = calculateLineAvoid(position, movement);
-    }
+    #if AVOID_LINE
+        calculateLineAvoid();
+    #endif
 
-    movement.rotation = calculateRotationCorrection();
-
-    return movement;
+    moveData.rotation = calculateRotationCorrection();
 }
 
 void updatePixy() {
@@ -356,84 +293,94 @@ void updateCompass() {
 
 void calculatePlayMode() {
     if (xbee.isConnected) {
-        if (abs(xbee.otherBallAngle - 180) - abs(slaveData.tsopAngle - 180) > 90) {
-            mode = PlayMode::attack;
+        if (abs(xbee.otherBallAngle - 180) - abs(ballData.angle - 180) > 90) {
+            playMode = PlayMode::attack;
         } else {
-            mode = PlayMode::defend;
+            playMode = PlayMode::defend;
         }
     } else {
-        mode = PlayMode::attack;
+        playMode = PlayMode::attack;
     }
 }
 
-void loop() {
-    // -- Slaves -- //
-    // Light Slave
-    LinePosition linePosition = slaveLightSensor.getLinePosition();
+void updateLine(double angle, double size) {
+    angle = doubleMod(angle + imu.heading, 360);
+
+    if (lineData.onField) {
+        if (size != 3) {
+            lineData.angle = angle;
+            lineData.size = size;
+
+            lineData.onField = false;
+        }
+    } else {
+        if (lineData.size == 3) {
+            if (size != 3) {
+                lineData.angle = doubleMod(angle + 180, 360);
+                lineData.size = 2 - size;
+            }
+        } else {
+            if (size == 3) {
+                if (lineData.size <= 1) {
+                    lineData.onField = true;
+                    lineData.size = 0;
+                    lineData.angle = 0;
+                } else {
+                    lineData.size = 3;
+                }
+            } else {
+                if (smallestAngleBetween(lineData.angle, angle) <= 90) {
+                    lineData.angle = angle;
+                    lineData.size = size;
+                } else {
+                    lineData.angle = doubleMod(angle + 180, 360);
+                    lineData.size = 2 - size;
+                }
+            }
+        }
+    }
+}
+
+void appDebug() {
+    #if DEBUG_APP_IMU
+        debug.appSendIMU(imu.heading);
+    #endif
 
     #if DEBUG_APP_LIGHTSENSORS
         uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
         uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
+
+        debug.appSendLightSensors(first16Bit, second16Bit);
     #endif
 
-    // TSOP Slave
-    int tsopAngle = slaveTSOP.getTSOPAngle();
-    int tsopStrength = slaveTSOP.getTSOPStrength();
+    #if DEBUG_APP_TSOPS
+        debug.appSendTSOPs(ballData.angle);
+        debug.appSendOrbitAngle(moveData.angle);
+    #endif
+}
 
-    // Serial.println(tsopStrength);
+void loop() {
+    updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
+    Serial.println(String(lineData.angle) + ", " + String(lineData.size));
 
-    // -- XBee -- //
-    // xbee.update(slaveData.tsopAngle, slaveData.tsopStrength);
+    ballData = BallData(slaveTSOP.getTSOPAngle(), slaveTSOP.getTSOPStrength());
 
-    // Serial.println(String(xbee.otherBallAngle) + ", " + String(xbee.otherBallStrength));
-
-    // -- Sensors -- //
-    // IMU
     updateCompass();
 
-    slaveLightSensor.sendHeading(imu.heading);
-
-    position = calculateRobotPosition(slaveData.linePosition, previousPosition);
-
-    if (position != previousPosition) {
-        Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
-
-        #if DEBUG_APP_LIGHTSENSORS
-            Bluetooth::send(position, BluetoothDataType::btRobotPosition);
-        #endif
-
-        previousPosition = position;
-    }
-
-    // Pixy
     #if PIXY_ENABLED
         updatePixy();
         calculateGoalTracking();
     #endif
 
-    // -- Debug -- //
-    // IMU
-    #if DEBUG_APP_IMU
-        debug.appSendIMU(imu.heading);
-    #endif
+    appDebug();
 
-    // Light Sensors
-    #if DEBUG_APP_LIGHTSENSORS
-        debug.appSendLightSensors(first16Bit, second16Bit);
-    #endif
+    calculateMovement();
 
-    #if DEBUG_APP_TSOPS
-        debug.appSendTSOPs(slaveData.tsopAngle);
-    #endif
+    motors.move(moveData);
 
-    // LED
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
-
-    // -- Movement -- //
-    motors.move(calculateMovement());
 }

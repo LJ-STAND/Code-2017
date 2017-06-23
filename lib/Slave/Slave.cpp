@@ -44,8 +44,12 @@ void SlaveLightSensor::init() {
     Slave::init(MASTER_CS_LIGHT);
 }
 
-LinePosition SlaveLightSensor::getLinePosition() {
-    return static_cast<LinePosition>(transaction(SlaveCommand::linePosition, SPITransactionType::receive));
+double SlaveLightSensor::getLineAngle() {
+    return (double)transaction(SlaveCommand::lineAngle, SPITransactionType::receive) / 100.0;
+}
+
+double SlaveLightSensor::getLineSize() {
+    return (double)transaction(SlaveCommand::lineSize, SPITransactionType::receive) / 100.0;
 }
 
 uint16_t SlaveLightSensor::getFirst16Bit() {
@@ -54,10 +58,6 @@ uint16_t SlaveLightSensor::getFirst16Bit() {
 
 uint16_t SlaveLightSensor::getSecond16Bit() {
     return transaction(SlaveCommand::lightSensorsSecond16Bit, SPITransactionType::receive);
-}
-
-void SlaveLightSensor::sendHeading(double heading) {
-    transaction(SlaveCommand::sendCompass, SPITransactionType::send, (uint16_t)heading);
 }
 
 void SlaveTSOP::init() {

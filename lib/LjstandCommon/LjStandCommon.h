@@ -29,6 +29,7 @@ double doubleMod(double x, double max);
 
 bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck);
 double angleBetween(double angleCounterClockwise, double angleClockwise);
+double smallestAngleBetween(double angle1, double angle2);
 double midAngleBetween(double angleCounterClockwise, double angleClockwise);
 
 // int maxInt(int array[]);

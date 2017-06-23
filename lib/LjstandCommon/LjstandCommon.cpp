@@ -33,6 +33,10 @@ double angleBetween(double angleCounterClockwise, double angleClockwise) {
     }
 }
 
+double smallestAngleBetween(double angle1, double angle2) {
+    return angleBetween(angle1, angle2) <= 180 ? angleBetween(angle1, angle2) : angleBetween(angle2, angle1);
+}
+
 double midAngleBetween(double angleCounterClockwise, double angleClockwise) {
     if (angleCounterClockwise < angleClockwise) {
         return (angleCounterClockwise + angleClockwise) / 2.0;

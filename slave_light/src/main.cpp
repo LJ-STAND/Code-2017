@@ -7,7 +7,6 @@
 #include <Arduino.h>
 #include <t3spi.h>
 #include <LightSensorArray.h>
-#include <LinePosition.h>
 #include <Pins.h>
 #include <Slave.h>
 #include <Timer.h>
@@ -24,12 +23,8 @@ SlaveCommand currentCommand;
 
 LightSensorArray lightSensorArray;
 
-LinePosition previousPosition = LinePosition::none;
-
 Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_LIGHT);
 bool ledOn;
-
-int heading;
 
 void setup() {
     Serial.begin(9600);
@@ -47,30 +42,22 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.data.getSensor(i));
+        Serial.print(lightSensorArray.data[i]);
         Serial.print(", ");
     }
 
-    Serial.print(linePositionString(lightSensorArray.getLinePosition()));
-    Serial.println();
+    Serial.println(String(lightSensorArray.getLineAngle()) + ", " + String(lightSensorArray.getLineSize()));
 }
 
 void loop() {
     lightSensorArray.read();
-    lightSensorArray.getClusters(lightSensorArray.data);
-    lightSensorArray.calculatePositionClusters();
-    LinePosition position = lightSensorArray.getLinePosition();
-
-    if (position != previousPosition) {
-        previousPosition = position;
-    }
+    lightSensorArray.calculateClusters();
+    lightSensorArray.calculateLine();
 
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
-
-    // debug();
 }
 
 void spi0_isr() {
@@ -97,8 +84,12 @@ void spi0_isr() {
 
             if (currentTransactionType == SPITransactionType::receive) {
                 switch (currentCommand) {
-                    case SlaveCommand::linePosition:
-                        dataOut[0] = (uint16_t)lightSensorArray.getLinePosition();
+                    case SlaveCommand::lineAngle:
+                        dataOut[0] = (uint16_t)round(lightSensorArray.getLineAngle() * 100);
+                        break;
+
+                    case SlaveCommand::lineSize:
+                        dataOut[0] = (uint16_t)round(lightSensorArray.getLineSize() * 100);
                         break;
 
                     case SlaveCommand::lightSensorsFirst16Bit:
@@ -137,14 +128,6 @@ void spi0_isr() {
 
         case SPITransactionState::cmdDelay2:
             spi.rxtx16(dataIn, dataOut, 1);
-            if (currentTransactionType == SPITransactionType::send) {
-                switch (currentCommand) {
-                    case SlaveCommand::sendCompass:
-                        heading = dataIn[0];
-                        // lightSensorArray.updateHeading(heading);
-                        break;
-                }
-            }
 
             transactionState = SPITransactionState::data;
 

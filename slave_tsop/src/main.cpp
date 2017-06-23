@@ -51,7 +51,7 @@ void loop() {
         tsops.unlock();
 
         tsopStrengthAverage.update(tsops.getStrength());
-        Serial.println(tsopStrengthAverage.average());
+        // Serial.println(tsopStrengthAverage.average());
     }
 
     if (ledTimer.timeHasPassed()) {

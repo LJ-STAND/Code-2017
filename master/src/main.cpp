@@ -362,8 +362,6 @@ void appDebug() {
 void loop() {
     updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    Serial.println(String(lineData.angle) + ", " + String(lineData.size));
-
     ballData = BallData(slaveTSOP.getTSOPAngle(), slaveTSOP.getTSOPStrength());
 
     updateCompass();

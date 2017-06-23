@@ -24,6 +24,9 @@ public:
     void getClusters2();
     void calculatePositionClusters();
 
+    double getAngle();
+    double getSize();
+
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
 
@@ -40,6 +43,9 @@ public:
 
 private:
     int arrayOffset = 0;
+
+    double angle;
+    double size;
 };
 
 #endif // LIGHT_SENSOR_ARRAY_H

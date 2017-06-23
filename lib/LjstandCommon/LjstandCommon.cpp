@@ -26,10 +26,18 @@ bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise
 }
 
 double angleBetween(double angleCounterClockwise, double angleClockwise) {
-    if (angleCounterClockwise < angleClockwise) {
+    if (angleCounterClockwise <= angleClockwise) {
         return angleClockwise - angleCounterClockwise;
     } else {
         return angleClockwise + (360 - angleCounterClockwise);
+    }
+}
+
+double midAngleBetween(double angleCounterClockwise, double angleClockwise) {
+    if (angleCounterClockwise < angleClockwise) {
+        return (angleCounterClockwise + angleClockwise) / 2.0;
+    } else {
+        return doubleMod((angleClockwise - (360 - angleCounterClockwise)) / 2.0, 360);
     }
 }
 

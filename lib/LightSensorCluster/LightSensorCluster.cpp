@@ -103,3 +103,11 @@ int LightSensorCluster::getLength() {
 double LightSensorCluster::getAngle() {
     return centre / 24.0 * 360;
 }
+
+double LightSensorCluster::getLeftAngle() {
+    return leftSensor / 24.0 * 360;
+}
+
+double LightSensorCluster::getRightAngle() {
+    return rightSensor / 24.0 * 360;
+}

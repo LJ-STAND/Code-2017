@@ -47,7 +47,7 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.sensors[i].isOnWhite());
+        Serial.print(lightSensorArray.data.getSensor(i));
         Serial.print(", ");
     }
 
@@ -69,6 +69,8 @@ void loop() {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
+
+    // debug();
 }
 
 void spi0_isr() {
@@ -139,7 +141,7 @@ void spi0_isr() {
                 switch (currentCommand) {
                     case SlaveCommand::sendCompass:
                         heading = dataIn[0];
-                        lightSensorArray.updateHeading(heading);
+                        // lightSensorArray.updateHeading(heading);
                         break;
                 }
             }

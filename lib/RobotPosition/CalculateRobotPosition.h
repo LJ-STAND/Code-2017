@@ -1017,7 +1017,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::bigCornerBackLeft: {
-                    return RobotPosition::bigOnCornerBackRight;
+                    return RobotPosition::bigOnCornerFrontRight;
                     break;
                 }
                 case LinePosition::bigCornerFrontLeft: {
@@ -1201,7 +1201,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::bigCornerFrontRight: {
-                    return RobotPosition::bigOnCornerBackLeft;
+                    return RobotPosition::smallOnCornerFrontRight;
                     break;
                 }
                 case LinePosition::bigCornerBackRight: {
@@ -1213,7 +1213,7 @@ RobotPosition calculateRobotPosition(LinePosition line, RobotPosition previousPo
                     break;
                 }
                 case LinePosition::bigCornerFrontLeft: {
-                    return RobotPosition::smallOnCornerFrontLeft;
+                    return RobotPosition::bigOnCornerBackRight;
                     break;
                 }
                 case LinePosition::centreVertical: {

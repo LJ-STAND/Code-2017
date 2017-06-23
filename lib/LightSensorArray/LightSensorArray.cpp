@@ -155,18 +155,29 @@ void LightSensorArray::getClusters2() {
 void LightSensorArray::calculatePositionClusters() {
     if (numClusters == 0) {
         position = LinePosition::none;
+
+        angle = 0;
+        size = 3;
     } else {
         double cluster1Angle = cluster1.getAngle();
         double cluster2Angle = cluster2.getAngle();
         double cluster3Angle = cluster3.getAngle();
 
-        LightSensorCluster totalCluster;
+        int angleThreshold;
 
         if (numClusters == 1) {
-            totalCluster = cluster1;
+            angleThreshold = LINE_SIDE_ANGLE_THRESHOLD_1;
+
+            angle = cluster1Angle;
+            size = 1 - cos(degreesToRadians(angleBetween(cluster1.getLeftAngle(), cluster1.getRightAngle()) / 2.0));
         } else if (numClusters == 2) {
-            totalCluster = angleBetween(cluster1Angle, cluster2Angle) <= 180 ? LightSensorCluster(cluster1.getLeftSensor(), cluster2.getRightSensor()) : LightSensorCluster(cluster2.getLeftSensor(), cluster1.getRightSensor());
+            angleThreshold = abs(cluster1.getLength() - cluster2.getLength()) < 2 ? LINE_SIDE_ANGLE_THRESHOLD_2 : 0;
+
+            angle = angleBetween(cluster1Angle, cluster2Angle) <= 180 ? midAngleBetween(cluster1Angle, cluster2Angle) : midAngleBetween(cluster2Angle, cluster1Angle);
+            size = 1 - cos(degreesToRadians(angleBetween(cluster1Angle, cluster2Angle) <= 180 ? angleBetween(cluster1Angle, cluster2Angle) / 2.0 : angleBetween(cluster2Angle, cluster1Angle) / 2.0));
         } else {
+            angleThreshold = LINE_SIDE_ANGLE_THRESHOLD_3;
+
             double angleDiff12 = angleBetween(cluster1Angle, cluster2Angle);
             double angleDiff23 = angleBetween(cluster2Angle, cluster3Angle);
             double angleDiff31 = angleBetween(cluster3Angle, cluster1Angle);
@@ -174,34 +185,34 @@ void LightSensorArray::calculatePositionClusters() {
             double biggestAngle = max(angleDiff12, max(angleDiff23, angleDiff31));
 
             if (angleDiff12 == biggestAngle) {
-                totalCluster = LightSensorCluster(cluster2.getLeftSensor(), cluster1.getRightSensor());
+                angle = midAngleBetween(cluster2Angle, cluster1Angle);
+                size = angleBetween(cluster2Angle, cluster1Angle) <= 180 ? 1 - cos(degreesToRadians(angleBetween(cluster2Angle, cluster1Angle) / 2.0)) : 1;
             } else if (angleDiff23 == biggestAngle) {
-                totalCluster = LightSensorCluster(cluster3.getLeftSensor(), cluster2.getRightSensor());
+                angle = midAngleBetween(cluster3Angle, cluster2Angle);
+                size = angleBetween(cluster3Angle, cluster2Angle) <= 180 ? 1 - cos(degreesToRadians(angleBetween(cluster3Angle, cluster2Angle) / 2.0)) : 1;
             } else {
-                totalCluster = LightSensorCluster(cluster1.getLeftSensor(), cluster3.getRightSensor());
+                angle = midAngleBetween(cluster1Angle, cluster3Angle);
+                size = angleBetween(cluster1Angle, cluster3Angle) <= 180 ? 1 - cos(degreesToRadians(angleBetween(cluster1Angle, cluster3Angle) / 2.0)) : 1;
             }
         }
 
-        double angle = totalCluster.getAngle();
-        int size = totalCluster.getLength();
-
-        if (angle >= 360 - LINE_SIDE_ANGLE_THRESHOLD || angle <= LINE_SIDE_ANGLE_THRESHOLD) {
+        if (angle >= 360 - angleThreshold || angle <= angleThreshold) {
             position = LinePosition::front;
-        } else if (angle >= 90 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 90 + LINE_SIDE_ANGLE_THRESHOLD) {
+        } else if (angle >= 90 - angleThreshold && angle <= 90 + angleThreshold) {
             position = LinePosition::right;
-        } else if (angle >= 180 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 180 + LINE_SIDE_ANGLE_THRESHOLD) {
+        } else if (angle >= 180 - angleThreshold && angle <= 180 + angleThreshold) {
             position = LinePosition::back;
-        } else if (angle >= 270 - LINE_SIDE_ANGLE_THRESHOLD && angle <= 270 + LINE_SIDE_ANGLE_THRESHOLD) {
+        } else if (angle >= 270 - angleThreshold && angle <= 270 + angleThreshold) {
             position = LinePosition::left;
         } else {
-            if (angle > LINE_SIDE_ANGLE_THRESHOLD && angle < 90 - LINE_SIDE_ANGLE_THRESHOLD) {
-                position = size < LS_NUM / 4 ? LinePosition::smallCornerFrontRight : LinePosition::bigCornerFrontRight;
-            } else if (angle > 90 + LINE_SIDE_ANGLE_THRESHOLD && angle < 180 - LINE_SIDE_ANGLE_THRESHOLD) {
-                position = size < LS_NUM / 4 ? LinePosition::smallCornerBackRight : LinePosition::bigCornerBackRight;
-            } else if (angle > 180 + LINE_SIDE_ANGLE_THRESHOLD && angle < 270 - LINE_SIDE_ANGLE_THRESHOLD) {
-                position = size < LS_NUM / 4 ? LinePosition::smallCornerBackLeft : LinePosition::bigCornerBackLeft;
+            if (angle > angleThreshold && angle < 90 - angleThreshold) {
+                position = size < 1 - cos(degreesToRadians(45)) ? LinePosition::smallCornerFrontRight : LinePosition::bigCornerFrontRight;
+            } else if (angle > 90 + angleThreshold && angle < 180 - angleThreshold) {
+                position = size < 1 - cos(degreesToRadians(45)) ? LinePosition::smallCornerBackRight : LinePosition::bigCornerBackRight;
+            } else if (angle > 180 + angleThreshold && angle < 270 - angleThreshold) {
+                position = size < 1 - cos(degreesToRadians(45)) ? LinePosition::smallCornerBackLeft : LinePosition::bigCornerBackLeft;
             } else {
-                position = size < LS_NUM / 4 ? LinePosition::smallCornerFrontLeft : LinePosition::bigCornerFrontLeft;
+                position = size < 1 - cos(degreesToRadians(45)) ? LinePosition::smallCornerFrontLeft : LinePosition::bigCornerFrontLeft;
             }
         }
     }
@@ -291,6 +302,14 @@ void LightSensorArray::calculatePosition() {
 
 LinePosition LightSensorArray::getLinePosition() {
     return position;
+}
+
+double getAngle() {
+    return angle;
+}
+
+double getSize() {
+    return size;
 }
 
 uint16_t LightSensorArray::getFirst16Bit() {

@@ -209,7 +209,7 @@ MoveData calculateOrbit() {
     // int tsopAngle = mod(slaveData.tsopAngle - orbitAngleRelative, 360);
     int tsopAngle = slaveData.tsopAngle;
 
-    Serial.println(tsopAngle);
+    // Serial.println(tsopAngle);
 
     int tsopStrength = slaveData.tsopStrength;
 
@@ -380,7 +380,7 @@ void loop() {
     int tsopAngle = slaveTSOP.getTSOPAngle();
     int tsopStrength = slaveTSOP.getTSOPStrength();
 
-    Serial.println(tsopStrength);
+    // Serial.println(tsopStrength);
 
     slaveData = SlaveData(linePosition, tsopAngle, tsopStrength);
 
@@ -398,7 +398,7 @@ void loop() {
     position = calculateRobotPosition(slaveData.linePosition, previousPosition);
 
     if (position != previousPosition) {
-        // Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
+        Serial.println(linePositionString(slaveData.linePosition) + ", " + robotPositionString(position));
 
         #if DEBUG_APP_LIGHTSENSORS
             Bluetooth::send(position, BluetoothDataType::btRobotPosition);

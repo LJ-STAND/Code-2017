@@ -4,9 +4,10 @@ void XBee::init() {
     XBeeSerial.begin(9600);
 }
 
-void XBee::update(int ballAngle, int ballStrength) {
+void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
     thisBallAngle = ballAngle;
     thisBallStrength = ballStrength;
+    thisPlayMode = playMode;
 
     sendNext();
 
@@ -24,6 +25,10 @@ void XBee::update(int ballAngle, int ballStrength) {
 
             case XBeeCommands::ballStrength:
                 otherBallStrength = data.data;
+                break;
+
+            case XBeeCommands::playMode:
+                otherPlayMode = data.data;
                 break;
         }
     }
@@ -57,6 +62,9 @@ void XBee::sendNext() {
         case XBeeCommands::ballStrength:
             send(toSendCommmand, thisBallStrength);
             break;
+
+        case XBeeCommands::playMode:
+            send(toSendCommmand, thisPlayMode);
     }
 }
 

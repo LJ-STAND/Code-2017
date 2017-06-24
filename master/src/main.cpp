@@ -45,11 +45,13 @@ BallData ballData;
 MoveData moveData;
 GoalData goalData;
 
-PlayMode playMode = PlayMode::defend;
+PlayMode playMode = PlayMode::attack;
+bool playModeUndecided = true;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
+Timer xbeeTimer = Timer(XBEE_UPDATE_TIME);
 
 double compassPreviousAngle = 0;
 long compassPreviousTime;
@@ -120,24 +122,6 @@ void setup() {
 
 double defaultDirection() {
     return playMode == PlayMode::attack ? 0 : 180;
-}
-
-void updatePlayMode(PlayMode newMode) {
-    playMode = newMode;
-
-    // Xbee stuff here:
-}
-
-void calculatePlayMode() {
-    if (xbee.isConnected) {
-        if (abs(xbee.otherBallAngle - 180) - abs(ballData.angle - 180) > 90) {
-            playMode = PlayMode::attack;
-        } else {
-            playMode = PlayMode::defend;
-        }
-    } else {
-        playMode = PlayMode::attack;
-    }
 }
 
 int calculateRotationCorrection() {
@@ -218,8 +202,6 @@ void calculateDefense() {
 
         double sidewaysMovement;
 
-        Serial.println(goalData.distance);
-
         if (ballData.visible) {
             if (ballData.angle < DEFEND_SMALL_ANGLE || ballData.angle > 360 - DEFEND_SMALL_ANGLE) {
                 sidewaysMovement = 0;
@@ -228,7 +210,7 @@ void calculateDefense() {
                     distanceMovement = 255;
 
                     if (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
-                        // updatePlayMode(PlayMode::attack);
+                        playMode = PlayMode::attack;
 
                         return;
                     }
@@ -390,6 +372,32 @@ void updateLine(double angle, double size) {
     }
 }
 
+void updateXBee() {
+    if (xbeeTimer.timeHasPassed()) {
+        xbee.update(ballData.angle, ballData.strength, playMode);
+
+        if (xbee.isConnected) {
+            if (playModeUndecided) {
+                playMode = xbee.otherBallStrength < ballData.strength ? PlayMode::attack : PlayMode::defend;
+                playModeUndecided = false;
+            }
+
+            if (xbee.otherPlayMode == playMode) {
+                playMode = playMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
+            }
+
+            if (playMode == PlayMode::defend) {
+                if ((ballData.angle < 40 || ballData.angle > 320) && (xbee.otherBallAngle > 140 && xbee.otherBallAngle < 220)) {
+                    playMode = playMode::attack;
+                }
+            }
+        } else {
+            playMode = PlayMode::attack;
+            playModeUndecided = true;
+        }
+    }
+}
+
 void appDebug() {
     #if DEBUG_APP_IMU
         debug.appSendIMU(imu.heading);
@@ -422,6 +430,10 @@ void loop() {
     #if PIXY_ENABLED
         updatePixy();
         calculateGoalTracking();
+    #endif
+
+    #if XBEE_ENABLED
+        updateXBee();
     #endif
 
     calculateMovement();

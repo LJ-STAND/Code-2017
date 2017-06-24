@@ -156,6 +156,7 @@
 #define XBEE_ENABLED false
 #define XBEE_TRANSACTION_LENGTH 5
 #define XBEE_LOST_COMMUNICATION_TIME 1000000
+#define XBEE_UPDATE_TIME 100000
 #define NUM_SEND 3
 
 #define XBeeSerial Serial4

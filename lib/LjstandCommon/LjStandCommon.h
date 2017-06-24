@@ -51,6 +51,7 @@ int sign(int value);
 int sign(double value);
 
 double degreesToRadians(double degrees);
+double radiansToDegrees(double radians);
 
 double doubleAbs(double value);
 

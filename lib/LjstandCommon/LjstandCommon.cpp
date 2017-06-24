@@ -100,6 +100,10 @@ double degreesToRadians(double degrees) {
     return degrees * TO_RADIANS;
 }
 
+double radiansToDegrees(double radians) {
+    return radians / TO_RADIANS;
+}
+
 double doubleAbs(double value) {
     return value * sign(value);
 }

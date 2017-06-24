@@ -8,7 +8,7 @@ class LightSensor {
 public:
     LightSensor() {}
     LightSensor(int in);
-    void init();
+    void init(bool isFront = false);
 
     void read();
     bool isOnWhite();

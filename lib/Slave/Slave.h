@@ -3,8 +3,8 @@
 
 #include <t3spi.h>
 #include <Pins.h>
-#include <LinePosition.h>
 #include <Config.h>
+#include <BallData.h>
 
 enum SPITransactionType: int {
     start,
@@ -53,6 +53,7 @@ public:
     uint16_t getSecond16Bit();
     double getLineAngle();
     double getLineSize();
+
 };
 
 class SlaveTSOP: public Slave {
@@ -60,6 +61,7 @@ public:
     void init();
     int getTSOPAngle();
     int getTSOPStrength();
+    BallData getBallData();
 };
 
 #endif // SLAVE_H

@@ -71,3 +71,10 @@ int SlaveTSOP::getTSOPAngle() {
 int SlaveTSOP::getTSOPStrength() {
     return transaction(SlaveCommand::tsopStrength, SPITransactionType::receive);
 }
+
+BallData SlaveTSOP::getBallData() {
+    int angle = getTSOPAngle();
+    int strength = getTSOPStrength();
+
+    return BallData(angle != TSOP_NO_BALL ? angle : 0, strength, angle != TSOP_NO_BALL);
+}

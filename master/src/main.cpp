@@ -45,7 +45,7 @@ BallData ballData;
 MoveData moveData;
 GoalData goalData;
 
-PlayMode playMode = PlayMode::attack;
+PlayMode playMode = PlayMode::defend;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
@@ -122,6 +122,24 @@ double defaultDirection() {
     return playMode == PlayMode::attack ? 0 : 180;
 }
 
+void updatePlayMode(PlayMode newMode) {
+    playMode = newMode;
+
+    // Xbee stuff here:
+}
+
+void calculatePlayMode() {
+    if (xbee.isConnected) {
+        if (abs(xbee.otherBallAngle - 180) - abs(ballData.angle - 180) > 90) {
+            playMode = PlayMode::attack;
+        } else {
+            playMode = PlayMode::defend;
+        }
+    } else {
+        playMode = PlayMode::attack;
+    }
+}
+
 int calculateRotationCorrection() {
     double multiplierD = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
     double multiplierP = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
@@ -145,16 +163,16 @@ void calculateLineAvoid() {
         if (lineData.size > 1) {
             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
             moveData.speed = lineData.size / 3.0 * 255;
-        } else {
+        } else if (lineData.size > 0.1) {
             if (mod(lineData.angle, 90) > 30 && mod(lineData.angle, 90) < 60) {
                 if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size < 0.5 ? 0 : lineData.size / 3.0 * 255;
+                    moveData.speed = lineData.size < 0.3 ? 0 : lineData.size / 3.0 * 255;
                 }
             } else {
                 if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), moveData.angle)) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size < 0.5 ? 0 : lineData.size / 3.0 * 255;
+                    moveData.speed = lineData.size < 0.3 ? 0 : lineData.size / 3.0 * 255;
                 }
             }
         }
@@ -186,10 +204,47 @@ void calculateOrbit() {
 
     moveData.speed = MAX_ORBIT_SPEED;
 
-    if (ballData.angle == TSOP_NO_BALL) {
+    if (!ballData.visible) {
         // No Ball -> Don't move except rotating
         moveData.angle = 0;
         moveData.speed = 0;
+    }
+}
+
+void calculateDefense() {
+    if (goalData.status != GoalStatus::invisible) {
+        double relativeDistance = goalData.distance - DEFEND_GOAL_DISTANCE;
+        double distanceMovement = min(relativeDistance * 5, 50);
+
+        double sidewaysMovement;
+
+        Serial.println(goalData.distance);
+
+        if (ballData.visible) {
+            if (ballData.angle < DEFEND_SMALL_ANGLE || ballData.angle > 360 - DEFEND_SMALL_ANGLE) {
+                sidewaysMovement = 0;
+
+                if (ballData.strength > DEFEND_SHORT_STRENGTH) {
+                    distanceMovement = 255;
+
+                    if (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
+                        // updatePlayMode(PlayMode::attack);
+
+                        return;
+                    }
+                }
+            } else if (ballData.angle < 180) {
+                sidewaysMovement = min(ballData.angle / 180.0 * 255 * 3, 255);
+            } else {
+                sidewaysMovement = min(-(360 - ballData.angle) / 180.0 * 255 * 3, 255);
+            }
+        }
+
+        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
+
+        moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
+    } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {
+        calculateOrbit();
     }
 }
 
@@ -197,29 +252,35 @@ void calculateGoalTracking() {
     if (goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate()) {
         facingDirection = mod(imu.heading + goalData.angle, 360);
 
-        if (ballData.strength > FACE_GOAL_SHORT_STRENGTH || ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
-            orbitAngleRelative = 0;
-            debug.setGreenBrightness(255);
-        } else if (ballData.strength > FACE_GOAL_BIG_STRENGTH) {
-            double strengthFactor = (double)(ballData.strength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
-            double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
-
-            orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
-            debug.setGreenBrightness((int)((double)strengthFactor * 255));
-        } else {
-            orbitAngleRelative = -imu.heading;
-            debug.setGreenBrightness(0);
-        }
-
-        orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
+        // if (ballData.strength > FACE_GOAL_SHORT_STRENGTH || ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
+        //     orbitAngleRelative = 0;
+        //     debug.setGreenBrightness(255);
+        // } else if (ballData.strength > FACE_GOAL_BIG_STRENGTH) {
+        //     double strengthFactor = (double)(ballData.strength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
+        //     double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
+        //
+        //     orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
+        //     debug.setGreenBrightness((int)((double)strengthFactor * 255));
+        // } else {
+        //     orbitAngleRelative = -imu.heading;
+        //     debug.setGreenBrightness(0);
+        // }
+        //
+        // orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
     } else {
         facingDirection = defaultDirection();
-        orbitAngleRelative = 0;
+        // orbitAngleRelative = 0;
     }
 }
 
 void calculateMovement() {
-    calculateOrbit();
+    if (playMode == PlayMode::attack) {
+        calculateOrbit();
+    } else {
+        calculateDefense();
+
+        moveData.angle = mod(moveData.angle + 180, 360);
+    }
 
     #if AVOID_LINE
         calculateLineAvoid();
@@ -236,7 +297,7 @@ void updatePixy() {
         int foundBlocks = 0;
 
         for (int i = 0; i < blocks; i++) {
-            if (pixy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA) {
+            if (pixy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA && pixy.blocks[i].signature == (playMode == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND)) {
                 goalBlock = pixy.blocks[i];
                 foundBlocks += 1;
             }
@@ -255,9 +316,9 @@ void updatePixy() {
 
             lastSeenGoalTimer.update();
 
-            goalData.distance = (int)(((double)goalBlock.height / (double)(GOAL_HEIGHT_SHORT - GOAL_HEIGHT_LONG)) * GOAL_DISTANCE_MULTIPLIER);
+            goalData.distance = (double)goalBlock.height / (double)GOAL_HEIGHT_MAX * GOAL_DISTANCE_MULTIPLIER;
 
-            #if DEBUG_APP_PIXY
+            #if DEBUG_APP && DEBUG_APP_PIXY
                 debug.appSendPixy(goalBlock.x, goalBlock.y, goalBlock.width, goalBlock.height);
             #endif
 
@@ -289,18 +350,6 @@ void updateCompass() {
 
     compassPreviousAngle = imu.heading;
     compassPreviousTime = currentTime;
-}
-
-void calculatePlayMode() {
-    if (xbee.isConnected) {
-        if (abs(xbee.otherBallAngle - 180) - abs(ballData.angle - 180) > 90) {
-            playMode = PlayMode::attack;
-        } else {
-            playMode = PlayMode::defend;
-        }
-    } else {
-        playMode = PlayMode::attack;
-    }
 }
 
 void updateLine(double angle, double size) {
@@ -362,7 +411,11 @@ void appDebug() {
 void loop() {
     updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    ballData = BallData(slaveTSOP.getTSOPAngle(), slaveTSOP.getTSOPStrength());
+    ballData = slaveTSOP.getBallData();
+
+    if (playMode == PlayMode::defend) {
+        ballData.angle = mod(ballData.angle + 180, 360);
+    }
 
     updateCompass();
 
@@ -370,8 +423,6 @@ void loop() {
         updatePixy();
         calculateGoalTracking();
     #endif
-
-    appDebug();
 
     calculateMovement();
 
@@ -381,4 +432,8 @@ void loop() {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
+
+    #if DEBUG_APP
+        appDebug();
+    #endif
 }

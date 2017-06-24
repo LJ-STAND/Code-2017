@@ -12,7 +12,7 @@ enum XBeeCommands: int {
     xbeeEnd,
     ballAngle,
     ballStrength,
-    playMode
+    mode
 };
 
 typedef struct XBeeData {
@@ -36,7 +36,7 @@ private:
     int thisBallStrength;
     PlayMode thisPlayMode;
 
-    XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength, XBeeCommands::playMode};
+    XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength, XBeeCommands::mode};
     int sendIndex = 0;
 
     Timer connectedTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);

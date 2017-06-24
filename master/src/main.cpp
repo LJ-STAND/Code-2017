@@ -388,7 +388,7 @@ void updateXBee() {
 
             if (playMode == PlayMode::defend) {
                 if ((ballData.angle < 40 || ballData.angle > 320) && (xbee.otherBallAngle > 140 && xbee.otherBallAngle < 220)) {
-                    playMode = playMode::attack;
+                    playMode = PlayMode::attack;
                 }
             }
         } else {

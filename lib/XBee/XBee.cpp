@@ -27,8 +27,8 @@ void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
                 otherBallStrength = data.data;
                 break;
 
-            case XBeeCommands::playMode:
-                otherPlayMode = data.data;
+            case XBeeCommands::mode:
+                otherPlayMode = static_cast<PlayMode>(data.data);
                 break;
         }
     }
@@ -63,7 +63,7 @@ void XBee::sendNext() {
             send(toSendCommmand, thisBallStrength);
             break;
 
-        case XBeeCommands::playMode:
+        case XBeeCommands::mode:
             send(toSendCommmand, thisPlayMode);
     }
 }

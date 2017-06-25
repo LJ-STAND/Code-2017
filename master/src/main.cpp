@@ -146,17 +146,17 @@ void calculateLineAvoid() {
     if (!lineData.onField) {
         if (lineData.size > 1) {
             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-            moveData.speed = lineData.size / 3.0 * 255;
-        } else if (lineData.size > 0.1) {
+            moveData.speed = lineData.size == 3 ? OVER_LINE_SPEED : lineData.size / 2.0 * LINE_SPEED;
+        } else if (lineData.size > LINE_AVOID_MIN) {
             if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
                 if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size < 0.3 ? 0 : lineData.size / 3.0 * 255;
+                    moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
             } else {
                 if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), moveData.angle)) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size < 0.3 ? 0 : lineData.size / 3.0 * 255;
+                    moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
             }
         }
@@ -200,7 +200,7 @@ void calculateDefense() {
 
     if (goalData.status != GoalStatus::invisible) {
         double relativeDistance = goalData.distance - DEFEND_GOAL_DISTANCE;
-        double distanceMovement = min(relativeDistance * 5, 50);
+        double distanceMovement = min(relativeDistance * 5, 100);
 
         double sidewaysMovement;
 

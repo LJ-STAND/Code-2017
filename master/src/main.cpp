@@ -124,7 +124,7 @@ double defaultDirection() {
     return playMode == PlayMode::attack ? 0 : 180;
 }
 
-int calculateRotationCorrection() {
+void calculateRotationCorrection() {
     double multiplierD = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
     double multiplierP = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
 
@@ -139,7 +139,7 @@ int calculateRotationCorrection() {
         correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
     }
 
-    return correctionRotation;
+    moveData.rotation = correctionRotation;
 }
 
 void calculateLineAvoid() {
@@ -148,7 +148,7 @@ void calculateLineAvoid() {
             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
             moveData.speed = lineData.size / 3.0 * 255;
         } else if (lineData.size > 0.1) {
-            if (mod(lineData.angle, 90) > 30 && mod(lineData.angle, 90) < 60) {
+            if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
                 if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
                     moveData.speed = lineData.size < 0.3 ? 0 : lineData.size / 3.0 * 255;
@@ -164,9 +164,9 @@ void calculateLineAvoid() {
 }
 
 void calculateOrbit() {
-    if (ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
+    if (angleIsInside(360 - ORBIT_SMALL_ANGLE, ORBIT_SMALL_ANGLE, ballData.angle)) {
         moveData.angle = (int)round(ballData.angle < 180 ? (ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - ballData.angle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
-    } else if (ballData.angle < ORBIT_BIG_ANGLE || ballData.angle > 360 - ORBIT_BIG_ANGLE) {
+    } else if (angleIsInside(360 - ORBIT_BIG_ANGLE, ORBIT_BIG_ANGLE, ballData.angle)) {
         if (ballData.angle < 180) {
             double nearFactor = (double)(ballData.angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
             moveData.angle = (int)round(90 * nearFactor + ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + ballData.angle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
@@ -186,10 +186,10 @@ void calculateOrbit() {
         }
     }
 
-    moveData.speed = MAX_ORBIT_SPEED;
+    moveData.speed = ORBIT_SPEED;
 
     if (!ballData.visible) {
-        // No Ball -> Don't move except rotating
+        // No Ball -> Don't move except rotating / line avoiding
         moveData.angle = 0;
         moveData.speed = 0;
     }
@@ -203,7 +203,7 @@ void calculateDefense() {
         double sidewaysMovement;
 
         if (ballData.visible) {
-            if (ballData.angle < DEFEND_SMALL_ANGLE || ballData.angle > 360 - DEFEND_SMALL_ANGLE) {
+            if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                 sidewaysMovement = 0;
 
                 if (ballData.strength > DEFEND_SHORT_STRENGTH) {
@@ -228,6 +228,8 @@ void calculateDefense() {
     } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {
         calculateOrbit();
     }
+
+    moveData.angle = mod(moveData.angle + 180, 360);
 }
 
 void calculateGoalTracking() {
@@ -260,15 +262,13 @@ void calculateMovement() {
         calculateOrbit();
     } else {
         calculateDefense();
-
-        moveData.angle = mod(moveData.angle + 180, 360);
     }
 
     #if AVOID_LINE
         calculateLineAvoid();
     #endif
 
-    moveData.rotation = calculateRotationCorrection();
+    calculateRotationCorrection();
 }
 
 void updatePixy() {
@@ -372,25 +372,29 @@ void updateLine(double angle, double size) {
     }
 }
 
+void updatePlayMode() {
+    if (playModeUndecided) {
+        playMode = xbee.otherBallStrength < ballData.strength ? PlayMode::attack : PlayMode::defend;
+        playModeUndecided = false;
+    }
+
+    if (xbee.otherPlayMode == playMode) {
+        playMode = playMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
+    }
+
+    if (playMode == PlayMode::defend) {
+        if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, ballData.angle) && angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle)) {
+            playMode = PlayMode::attack;
+        }
+    }
+}
+
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
         xbee.update(ballData.angle, ballData.strength, playMode);
 
         if (xbee.isConnected) {
-            if (playModeUndecided) {
-                playMode = xbee.otherBallStrength < ballData.strength ? PlayMode::attack : PlayMode::defend;
-                playModeUndecided = false;
-            }
-
-            if (xbee.otherPlayMode == playMode) {
-                playMode = playMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
-            }
-
-            if (playMode == PlayMode::defend) {
-                if ((ballData.angle < 40 || ballData.angle > 320) && (xbee.otherBallAngle > 140 && xbee.otherBallAngle < 220)) {
-                    playMode = PlayMode::attack;
-                }
-            }
+            updatePlayMode();
         } else {
             playMode = PlayMode::attack;
             playModeUndecided = true;

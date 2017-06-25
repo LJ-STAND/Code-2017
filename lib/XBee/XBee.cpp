@@ -1,7 +1,7 @@
 #include "XBee.h"
 
 void XBee::init() {
-    XBeeSerial.begin(9600);
+    XBEESERIAL.begin(9600);
 }
 
 void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
@@ -35,11 +35,11 @@ void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
 }
 
 void XBee::tx(uint8_t data) {
-    XBeeSerial.write(data);
+    XBEESERIAL.write(data);
 }
 
 int XBee::rx() {
-    return XBeeSerial.read();
+    return XBEESERIAL.read();
 }
 
 void XBee::send(XBeeCommands command, uint16_t data) {
@@ -71,7 +71,7 @@ void XBee::sendNext() {
 XBeeData XBee::receive() {
     XBeeData nothingRecieved = (XBeeData) {XBeeCommands::xbeeEnd, 0, false};
 
-    if (XBeeSerial.available() > XBEE_TRANSACTION_LENGTH) {
+    if (XBEESERIAL.available() > XBEE_TRANSACTION_LENGTH) {
         int start = rx();
 
         if (start != XBeeCommands::xbeeStart) {

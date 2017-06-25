@@ -142,6 +142,12 @@ void LightSensorArray::calculateLine() {
     }
 }
 
+void LightSensorArray::resetClusters() {
+    cluster1 = LightSensorCluster(0.0, 0);
+    cluster2 = LightSensorCluster(0.0, 0);
+    cluster3 = LightSensorCluster(0.0, 0);
+}
+
 double LightSensorArray::getLineAngle() {
     return angle;
 }

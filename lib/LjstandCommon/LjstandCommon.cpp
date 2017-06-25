@@ -26,23 +26,16 @@ bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise
 }
 
 double angleBetween(double angleCounterClockwise, double angleClockwise) {
-    if (angleCounterClockwise <= angleClockwise) {
-        return angleClockwise - angleCounterClockwise;
-    } else {
-        return angleClockwise + (360 - angleCounterClockwise);
-    }
+    return mod(angleClockwise - angleCounterClockwise, 360);
 }
 
 double smallestAngleBetween(double angle1, double angle2) {
-    return angleBetween(angle1, angle2) <= 180 ? angleBetween(angle1, angle2) : angleBetween(angle2, angle1);
+    double ang = angleBetween(angle1, angle2);
+    return fmin(ang, 360 - ang);
 }
 
 double midAngleBetween(double angleCounterClockwise, double angleClockwise) {
-    if (angleCounterClockwise < angleClockwise) {
-        return (angleCounterClockwise + angleClockwise) / 2.0;
-    } else {
-        return doubleMod((angleClockwise - (360 - angleCounterClockwise)) / 2.0, 360);
-    }
+    return mod(angleCounterClockwise + angleBetween(angleCounterClockwise, angleClockwise) / 2.0, 360);
 }
 
 // int maxInt(int array[]) {
@@ -101,7 +94,7 @@ double degreesToRadians(double degrees) {
 }
 
 double radiansToDegrees(double radians) {
-    return radians / TO_RADIANS;
+    return radians * TO_DEGREES;
 }
 
 double doubleAbs(double value) {

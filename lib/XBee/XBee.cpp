@@ -9,27 +9,30 @@ void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
     thisBallStrength = ballStrength;
     thisPlayMode = playMode;
 
-    sendNext();
 
-    XBeeData data = receive();
+    for (int i = 0; i < NUM_SEND; i++) {
+        sendNext();
 
-    isConnected = data.received && !connectedTimer.timeHasPassed();
+        XBeeData data = receive();
 
-    if (data.received) {
-        connectedTimer.update();
+        isConnected = data.received && !connectedTimer.timeHasPassed();
 
-        switch (data.command) {
-            case XBeeCommands::ballAngle:
-                otherBallAngle = data.data;
-                break;
+        if (data.received) {
+            connectedTimer.update();
 
-            case XBeeCommands::ballStrength:
-                otherBallStrength = data.data;
-                break;
+            switch (data.command) {
+                case XBeeCommands::ballAngle:
+                    otherBallAngle = data.data;
+                    break;
 
-            case XBeeCommands::mode:
-                otherPlayMode = static_cast<PlayMode>(data.data);
-                break;
+                case XBeeCommands::ballStrength:
+                    otherBallStrength = data.data;
+                    break;
+
+                case XBeeCommands::mode:
+                    otherPlayMode = static_cast<PlayMode>(data.data);
+                    break;
+            }
         }
     }
 }

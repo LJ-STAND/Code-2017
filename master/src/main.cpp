@@ -196,6 +196,8 @@ void calculateOrbit() {
 }
 
 void calculateDefense() {
+    ballData.angle = mod(ballData.angle + 180, 360);
+
     if (goalData.status != GoalStatus::invisible) {
         double relativeDistance = goalData.distance - DEFEND_GOAL_DISTANCE;
         double distanceMovement = min(relativeDistance * 5, 50);
@@ -208,12 +210,6 @@ void calculateDefense() {
 
                 if (ballData.strength > DEFEND_SHORT_STRENGTH) {
                     distanceMovement = 255;
-
-                    if (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
-                        playMode = PlayMode::attack;
-
-                        return;
-                    }
                 }
             } else if (ballData.angle < 180) {
                 sidewaysMovement = min(ballData.angle / 180.0 * 255 * 3, 255);
@@ -425,10 +421,6 @@ void loop() {
     updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
     ballData = slaveTSOP.getBallData();
-
-    if (playMode == PlayMode::defend) {
-        ballData.angle = mod(ballData.angle + 180, 360);
-    }
 
     updateCompass();
 

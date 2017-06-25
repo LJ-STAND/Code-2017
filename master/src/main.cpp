@@ -45,7 +45,7 @@ BallData ballData;
 MoveData moveData;
 GoalData goalData;
 
-PlayMode playMode = PlayMode::attack;
+PlayMode playMode = PlayMode::defend;
 bool playModeUndecided = true;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
@@ -199,8 +199,8 @@ void calculateDefense() {
     ballData.angle = mod(ballData.angle + 180, 360);
 
     if (goalData.status != GoalStatus::invisible) {
-        double relativeDistance = goalData.distance - DEFEND_GOAL_DISTANCE;
-        double distanceMovement = min(relativeDistance * 5, 100);
+        double relativeDistance = abs(goalData.distance - DEFEND_GOAL_DISTANCE) > DEFEND_GOAL_DISTANCE_BUFFER ? goalData.distance - DEFEND_GOAL_DISTANCE : 0;
+        double distanceMovement = min(relativeDistance * 3, 100);
 
         double sidewaysMovement;
 
@@ -212,9 +212,9 @@ void calculateDefense() {
                     distanceMovement = 255;
                 }
             } else if (ballData.angle < 180) {
-                sidewaysMovement = min(ballData.angle / 180.0 * 255 * 3, 255);
+                sidewaysMovement = min(ballData.angle / 180.0 * 200 * 3, 200);
             } else {
-                sidewaysMovement = min(-(360 - ballData.angle) / 180.0 * 255 * 3, 255);
+                sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * 200 * 3, -200);
             }
         }
 

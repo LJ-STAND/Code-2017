@@ -156,7 +156,7 @@ void calculateLineAvoid() {
                     moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
             } else {
-                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360)) {
+                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360))) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
                     moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
@@ -264,6 +264,8 @@ void calculateMovement() {
     #endif
 
     calculateRotationCorrection();
+
+    motors.move(moveData);
 }
 
 void updatePixy() {
@@ -437,8 +439,6 @@ void loop() {
     #endif
 
     calculateMovement();
-
-    motors.move(moveData);
 
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);

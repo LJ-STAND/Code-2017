@@ -6,17 +6,8 @@
 #include <Config.h>
 #include <BallData.h>
 
-enum SPITransactionType: int {
-    start,
-    end,
-    commandDelay,
-    commandDelay2,
-    send,
-    receive
-};
-
 enum SlaveCommand: int {
-    lineAngle = 6,
+    lineAngle,
     lineSize,
     lightSensorsFirst16Bit,
     lightSensorsSecond16Bit,
@@ -24,21 +15,10 @@ enum SlaveCommand: int {
     tsopStrength
 };
 
-enum SPITransactionState: int {
-    noTransaction,
-    beginning,
-    type,
-    command,
-    cmdDelay,
-    cmdDelay2,
-    data
-};
-
 class Slave {
 public:
     void init(int csPin);
-    uint16_t txrx(uint16_t data=0);
-    uint16_t transaction(SlaveCommand command, SPITransactionType transactionType, uint16_t data=0);
+    uint16_t transaction(SlaveCommand command);
 
 private:
     volatile uint16_t dataIn[1];

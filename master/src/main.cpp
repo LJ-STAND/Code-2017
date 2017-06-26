@@ -204,7 +204,7 @@ void calculateDefense() {
         double relativeDistance = abs(goalData.distance - DEFEND_GOAL_DISTANCE) > DEFEND_GOAL_DISTANCE_BUFFER ? goalData.distance - DEFEND_GOAL_DISTANCE : 0;
         double distanceMovement = relativeDistance > 0 ? min(relativeDistance * DEFEND_DISTANCE_MULTIPLIER, DEFEND_DISTANCE_MAX_SPEED) : max(relativeDistance * DEFEND_DISTANCE_MULTIPLIER, -DEFEND_DISTANCE_MAX_SPEED);
 
-        double sidewaysMovement;
+        double sidewaysMovement = 0;
 
         if (ballData.visible) {
 
@@ -272,13 +272,19 @@ void updatePixy() {
     if (pixyTimer.timeHasPassed()) {
         uint16_t blocks = pixy.getBlocks();
 
-        Block goalBlock;
+        Block goalBlock = Block();
+        int biggestArea = 0;
         int foundBlocks = 0;
 
         for (int i = 0; i < blocks; i++) {
-            if (pixy.blocks[i].height * pixy.blocks[i].width > GOAL_MIN_AREA && pixy.blocks[i].signature == (playMode == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND)) {
-                goalBlock = pixy.blocks[i];
+            int blockArea = pixy.blocks[i].height * pixy.blocks[i].width;
+
+            if (blockArea > GOAL_MIN_AREA && pixy.blocks[i].signature == (playMode == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND)) {
                 foundBlocks += 1;
+
+                if (blockArea > biggestArea) {
+                    goalBlock = pixy.blocks[i];
+                }
             }
         }
 

@@ -38,7 +38,7 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.data[i]);
+        Serial.print(lightSensorArray.sensors[i].getValue());
         Serial.print(", ");
     }
 

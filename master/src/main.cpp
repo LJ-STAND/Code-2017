@@ -217,7 +217,7 @@ void calculateDefense() {
             }
         }
 
-        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
+        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - mod(imu.heading + 180, 360), 360);
 
         moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
     } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {

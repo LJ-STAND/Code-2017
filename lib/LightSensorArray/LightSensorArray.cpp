@@ -108,8 +108,8 @@ void LightSensorArray::fillInSensors() {
 
 void LightSensorArray::calculateLine() {
     if (numClusters == 0) {
-        angle = 0;
-        size = 3;
+        angle = NO_LINE_ANGLE;
+        size = NO_LINE_SIZE;
     } else {
         double cluster1Angle = cluster1.getAngle();
         double cluster2Angle = cluster2.getAngle();

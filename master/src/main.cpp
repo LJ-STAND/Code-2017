@@ -58,11 +58,13 @@ long compassPreviousTime;
 double compassDiff = 0;
 
 double facingDirection = 0;
-double orbitAngleRelative = 0;
+// double orbitAngleRelative = 0;
 
 bool ledOn;
 
 void setup() {
+    lineData.onField = true;
+
     // Onboard LED
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
@@ -144,17 +146,17 @@ void calculateRotationCorrection() {
 
 void calculateLineAvoid() {
     if (!lineData.onField) {
-        if (lineData.size > 1) {
+        if (lineData.size > LINE_BIG_SIZE) {
             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-            moveData.speed = lineData.size == 3 ? OVER_LINE_SPEED : lineData.size / 2.0 * LINE_SPEED;
-        } else if (lineData.size > LINE_AVOID_MIN) {
+            moveData.speed = lineData.size == 3 ? OVER_LINE_SPEED : min(lineData.size / 2.0 * LINE_SPEED * 5, LINE_SPEED);
+        } else if (lineData.size > LINE_SMALL_SIZE) {
             if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
                 if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
                     moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
             } else {
-                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), moveData.angle)) {
+                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360)) {
                     moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
                     moveData.speed = lineData.size / 2.0 * LINE_SPEED;
                 }
@@ -200,21 +202,18 @@ void calculateDefense() {
 
     if (goalData.status != GoalStatus::invisible) {
         double relativeDistance = abs(goalData.distance - DEFEND_GOAL_DISTANCE) > DEFEND_GOAL_DISTANCE_BUFFER ? goalData.distance - DEFEND_GOAL_DISTANCE : 0;
-        double distanceMovement = min(relativeDistance * 3, 100);
+        double distanceMovement = relativeDistance > 0 ? min(relativeDistance * DEFEND_DISTANCE_MULTIPLIER, DEFEND_DISTANCE_MAX_SPEED) : max(relativeDistance * DEFEND_DISTANCE_MULTIPLIER, -DEFEND_DISTANCE_MAX_SPEED);
 
         double sidewaysMovement;
 
         if (ballData.visible) {
+
             if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                 sidewaysMovement = 0;
-
-                if (ballData.strength > DEFEND_SHORT_STRENGTH) {
-                    distanceMovement = 255;
-                }
             } else if (ballData.angle < 180) {
-                sidewaysMovement = min(ballData.angle / 180.0 * 200 * 3, 200);
+                sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
             } else {
-                sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * 200 * 3, -200);
+                sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
             }
         }
 
@@ -331,10 +330,12 @@ void updateCompass() {
 }
 
 void updateLine(double angle, double size) {
-    angle = doubleMod(angle + imu.heading, 360);
+    bool noLine = angle == NO_LINE_ANGLE || size == 3;
+
+    angle = noLine ? 0 : doubleMod(angle + imu.heading, 360);
 
     if (lineData.onField) {
-        if (size != 3) {
+        if (!noLine) {
             lineData.angle = angle;
             lineData.size = size;
 
@@ -342,12 +343,12 @@ void updateLine(double angle, double size) {
         }
     } else {
         if (lineData.size == 3) {
-            if (size != 3) {
+            if (!noLine) {
                 lineData.angle = doubleMod(angle + 180, 360);
                 lineData.size = 2 - size;
             }
         } else {
-            if (size == 3) {
+            if (noLine) {
                 if (lineData.size <= 1) {
                     lineData.onField = true;
                     lineData.size = 0;
@@ -366,6 +367,8 @@ void updateLine(double angle, double size) {
             }
         }
     }
+
+    // Serial.println(String(lineData.onField) + ", " + String(lineData.angle) + ", " + String(lineData.size) + ", " + String(angle) + ", " + String(size));
 }
 
 void updatePlayMode() {

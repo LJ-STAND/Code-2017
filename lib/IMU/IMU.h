@@ -2,7 +2,7 @@
 #define COMPASS_H
 
 #include <I2C.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 #include <Config.h>
 
 class IMU {

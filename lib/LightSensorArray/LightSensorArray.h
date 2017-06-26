@@ -6,7 +6,7 @@
 #include <LightSensor.h>
 #include <LightSensorCluster.h>
 #include <Bits.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 
 class LightSensorArray {
 public:

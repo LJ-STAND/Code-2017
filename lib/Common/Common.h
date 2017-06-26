@@ -1,8 +1,8 @@
 /* Library of common functions and macros.
  */
 
-#ifndef LJSTANDCOMMON_H
-#define LJSTANDCOMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <math.h>
 
@@ -72,4 +72,4 @@ struct Vector3D {
 
 
 
-#endif  // LJSTANDCOMMON_H
+#endif  // COMMON_H

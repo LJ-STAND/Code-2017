@@ -4,7 +4,7 @@
 #include <Config.h>
 #include <Arduino.h>
 #include <Timer.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 #include <PlayMode.h>
 
 enum XBeeCommands: int {

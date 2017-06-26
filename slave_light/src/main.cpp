@@ -10,7 +10,7 @@
 #include <Pins.h>
 #include <Slave.h>
 #include <Timer.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 
 T3SPI spi;
 

@@ -264,8 +264,6 @@ void calculateMovement() {
     #endif
 
     calculateRotationCorrection();
-
-    motors.move(moveData);
 }
 
 void updatePixy() {
@@ -445,6 +443,8 @@ void loop() {
     #endif
 
     calculateMovement();
+
+    motors.move(moveData);
 
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);

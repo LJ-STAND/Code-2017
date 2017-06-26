@@ -1,7 +1,7 @@
 #ifndef MOVINGAVERAGE_H
 #define MOVINGAVERAGE_H
 
-#include <LJSTANDCommon.h>
+#include <Common.h>
 
 class MovingAverage {
 public:

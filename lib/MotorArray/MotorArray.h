@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <Pins.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 #include <MoveData.h>
 #include <Motor.h>
 #include <Config.h>

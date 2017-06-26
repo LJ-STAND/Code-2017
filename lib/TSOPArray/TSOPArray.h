@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#include <LJSTANDCommon.h>
+#include <Common.h>
 #include <Config.h>
 #include <Pins.h>
 

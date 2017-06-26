@@ -2,7 +2,7 @@
 #define LIGHT_SENSOR_CLUSTER_H
 
 #include <Arduino.h>
-#include <LJSTANDCommon.h>
+#include <Common.h>
 #include <Config.h>
 
 class LightSensorCluster {
@@ -16,9 +16,6 @@ public:
     void addCluster(LightSensorCluster cluster);
 
     void addSensorClockwise();
-
-    int getQuadrants();
-    Vector2D getCoordinates();
 
     int getLeftSensor();
     int getRightSensor();

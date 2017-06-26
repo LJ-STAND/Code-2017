@@ -11,6 +11,9 @@ typedef struct GoalData {
     double distance;
     int angle;
     GoalStatus status;
+
+    GoalData() {}
+    GoalData(double d, int a, GoalStatus s) : distance(d), angle(a), status(s) {}
 } GoalData;
 
 #endif // GOALDATA_H

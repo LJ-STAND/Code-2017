@@ -21,6 +21,9 @@ typedef struct BluetoothData {
     BluetoothDataType type;
     int value;
     String string;
+
+    BluetoothData() {}
+    BluetoothData(BluetoothDataType t, int v, String s) : type(t), value(v), string(s) {}
 } BluetoothData;
 
 #endif

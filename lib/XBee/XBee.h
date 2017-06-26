@@ -5,12 +5,14 @@
 #include <Arduino.h>
 #include <Timer.h>
 #include <LJSTANDCommon.h>
+#include <PlayMode.h>
 
 enum XBeeCommands: int {
     xbeeStart,
     xbeeEnd,
     ballAngle,
-    ballStrength
+    ballStrength,
+    mode
 };
 
 typedef struct XBeeData {
@@ -23,16 +25,18 @@ class XBee {
 public:
     int otherBallAngle;
     int otherBallStrength;
+    PlayMode otherPlayMode;
     bool isConnected;
 
     void init();
-    void update(int ballAngle, int ballStrength);
+    void update(int ballAngle, int ballStrength, PlayMode playMode);
 
 private:
     int thisBallAngle;
     int thisBallStrength;
+    PlayMode thisPlayMode;
 
-    XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength};
+    XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength, XBeeCommands::mode};
     int sendIndex = 0;
 
     Timer connectedTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);

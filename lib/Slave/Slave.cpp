@@ -6,58 +6,34 @@ void Slave::init(int csPin) {
     spi.enableCS(cs, CS_ActiveLOW);
 }
 
-uint16_t Slave::txrx(uint16_t data) {
-    dataOut[0] = data;
-    spi.txrx16(dataOut, dataIn, 1, CTAR_0, cs);
-    delayMicroseconds(SPI_DELAY);
+uint16_t Slave::transaction(SlaveCommand command) {
+    dataOut[0] = (uint16_t)command;
+
+    for (int i = 0; i < 3; i++) {
+        spi.txrx16(dataOut, dataIn, 1, CTAR_0, cs);
+    }
+
     return dataIn[0];
-}
-
-uint16_t Slave::transaction(SlaveCommand command, SPITransactionType transactionType, uint16_t data) {
-    txrx(SPITransactionType::start);
-    txrx(transactionType);
-    txrx(command);
-
-    for (int i = 0; i < 5; i++) {
-        // 5 delay commands to ensure correct data is recieved
-        txrx(SPITransactionType::commandDelay);
-    }
-
-    txrx(SPITransactionType::commandDelay2);
-
-    uint16_t received;
-
-    if (transactionType == SPITransactionType::send) {
-        txrx(data);
-    } else if (transactionType == SPITransactionType::receive) {
-        received = txrx();
-    } else {
-        txrx();
-    }
-
-    txrx(SPITransactionType::end);
-
-    return received;
 }
 
 void SlaveLightSensor::init() {
     Slave::init(MASTER_CS_LIGHT);
 }
 
-LinePosition SlaveLightSensor::getLinePosition() {
-    return static_cast<LinePosition>(transaction(SlaveCommand::linePosition, SPITransactionType::receive));
+double SlaveLightSensor::getLineAngle() {
+    return (double)transaction(SlaveCommand::lineAngle) / 100.0;
+}
+
+double SlaveLightSensor::getLineSize() {
+    return (double)transaction(SlaveCommand::lineSize) / 100.0;
 }
 
 uint16_t SlaveLightSensor::getFirst16Bit() {
-    return transaction(SlaveCommand::lightSensorsFirst16Bit, SPITransactionType::receive);
+    return transaction(SlaveCommand::lightSensorsFirst16Bit);
 }
 
 uint16_t SlaveLightSensor::getSecond16Bit() {
-    return transaction(SlaveCommand::lightSensorsSecond16Bit, SPITransactionType::receive);
-}
-
-void SlaveLightSensor::sendHeading(double heading) {
-    transaction(SlaveCommand::sendCompass, SPITransactionType::send, (uint16_t)heading);
+    return transaction(SlaveCommand::lightSensorsSecond16Bit);
 }
 
 void SlaveTSOP::init() {
@@ -65,9 +41,16 @@ void SlaveTSOP::init() {
 }
 
 int SlaveTSOP::getTSOPAngle() {
-    return transaction(SlaveCommand::tsopAngle, SPITransactionType::receive);
+    return transaction(SlaveCommand::tsopAngle);
 }
 
 int SlaveTSOP::getTSOPStrength() {
-    return transaction(SlaveCommand::tsopStrength, SPITransactionType::receive);
+    return transaction(SlaveCommand::tsopStrength);
+}
+
+BallData SlaveTSOP::getBallData() {
+    int angle = getTSOPAngle();
+    int strength = getTSOPStrength();
+
+    return BallData(angle, strength, angle != TSOP_NO_BALL);
 }

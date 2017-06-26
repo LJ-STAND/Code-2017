@@ -8,6 +8,8 @@
 
 #define TO_RADIANS 0.01745329251994329576923690768489
 
+#define TO_DEGREES 57.295779513082320876798154814105
+
 #define ARRAYLENGTH(array) (sizeof(array) / sizeof(array[0]))
 
 #define ARRAYSHIFTDOWN(a, lower, upper){          \
@@ -29,6 +31,7 @@ double doubleMod(double x, double max);
 
 bool angleIsInside(double angleBoundCounterClockwise, double angleBoundClockwise, double angleCheck);
 double angleBetween(double angleCounterClockwise, double angleClockwise);
+double smallestAngleBetween(double angle1, double angle2);
 double midAngleBetween(double angleCounterClockwise, double angleClockwise);
 
 // int maxInt(int array[]);
@@ -50,6 +53,7 @@ int sign(int value);
 int sign(double value);
 
 double degreesToRadians(double degrees);
+double radiansToDegrees(double radians);
 
 double doubleAbs(double value);
 

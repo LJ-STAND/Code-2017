@@ -1,40 +1,48 @@
 #include "XBee.h"
 
 void XBee::init() {
-    XBeeSerial.begin(9600);
+    XBEESERIAL.begin(9600);
 }
 
-void XBee::update(int ballAngle, int ballStrength) {
+void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
     thisBallAngle = ballAngle;
     thisBallStrength = ballStrength;
+    thisPlayMode = playMode;
 
-    sendNext();
 
-    XBeeData data = receive();
+    for (int i = 0; i < NUM_SEND; i++) {
+        sendNext();
 
-    isConnected = data.received && !connectedTimer.timeHasPassed();
+        XBeeData data = receive();
 
-    if (data.received) {
-        connectedTimer.update();
+        isConnected = data.received && !connectedTimer.timeHasPassed();
 
-        switch (data.command) {
-            case XBeeCommands::ballAngle:
-                otherBallAngle = data.data;
-                break;
+        if (data.received) {
+            connectedTimer.update();
 
-            case XBeeCommands::ballStrength:
-                otherBallStrength = data.data;
-                break;
+            switch (data.command) {
+                case XBeeCommands::ballAngle:
+                    otherBallAngle = data.data;
+                    break;
+
+                case XBeeCommands::ballStrength:
+                    otherBallStrength = data.data;
+                    break;
+
+                case XBeeCommands::mode:
+                    otherPlayMode = static_cast<PlayMode>(data.data);
+                    break;
+            }
         }
     }
 }
 
 void XBee::tx(uint8_t data) {
-    XBeeSerial.write(data);
+    XBEESERIAL.write(data);
 }
 
 int XBee::rx() {
-    return XBeeSerial.read();
+    return XBEESERIAL.read();
 }
 
 void XBee::send(XBeeCommands command, uint16_t data) {
@@ -57,13 +65,16 @@ void XBee::sendNext() {
         case XBeeCommands::ballStrength:
             send(toSendCommmand, thisBallStrength);
             break;
+
+        case XBeeCommands::mode:
+            send(toSendCommmand, thisPlayMode);
     }
 }
 
 XBeeData XBee::receive() {
     XBeeData nothingRecieved = (XBeeData) {XBeeCommands::xbeeEnd, 0, false};
 
-    if (XBeeSerial.available() > XBEE_TRANSACTION_LENGTH) {
+    if (XBEESERIAL.available() > XBEE_TRANSACTION_LENGTH) {
         int start = rx();
 
         if (start != XBeeCommands::xbeeStart) {

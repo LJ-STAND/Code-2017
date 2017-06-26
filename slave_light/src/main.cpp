@@ -7,7 +7,6 @@
 #include <Arduino.h>
 #include <t3spi.h>
 #include <LightSensorArray.h>
-#include <LinePosition.h>
 #include <Pins.h>
 #include <Slave.h>
 #include <Timer.h>
@@ -18,18 +17,10 @@ T3SPI spi;
 volatile uint16_t dataIn[1];
 volatile uint16_t dataOut[1];
 
-SPITransactionState transactionState = SPITransactionState::noTransaction;
-SPITransactionType currentTransactionType;
-SlaveCommand currentCommand;
-
 LightSensorArray lightSensorArray;
-
-LinePosition previousPosition = LinePosition::none;
 
 Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_LIGHT);
 bool ledOn;
-
-int heading;
 
 void setup() {
     Serial.begin(9600);
@@ -47,115 +38,47 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.data.getSensor(i));
+        Serial.print(lightSensorArray.data[i]);
         Serial.print(", ");
     }
 
-    Serial.print(linePositionString(lightSensorArray.getLinePosition()));
-    Serial.println();
+    Serial.println(String(lightSensorArray.getLineAngle()) + ", " + String(lightSensorArray.getLineSize()));
 }
 
 void loop() {
     lightSensorArray.read();
-    lightSensorArray.getClusters(lightSensorArray.data);
-    lightSensorArray.calculatePositionClusters();
-    LinePosition position = lightSensorArray.getLinePosition();
-
-    if (position != previousPosition) {
-        previousPosition = position;
-    }
+    lightSensorArray.calculateClusters();
+    lightSensorArray.calculateLine();
 
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
-
-    // debug();
 }
 
 void spi0_isr() {
-    switch (transactionState) {
-        case SPITransactionState::noTransaction:
-            spi.rxtx16(dataIn, dataOut, 1);
+    spi.rxtx16(dataIn, dataOut, 1);
+    int command = dataIn[0];
 
-            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::start) {
-                transactionState = SPITransactionState::beginning;
-            }
-
+    switch (command) {
+        case SlaveCommand::lineAngle:
+            dataOut[0] = (uint16_t)round(lightSensorArray.getLineAngle() * 100);
             break;
 
-        case SPITransactionState::beginning:
-            spi.rxtx16(dataIn, dataOut, 1);
-            currentTransactionType = static_cast<SPITransactionType>(dataIn[0]);
-            transactionState = SPITransactionState::type;
-
+        case SlaveCommand::lineSize:
+            dataOut[0] = (uint16_t)round(lightSensorArray.getLineSize() * 100);
             break;
 
-        case SPITransactionState::type:
-            spi.rxtx16(dataIn, dataOut, 1);
-            currentCommand = static_cast<SlaveCommand>(dataIn[0]);
-
-            if (currentTransactionType == SPITransactionType::receive) {
-                switch (currentCommand) {
-                    case SlaveCommand::linePosition:
-                        dataOut[0] = (uint16_t)lightSensorArray.getLinePosition();
-                        break;
-
-                    case SlaveCommand::lightSensorsFirst16Bit:
-                        dataOut[0] = lightSensorArray.getFirst16Bit();
-                        break;
-
-                    case SlaveCommand::lightSensorsSecond16Bit:
-                        dataOut[0] = lightSensorArray.getSecond16Bit();
-                        break;
-
-                    default:
-                        dataOut[0] = 0;
-                        break;
-                }
-            }
-
-            transactionState = SPITransactionState::command;
-
+        case SlaveCommand::lightSensorsFirst16Bit:
+            dataOut[0] = lightSensorArray.getFirst16Bit();
             break;
 
-        case SPITransactionState::command:
-            spi.rxtx16(dataIn, dataOut, 1);
-            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay) {
-                transactionState = SPITransactionState::cmdDelay;
-            }
-
+        case SlaveCommand::lightSensorsSecond16Bit:
+            dataOut[0] = lightSensorArray.getSecond16Bit();
             break;
 
-        case SPITransactionState::cmdDelay:
-            spi.rxtx16(dataIn, dataOut, 1);
-            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::commandDelay2) {
-                transactionState = SPITransactionState::cmdDelay2;
-            }
-
-            break;
-
-        case SPITransactionState::cmdDelay2:
-            spi.rxtx16(dataIn, dataOut, 1);
-            if (currentTransactionType == SPITransactionType::send) {
-                switch (currentCommand) {
-                    case SlaveCommand::sendCompass:
-                        heading = dataIn[0];
-                        // lightSensorArray.updateHeading(heading);
-                        break;
-                }
-            }
-
-            transactionState = SPITransactionState::data;
-
-            break;
-
-        case SPITransactionState::data:
-            spi.rxtx16(dataIn, dataOut, 1);
-            if (static_cast<SPITransactionType>(dataIn[0]) == SPITransactionType::end) {
-                transactionState = SPITransactionState::noTransaction;
-            }
-
+        default:
+            dataOut[0] = 0;
             break;
     }
 }

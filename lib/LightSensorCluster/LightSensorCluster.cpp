@@ -82,6 +82,21 @@ void LightSensorCluster::addCluster(LightSensorCluster cluster) {
     updateLengthCentre();
 }
 
+void LightSensorCluster::updateLeftRight() {
+    leftSensor = mod(centre - ((length - 1) / 2.0), LS_NUM);
+    rightSensor = mod(centre + ((length - 1) / 2.0), LS_NUM);
+}
+
+void LightSensorCluster::updateLengthCentre() {
+    if (leftSensor > rightSensor) {
+        centre = doubleMod((-(LS_NUM - leftSensor) + rightSensor) / 2.0, LS_NUM);
+        length = (LS_NUM - (leftSensor - rightSensor)) + 1;
+    } else {
+        centre = (leftSensor + rightSensor) / 2.0;
+        length = (rightSensor - leftSensor) + 1;
+    }
+}
+
 int LightSensorCluster::getLeftSensor() {
     // Note: left is the counterclockwise boundary because its easier to write.
     return leftSensor;
@@ -101,13 +116,13 @@ int LightSensorCluster::getLength() {
 }
 
 double LightSensorCluster::getAngle() {
-    return centre / 24.0 * 360;
+    return centre / (LS_NUM * 1.0) * 360;
 }
 
 double LightSensorCluster::getLeftAngle() {
-    return leftSensor / 24.0 * 360;
+    return leftSensor / (LS_NUM * 1.0) * 360;
 }
 
 double LightSensorCluster::getRightAngle() {
-    return rightSensor / 24.0 * 360;
+    return rightSensor / (LS_NUM * 1.0) * 360;
 }

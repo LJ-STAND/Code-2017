@@ -3,42 +3,22 @@
 
 #include <t3spi.h>
 #include <Pins.h>
-#include <LinePosition.h>
 #include <Config.h>
-
-enum SPITransactionType: int {
-    start,
-    end,
-    commandDelay,
-    commandDelay2,
-    send,
-    receive
-};
+#include <BallData.h>
 
 enum SlaveCommand: int {
-    linePosition = 6,
+    lineAngle,
+    lineSize,
     lightSensorsFirst16Bit,
     lightSensorsSecond16Bit,
     tsopAngle,
-    tsopStrength,
-    sendCompass
-};
-
-enum SPITransactionState: int {
-    noTransaction,
-    beginning,
-    type,
-    command,
-    cmdDelay,
-    cmdDelay2,
-    data
+    tsopStrength
 };
 
 class Slave {
 public:
     void init(int csPin);
-    uint16_t txrx(uint16_t data=0);
-    uint16_t transaction(SlaveCommand command, SPITransactionType transactionType, uint16_t data=0);
+    uint16_t transaction(SlaveCommand command);
 
 private:
     volatile uint16_t dataIn[1];
@@ -49,10 +29,11 @@ private:
 class SlaveLightSensor: public Slave {
 public:
     void init();
-    LinePosition getLinePosition();
     uint16_t getFirst16Bit();
     uint16_t getSecond16Bit();
-    void sendHeading(double heading);
+    double getLineAngle();
+    double getLineSize();
+
 };
 
 class SlaveTSOP: public Slave {
@@ -60,6 +41,7 @@ public:
     void init();
     int getTSOPAngle();
     int getTSOPStrength();
+    BallData getBallData();
 };
 
 #endif // SLAVE_H

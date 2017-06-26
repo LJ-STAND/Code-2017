@@ -4,7 +4,7 @@ LightSensor::LightSensor(int in) {
     inPin = in;
 }
 
-void LightSensor::init() {
+void LightSensor::init(bool isFront) {
     pinMode(inPin, INPUT);
 
     // Auto calibrate
@@ -15,7 +15,7 @@ void LightSensor::init() {
         defaultValue += value;
     }
 
-    thresholdValue = round((int)((double)defaultValue / LS_CALIBRATION_COUNT) + LS_CALIBRATION_BUFFER);
+    thresholdValue = round((int)((double)defaultValue / LS_CALIBRATION_COUNT) + (isFront ? LS_CALIBRATION_BUFFER_FRONT : LS_CALIBRATION_BUFFER));
 }
 
 void LightSensor::read() {

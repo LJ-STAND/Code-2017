@@ -4,7 +4,6 @@
 #include <Pins.h>
 #include <Arduino.h>
 #include <Bluetooth.h>
-#include <LightSensorData.h>
 #include <Bits.h>
 #include <Config.h>
 #include <Timer.h>

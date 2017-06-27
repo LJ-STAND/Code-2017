@@ -45,7 +45,7 @@ BallData ballData;
 MoveData moveData;
 GoalData goalData;
 
-PlayMode playMode = PlayMode::defend;
+PlayMode playMode = PLAYMODE_DEFAULT;
 bool playModeUndecided = true;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
@@ -157,8 +157,8 @@ void calculateLineAvoid() {
                 }
             } else {
                 if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360))) {
-                    moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size / 2.0 * LINE_SPEED;
+                    moveData.angle = 0;
+                    moveData.speed = 0;
                 }
             }
         }
@@ -219,7 +219,8 @@ void calculateDefense() {
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - mod(imu.heading + 180, 360), 360);
 
-        moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
+        // moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
+        moveData.speed = distanceMovement * sidewaysMovement == 0 ? 0 : DEFEND_SPEED;
     } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {
         calculateOrbit();
     }

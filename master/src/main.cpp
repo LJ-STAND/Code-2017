@@ -208,7 +208,11 @@ void calculateDefense() {
 
         if (ballData.visible) {
 
-            if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
+            if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle) && ballData.strength > DEFEND_CHARGE_STRENGTH) {
+                sidewaysMovement = 0;
+                distanceMovement = ORBIT_SPEED;
+            }
+            else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                 sidewaysMovement = 0;
             } else if (ballData.angle < 180) {
                 sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
@@ -219,8 +223,8 @@ void calculateDefense() {
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - mod(imu.heading + 180, 360), 360);
 
-        // moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
-        moveData.speed = distanceMovement * sidewaysMovement == 0 ? 0 : DEFEND_SPEED;
+        moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
+        // moveData.speed = distanceMovement * sidewaysMovement == 0 ? 0 : DEFEND_SPEED;
     } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {
         calculateOrbit();
     }
@@ -399,6 +403,8 @@ void updatePlayMode() {
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
         xbee.update(ballData.angle, ballData.strength, playMode);
+
+        debug.toggleBlue(xbee.isConnected);
 
         if (xbee.isConnected) {
             updatePlayMode();

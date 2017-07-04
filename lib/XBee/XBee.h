@@ -7,45 +7,29 @@
 #include <Common.h>
 #include <PlayMode.h>
 
-enum XBeeCommands: int {
-    xbeeStart,
-    xbeeEnd,
-    ballAngle,
-    ballStrength,
-    mode
-};
-
-typedef struct XBeeData {
-    XBeeCommands command;
-    int data;
-    bool received;
-} XBeeData;
-
 class XBee {
 public:
     int otherBallAngle;
     int otherBallStrength;
+    int otherHeading;
     PlayMode otherPlayMode;
+
     bool isConnected;
 
     void init();
-    void update(int ballAngle, int ballStrength, PlayMode playMode);
+    void update(int ballAngle, int ballStrength, int heading, PlayMode playMode, bool noRecieve = false);
 
 private:
     int thisBallAngle;
     int thisBallStrength;
+    int thisHeading;
     PlayMode thisPlayMode;
-
-    XBeeCommands toSend[NUM_SEND] = {XBeeCommands::ballAngle, XBeeCommands::ballStrength, XBeeCommands::mode};
-    int sendIndex = 0;
 
     Timer connectedTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);
 
-    void tx(uint8_t data);
-    int rx();
-    void send(XBeeCommands command, uint16_t data);
-    void sendNext();
-    XBeeData receive();
+    void send();
+    void receive();
+    void resetOtherData();
 };
 
 #endif // XBEE_H

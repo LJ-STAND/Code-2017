@@ -1,97 +1,71 @@
 #include "XBee.h"
 
 void XBee::init() {
-    XBEESERIAL.begin(9600);
+    XBEESERIAL.begin(XBEE_BAUD);
+    resetOtherData();
 }
 
-void XBee::update(int ballAngle, int ballStrength, PlayMode playMode) {
+void XBee::update(int ballAngle, int ballStrength, int heading, PlayMode playMode, bool noRecieve) {
     thisBallAngle = ballAngle;
     thisBallStrength = ballStrength;
+    thisHeading = heading;
     thisPlayMode = playMode;
 
+    send();
 
-    for (int i = 0; i < NUM_SEND; i++) {
-        sendNext();
+    if (!noRecieve) {
+        receive();
+    }
+}
 
-        XBeeData data = receive();
+void XBee::send() {
+    XBEESERIAL.write(XBEE_START);
+    XBEESERIAL.write(XBEE_START);
+    XBEESERIAL.write(thisBallAngle >> 8);
+    XBEESERIAL.write(thisBallAngle & 0xFF);
+    XBEESERIAL.write(thisBallStrength);
+    XBEESERIAL.write(thisHeading >> 8);
+    XBEESERIAL.write(thisHeading & 0xFF);
+    XBEESERIAL.write(thisPlayMode);
+}
 
-        isConnected = data.received && !connectedTimer.timeHasPassed();
+void XBee::receive() {
+    bool nothingRecieved = true;
 
-        if (data.received) {
-            connectedTimer.update();
+    while (XBEESERIAL.available() >= XBEE_PACKET_SIZE) {
+        uint8_t first = XBEESERIAL.read();
+        uint8_t second = XBEESERIAL.peek();
 
-            switch (data.command) {
-                case XBeeCommands::ballAngle:
-                    otherBallAngle = data.data;
-                    break;
+        if (first == XBEE_START && second == XBEE_START) {
+            XBEESERIAL.read();
 
-                case XBeeCommands::ballStrength:
-                    otherBallStrength = data.data;
-                    break;
+            uint8_t dataBuffer[XBEE_PACKET_SIZE - 2];
 
-                case XBeeCommands::mode:
-                    otherPlayMode = static_cast<PlayMode>(data.data);
-                    break;
+            for (int i = 0; i < XBEE_PACKET_SIZE - 2; i++) {
+                dataBuffer[i] = XBEESERIAL.read();
+                Serial.println(dataBuffer[i]);
             }
-        }
-    }
-}
 
-void XBee::tx(uint8_t data) {
-    XBEESERIAL.write(data);
-}
+            otherBallAngle = (dataBuffer[0] << 8) | dataBuffer[1];
+            otherBallStrength = dataBuffer[2];
+            otherHeading = (dataBuffer[3] << 8) | dataBuffer[4];
+            otherPlayMode = static_cast<PlayMode>(dataBuffer[5]);
 
-int XBee::rx() {
-    return XBEESERIAL.read();
-}
-
-void XBee::send(XBeeCommands command, uint16_t data) {
-    tx(xbeeStart);
-    tx(command);
-    tx(data >> 8);
-    tx(data & 0xff);
-    tx(xbeeEnd);
-}
-
-void XBee::sendNext() {
-    XBeeCommands toSendCommmand = toSend[sendIndex];
-    sendIndex = mod(sendIndex + 1, NUM_SEND);
-
-    switch (toSendCommmand) {
-        case XBeeCommands::ballAngle:
-            send(toSendCommmand, thisBallAngle);
-            break;
-
-        case XBeeCommands::ballStrength:
-            send(toSendCommmand, thisBallStrength);
-            break;
-
-        case XBeeCommands::mode:
-            send(toSendCommmand, thisPlayMode);
-    }
-}
-
-XBeeData XBee::receive() {
-    XBeeData nothingRecieved = (XBeeData) {XBeeCommands::xbeeEnd, 0, false};
-
-    if (XBEESERIAL.available() > XBEE_TRANSACTION_LENGTH) {
-        int start = rx();
-
-        if (start != XBeeCommands::xbeeStart) {
-            return nothingRecieved;
-        }
-
-        int command = rx();
-        int high = rx();
-        int low = rx();
-        int end = rx();
-
-        int data = (high << 8) | low;
-
-        if (start == XBeeCommands::xbeeStart && end == XBeeCommands::xbeeEnd) {
-            return (XBeeData) {static_cast<XBeeCommands>(command), data, true};
+            nothingRecieved = false;
+            connectedTimer.update();
         }
     }
 
-    return nothingRecieved;
+    isConnected = !nothingRecieved || !connectedTimer.timeHasPassedNoUpdate();
+
+    if (!isConnected) {
+        resetOtherData();
+    }
+}
+
+void XBee::resetOtherData() {
+    otherBallAngle = TSOP_NO_BALL;
+    otherBallStrength = 0;
+    otherPlayMode = PlayMode::undecided;
+    otherHeading = 0;
 }

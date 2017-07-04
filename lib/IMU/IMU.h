@@ -8,8 +8,6 @@
 class IMU {
 public:
     double heading;
-    Vector2D velocity;
-    Vector2D position;
 
     IMU() {};
     void init();
@@ -18,17 +16,12 @@ public:
     Vector3D readGyroscope();
     Vector3D readMagnetometer();
 
-    void updateGyro();
-    void updateAccelerometer();
     void update();
     void calibrate();
 
 private:
     long previousTimeGyro;
-    long previousTimeAccel;
     double calibrationGyro;
-    double calibrationAccelX;
-    double calibrationAccelY;
 
     double convertRawAcceleration(int raw) {
         // Since we are using 2G range

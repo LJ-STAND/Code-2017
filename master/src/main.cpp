@@ -24,6 +24,7 @@
 #include <PlayMode.h>
 #include <BallData.h>
 #include <LineData.h>
+#include <Common.h>
 
 XBee xbee;
 T3SPI spi;
@@ -40,31 +41,29 @@ Sonar sonarLeft;
 SlaveLightSensor slaveLightSensor;
 SlaveTSOP slaveTSOP;
 
-LineData lineData;
+LineData lineData(0, 0, true);
 BallData ballData;
 MoveData moveData;
 GoalData goalData;
 
-PlayMode playMode = PLAYMODE_DEFAULT;
-bool playModeUndecided = true;
+PlayMode playMode = PlayMode::undecided;
+bool playModeSwitchComplete = true;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
 Timer xbeeTimer = Timer(XBEE_UPDATE_TIME);
+Timer playModeSwitchTimer = Timer(PLAYMODE_SWITCH_TIME);
 
 double compassPreviousAngle = 0;
 long compassPreviousTime;
 double compassDiff = 0;
 
 double facingDirection = 0;
-// double orbitAngleRelative = 0;
 
 bool ledOn;
 
 void setup() {
-    lineData.onField = true;
-
     // Onboard LED
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
@@ -73,13 +72,13 @@ void setup() {
     debug.init();
 
     // I2C
-    Wire.begin(I2C_MASTER, 0x00, I2C_PINS_18_19, I2C_PULLUP_EXT, 400000);
+    Wire.begin(I2C_MASTER, 0x00, I2C_PINS_18_19, I2C_PULLUP_EXT, 100000);
     Wire.setDefaultTimeout(200000);
 
     debug.toggleOrange(true);
 
     // Serial
-    Serial.begin(9600);
+    Serial.begin(57600);
     Bluetooth::init();
 
     // XBee
@@ -111,24 +110,22 @@ void setup() {
     // Pixy
     pixy.init();
 
-    // Sonars
-    sonarFront.init(SONAR_FRONT_ADDRESS);
-    sonarRight.init(SONAR_RIGHT_ADDRESS);
-    sonarBack.init(SONAR_BACK_ADDRESS);
-    sonarLeft.init(SONAR_LEFT_ADDRESS);
-
     debug.toggleAllLEDs(true);
     delay(100);
     debug.toggleAllLEDs(false);
 }
 
+PlayMode currentPlayMode() {
+    return playMode == PlayMode::undecided ? PLAYMODE_DEFAULT : playMode;
+}
+
 double defaultDirection() {
-    return playMode == PlayMode::attack ? 0 : 180;
+    return currentPlayMode() == PlayMode::attack ? 0 : 180;
 }
 
 void calculateRotationCorrection() {
-    double multiplierD = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
-    double multiplierP = goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate() ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
+    double multiplierD = goalData.status != GoalStatus::invisible ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
+    double multiplierP = goalData.status != GoalStatus::invisible ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
 
     int correctionRotation;
     int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
@@ -165,6 +162,29 @@ void calculateLineAvoid() {
     }
 }
 
+void centre() {
+    if (goalData.status != GoalStatus::invisible) {
+        double relativeDistance = abs(CENTRE_GOAL_DISTANCE - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? CENTRE_GOAL_DISTANCE - goalData.distance : 0;
+        double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
+
+        double sidewaysMovement = 0;
+
+        if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
+            if (goalData.angle > 0) {
+                sidewaysMovement = min(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
+            } else {
+                sidewaysMovement = max(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, -CENTRE_SIDEWAYS_MAX_SPEED);
+            }
+        }
+
+        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
+        moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
+    } else {
+        moveData.angle = 0;
+        moveData.speed = 0;
+    }
+}
+
 void calculateOrbit() {
     if (angleIsInside(360 - ORBIT_SMALL_ANGLE, ORBIT_SMALL_ANGLE, ballData.angle)) {
         moveData.angle = (int)round(ballData.angle < 180 ? (ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - ballData.angle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
@@ -174,7 +194,7 @@ void calculateOrbit() {
             moveData.angle = (int)round(90 * nearFactor + ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + ballData.angle * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor);
         } else {
             double nearFactor = (double)(360 - ballData.angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
-            moveData.angle = (int)round(360 - (90 * nearFactor + (360 - ballData.angle)* ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - ballData.angle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
+            moveData.angle = (int)round(360 - (90 * nearFactor + (360 - ballData.angle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER + (360 - ballData.angle) * (1 - ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) * nearFactor));
         }
     } else {
         if (ballData.strength > ORBIT_SHORT_STRENGTH) {
@@ -189,12 +209,6 @@ void calculateOrbit() {
     }
 
     moveData.speed = ORBIT_SPEED;
-
-    if (!ballData.visible) {
-        // No Ball -> Don't move except rotating / line avoiding
-        moveData.angle = 0;
-        moveData.speed = 0;
-    }
 }
 
 void calculateDefense() {
@@ -207,59 +221,109 @@ void calculateDefense() {
         double sidewaysMovement = 0;
 
         if (ballData.visible) {
-
-            if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle) && ballData.strength > DEFEND_CHARGE_STRENGTH) {
-                sidewaysMovement = 0;
-                distanceMovement = ORBIT_SPEED;
-            }
-            else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
-                sidewaysMovement = 0;
-            } else if (ballData.angle < 180) {
-                sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
+            if (goalData.angle > 15) {
+                sidewaysMovement = (-(goalData.angle - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
+            } else if (goalData.angle < -15) {
+                sidewaysMovement = ((abs(goalData.angle) - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
             } else {
-                sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
+
+            if (angleIsInside(270, 90, ballData.angle)) {
+                if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle) && ballData.strength > DEFEND_CHARGE_STRENGTH) {
+                    sidewaysMovement = 0;
+                    // distanceMovement = ORBIT_SPEED;
+                } else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
+                    sidewaysMovement = 0;
+                } else if (ballData.angle < 180) {
+                    // if (goalData.angle < 30 /*imu.heading - 180 < 45*/) {
+                        // sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
+                    // } else {
+                    //     sidewaysMovement = -50;
+                    // }
+
+                    if (goalData.angle)
+                        sidewaysMovement = min(sin(degreesToRadians(ballData.angle)) * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
+                } else {
+                    // if (goalData.angle > -30/*180 - imu.heading < 45*/) {
+                        // sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
+                    // } else {
+                    //     sidewaysMovement = 50;
+                    // }
+
+                    sidewaysMovement = max(-sin(degreesToRadians(360 - ballData.angle)) * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
+                }
+            } else {
+                if (goalData.angle > 15 && ()) {
+                    sidewaysMovement = (-(goalData.angle - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
+                } else if (goalData.angle < -15) {
+                    sidewaysMovement = ((abs(goalData.angle) - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
+                } else {
+                    // if ((ballData.angle < 180 && imu.heading - 180 < 45) || (ballData.angle > 180 && 180 - imu.heading < 45)) {
+                    calculateOrbit();
+                    moveData.angle = mod(moveData.angle + 180, 360);
+                    return;
+                }
+            }
+        } else if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
+            if (goalData.angle > 0) {
+                sidewaysMovement = max(-goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, -CENTRE_SIDEWAYS_MAX_SPEED);
+            } else {
+                sidewaysMovement = min(-goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
             }
         }
 
-        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - mod(imu.heading + 180, 360), 360);
-
+        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - (smallestAngleBetween(imu.heading, 180) < 50 ? mod(imu.heading + 180, 360) : 0), 360);
         moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
-        // moveData.speed = distanceMovement * sidewaysMovement == 0 ? 0 : DEFEND_SPEED;
-    } else if (smallestAngleBetween(imu.heading, defaultDirection()) < 50) {
+    } else if (smallestAngleBetween(imu.heading, 180) < 50 && ballData.visible) {
         calculateOrbit();
+    } else {
+        moveData.speed = 0;
+        moveData.angle = 180;
     }
 
     moveData.angle = mod(moveData.angle + 180, 360);
 }
 
 void calculateGoalTracking() {
-    if (goalData.status != GoalStatus::invisible || !lastSeenGoalTimer.timeHasPassedNoUpdate()) {
-        facingDirection = mod(imu.heading + goalData.angle, 360);
+    if (goalData.status != GoalStatus::invisible) {
+        int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
 
-        // if (ballData.strength > FACE_GOAL_SHORT_STRENGTH || ballData.angle < ORBIT_SMALL_ANGLE || ballData.angle > 360 - ORBIT_SMALL_ANGLE) {
-        //     orbitAngleRelative = 0;
-        //     debug.setGreenBrightness(255);
-        // } else if (ballData.strength > FACE_GOAL_BIG_STRENGTH) {
-        //     double strengthFactor = (double)(ballData.strength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH);
-        //     double scaledHeading = doubleMod(imu.heading + 180, 360) - 180;
-        //
-        //     orbitAngleRelative = -scaledHeading * (1 - strengthFactor);
-        //     debug.setGreenBrightness((int)((double)strengthFactor * 255));
-        // } else {
-        //     orbitAngleRelative = -imu.heading;
-        //     debug.setGreenBrightness(0);
-        // }
-        //
-        // orbitAngleRelative = doubleMod(orbitAngleRelative, 360.0);
+        if (currentPlayMode() == PlayMode::defend) {
+            // if (ballData.visible) {
+            //     facingDirection = goalAngle;
+            // } else {
+            //     facingDirection = 180;
+            // }
+
+            facingDirection = 180;
+        } else {
+            if (FACE_GOAL) {
+                if (!ballData.visible) {
+                    facingDirection = 0;
+                } else if (ballData.strength > FACE_GOAL_SHORT_STRENGTH || ALWAYS_FACE_GOAL) {
+                    facingDirection = goalAngle;
+                } else if (ballData.strength > FACE_GOAL_BIG_STRENGTH) {
+                    facingDirection = ((double)(ballData.strength - FACE_GOAL_BIG_STRENGTH) / (double)(FACE_GOAL_SHORT_STRENGTH - FACE_GOAL_BIG_STRENGTH)) * goalAngle;
+                } else {
+                    facingDirection = 0;
+                }
+            } else {
+                facingDirection = 0;
+            }
+        }
+
+        facingDirection = mod(facingDirection, 360);
     } else {
         facingDirection = defaultDirection();
-        // orbitAngleRelative = 0;
     }
 }
 
 void calculateMovement() {
-    if (playMode == PlayMode::attack) {
-        calculateOrbit();
+    if (currentPlayMode() == PlayMode::attack) {
+        if (ballData.visible) {
+            calculateOrbit();
+        } else {
+            centre();
+        }
     } else {
         calculateDefense();
     }
@@ -279,46 +343,43 @@ void updatePixy() {
         int biggestArea = 0;
         int foundBlocks = 0;
 
-        for (int i = 0; i < blocks; i++) {
-            int blockArea = pixy.blocks[i].height * pixy.blocks[i].width;
+        Serial.println(blocks);
 
-            if (blockArea > GOAL_MIN_AREA && pixy.blocks[i].signature == (playMode == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND)) {
-                foundBlocks += 1;
+        if (blocks < 3 || currentPlayMode() == PlayMode::attack) {
+            for (int i = 0; i < blocks; i++) {
+                int blockArea = pixy.blocks[i].height * pixy.blocks[i].width;
 
-                if (blockArea > biggestArea) {
-                    goalBlock = pixy.blocks[i];
+                if (blockArea > GOAL_MIN_AREA && pixy.blocks[i].signature == (currentPlayMode() == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND) && smallestAngleBetween(imu.heading, defaultDirection()) < 90) {
+                    foundBlocks += 1;
+
+                    if (blockArea > biggestArea) {
+                        goalBlock = pixy.blocks[i];
+                    }
                 }
             }
         }
 
-        if (foundBlocks > 1) {
-            goalData.status = GoalStatus::blocked;
-        } else if (foundBlocks > 0) {
-            goalData.status = GoalStatus::visible;
+        if (foundBlocks == 0) {
+            if (lastSeenGoalTimer.timeHasPassedNoUpdate()) {
+                goalData.status = GoalStatus::invisible;
+                goalData.angle = 0;
+                goalData.distance = 0;
+            }
         } else {
-            goalData.status = GoalStatus::invisible;
-        }
-
-        if (goalData.status != GoalStatus::invisible) {
-            debug.toggleRed(true);
+            if (foundBlocks > 1) {
+                goalData.status = GoalStatus::blocked;
+            } else {
+                goalData.status = GoalStatus::visible;
+            }
 
             lastSeenGoalTimer.update();
-
-            goalData.distance = (double)goalBlock.height / (double)GOAL_HEIGHT_MAX * GOAL_DISTANCE_MULTIPLIER;
 
             #if DEBUG_APP && DEBUG_APP_PIXY
                 debug.appSendPixy(goalBlock.x, goalBlock.y, goalBlock.width, goalBlock.height);
             #endif
 
-            double middleGoalPoint = (double)goalBlock.x;
-            double goalDiffMiddleFOV = middleGoalPoint - 160;
-
-            goalData.angle = (int)(((double)goalDiffMiddleFOV / 160.0) * 75);
-        } else {
-            if (lastSeenGoalTimer.timeHasPassedNoUpdate()) {
-                goalData.angle = 0;
-                goalData.distance = 0;
-            }
+            goalData.distance = (double)goalBlock.height / (double)PIXY_FRAME_HEIGHT * GOAL_DISTANCE_MULTIPLIER;
+            goalData.angle = (int)((double)(goalBlock.x - (PIXY_FRAME_WIDTH / 2.0)) / (PIXY_FRAME_WIDTH / 2.0) * 37.5);
         }
 
         debug.toggleRed(goalData.status != GoalStatus::invisible);
@@ -383,34 +444,59 @@ void updateLine(double angle, double size) {
 }
 
 void updatePlayMode() {
-    if (playModeUndecided) {
-        playMode = xbee.otherBallStrength < ballData.strength ? PlayMode::attack : PlayMode::defend;
-        playModeUndecided = false;
-    }
+    PlayMode previousPlayMode = playMode;
 
-    if (xbee.otherPlayMode == playMode) {
-        playMode = playMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
-    }
-
-    if (playMode == PlayMode::defend) {
-        // Two situations to switch roles, note the ||.
-        if ((angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, ballData.angle) && angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle)) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength)) {
-            playMode = PlayMode::attack;
+    if (playMode == PlayMode::undecided) {
+        if (xbee.otherPlayMode == PlayMode::undecided) {
+            if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                playMode = PlayMode::attack;
+            } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle == TSOP_NO_BALL) {
+                playMode = PlayMode::defend;
+            } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::attack : PlayMode::defend;
+            }
+        } else {
+            playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
         }
+    } else if (xbee.otherPlayMode != PlayMode::undecided) {
+        if (playModeSwitchComplete && playModeSwitchTimer.timeHasPassedNoUpdate()) {
+            if (xbee.otherPlayMode == playMode) {
+                playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
+                playModeSwitchTimer.update();
+            } else if (playMode == PlayMode::defend) {
+                if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                    playMode = PlayMode::attack;
+                    playModeSwitchComplete = false;
+                    playModeSwitchTimer.update();
+                } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                    // Two situations to switch roles, note the ||.
+                    if ((angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360))) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH)) {
+                        playMode = PlayMode::attack;
+                        playModeSwitchComplete = false;
+                        playModeSwitchTimer.update();
+                    }
+                }
+            }
+        } else if (xbee.otherPlayMode != playMode) {
+            playModeSwitchComplete = true;
+        }
+    }
+
+    if (playMode != previousPlayMode) {
+        xbee.update(ballData.angle, ballData.strength, imu.heading, playMode, true);
     }
 }
 
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
-        xbee.update(ballData.angle, ballData.strength, playMode);
+        xbee.update(ballData.angle, ballData.strength, imu.heading, playMode);
 
-        debug.toggleBlue(xbee.isConnected);
+        debug.toggleGreen(xbee.isConnected);
 
         if (xbee.isConnected) {
             updatePlayMode();
         } else {
-            playMode = PlayMode::attack;
-            playModeUndecided = true;
+            playMode = PlayMode::undecided;
         }
     }
 }
@@ -434,9 +520,11 @@ void appDebug() {
 }
 
 void loop() {
-    updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
-
     ballData = slaveTSOP.getBallData();
+
+    debug.toggleOrange(ballData.visible);
+
+    updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
     updateCompass();
 
@@ -457,6 +545,10 @@ void loop() {
         digitalWrite(LED_BUILTIN, ledOn);
         ledOn = !ledOn;
     }
+
+    debug.toggleBlue(currentPlayMode() == PlayMode::attack);
+    debug.toggleYellow(currentPlayMode() == PlayMode::defend);
+    debug.toggleWhite(playMode == PlayMode::undecided);
 
     #if DEBUG_APP
         appDebug();

@@ -3,7 +3,8 @@
 
 enum PlayMode: int {
     attack,
-    defend
+    defend,
+    undecided
 };
 
 #endif // PLAY_MODE_H

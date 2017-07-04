@@ -10,7 +10,7 @@ void Timer::update() {
 
 bool Timer::timeHasPassed() {
     if (micros() - lastUpdate > timerDuration) {
-        lastUpdate = micros();
+        update();
         return true;
     }
 

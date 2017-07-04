@@ -9,7 +9,6 @@ void IMU::init() {
     I2CwriteByte(MAG_ADDRESS, 0x0A, 0x16);
 
     previousTimeGyro = micros();
-    previousTimeAccel = micros();
 };
 
 Vector3D IMU::readAccelerometer() {
@@ -53,35 +52,14 @@ Vector3D IMU::readMagnetometer() {
     return returnVector;
 }
 
-void IMU::updateGyro() {
-    double reading = (double) readGyroscope().z;
+void IMU::update() {
+    double reading = (double)readGyroscope().z;
 
 	long currentTime = micros();
     heading += -(((double)(currentTime - previousTimeGyro) / 1000000.0) * (reading - calibrationGyro));
 	heading = doubleMod(heading, 360.0);
 
 	previousTimeGyro = currentTime;
-}
-
-void IMU::updateAccelerometer() {
-    Vector3D reading = readAccelerometer();
-    Vector2D twoAxis = (Vector2D) {(reading.x - calibrationAccelX) * 9.8, (reading.y- calibrationAccelY) * 9.8};
-
-    long currentTime = micros();
-    long deltaTime = currentTime - previousTimeAccel;
-
-    velocity.x += (((double)(deltaTime) / 1000000.0) * twoAxis.x);
-    velocity.y += (((double)(deltaTime) / 1000000.0) * twoAxis.y);
-
-    position.x += (((double)(deltaTime) / 1000000.0) * velocity.x);
-    position.y += (((double)(deltaTime) / 1000000.0) * velocity.y);
-
-    previousTimeAccel = currentTime;
-}
-
-void IMU::update() {
-    updateGyro();
-    updateAccelerometer();
 }
 
 void IMU::calibrate() {
@@ -91,13 +69,5 @@ void IMU::calibrate() {
         delay(IMU_CALIBRATION_TIME);
     }
 
-    for (int i = 0; i < IMU_CALIBRATION_COUNT; i++) {
-        Vector3D readingAccel = readAccelerometer();
-        calibrationAccelX += readingAccel.x;
-        calibrationAccelY += readingAccel.y;
-    }
-
     calibrationGyro /= IMU_CALIBRATION_COUNT;
-    calibrationAccelX /= IMU_CALIBRATION_COUNT;
-    calibrationAccelY /= IMU_CALIBRATION_COUNT;
 }

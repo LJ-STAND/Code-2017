@@ -221,12 +221,6 @@ void calculateDefense() {
         double sidewaysMovement = 0;
 
         if (ballData.visible) {
-            if (goalData.angle > 15) {
-                sidewaysMovement = (-(goalData.angle - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
-            } else if (goalData.angle < -15) {
-                sidewaysMovement = ((abs(goalData.angle) - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
-            } else {
-
             if (angleIsInside(270, 90, ballData.angle)) {
                 if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle) && ballData.strength > DEFEND_CHARGE_STRENGTH) {
                     sidewaysMovement = 0;
@@ -234,34 +228,14 @@ void calculateDefense() {
                 } else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                     sidewaysMovement = 0;
                 } else if (ballData.angle < 180) {
-                    // if (goalData.angle < 30 /*imu.heading - 180 < 45*/) {
-                        // sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
-                    // } else {
-                    //     sidewaysMovement = -50;
-                    // }
-
-                    if (goalData.angle)
-                        sidewaysMovement = min(sin(degreesToRadians(ballData.angle)) * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = min(ballData.angle / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
                 } else {
-                    // if (goalData.angle > -30/*180 - imu.heading < 45*/) {
-                        // sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
-                    // } else {
-                    //     sidewaysMovement = 50;
-                    // }
-
-                    sidewaysMovement = max(-sin(degreesToRadians(360 - ballData.angle)) * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = max(-(360 - ballData.angle) / 180.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
                 }
             } else {
-                if (goalData.angle > 15 && ()) {
-                    sidewaysMovement = (-(goalData.angle - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
-                } else if (goalData.angle < -15) {
-                    sidewaysMovement = ((abs(goalData.angle) - 15) / ((PIXY_HORIZONTAL_FOV / 2.0) - 15)) * 100;
-                } else {
-                    // if ((ballData.angle < 180 && imu.heading - 180 < 45) || (ballData.angle > 180 && 180 - imu.heading < 45)) {
-                    calculateOrbit();
-                    moveData.angle = mod(moveData.angle + 180, 360);
-                    return;
-                }
+                calculateOrbit();
+                moveData.angle = mod(moveData.angle + 180, 360);
+                return;
             }
         } else if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
             if (goalData.angle > 0) {
@@ -271,7 +245,7 @@ void calculateDefense() {
             }
         }
 
-        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)) - (smallestAngleBetween(imu.heading, 180) < 50 ? mod(imu.heading + 180, 360) : 0), 360);
+        moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
         moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
     } else if (smallestAngleBetween(imu.heading, 180) < 50 && ballData.visible) {
         calculateOrbit();
@@ -288,13 +262,11 @@ void calculateGoalTracking() {
         int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
 
         if (currentPlayMode() == PlayMode::defend) {
-            // if (ballData.visible) {
-            //     facingDirection = goalAngle;
-            // } else {
-            //     facingDirection = 180;
-            // }
-
-            facingDirection = 180;
+            if (ballData.visible) {
+                facingDirection = goalAngle;
+            } else {
+                facingDirection = 180;
+            }
         } else {
             if (FACE_GOAL) {
                 if (!ballData.visible) {

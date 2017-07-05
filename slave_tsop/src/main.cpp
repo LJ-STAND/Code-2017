@@ -23,7 +23,7 @@ Timer ledTimer = Timer(LED_BLINK_TIME_SLAVE_TSOP);
 bool ledOn;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(57600);
 
     spi.begin_SLAVE(SLAVE_TSOP_SCK, SLAVE_TSOP_MOSI, SLAVE_TSOP_MISO, SLAVE_TSOP_CS);
     spi.setCTAR_SLAVE(16, SPI_MODE0);

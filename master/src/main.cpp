@@ -315,8 +315,6 @@ void updatePixy() {
         int biggestArea = 0;
         int foundBlocks = 0;
 
-        Serial.println(blocks);
-
         if (blocks < 3 || currentPlayMode() == PlayMode::attack) {
             for (int i = 0; i < blocks; i++) {
                 int blockArea = pixy.blocks[i].height * pixy.blocks[i].width;
@@ -412,7 +410,13 @@ void updateLine(double angle, double size) {
         }
     }
 
-    // Serial.println(String(lineData.onField) + ", " + String(lineData.angle) + ", " + String(lineData.size) + ", " + String(angle) + ", " + String(size));
+    if (lineData.onField) {
+        Serial.print("On");
+    } else {
+        Serial.print("Off");
+    }
+
+    Serial.println(", Robot: " + String(lineData.angle) + ", " + String(lineData.size) + ", Line: " + String(angle) + ", " + String(size));
 }
 
 void updatePlayMode() {

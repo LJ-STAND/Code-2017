@@ -45,8 +45,7 @@ void Motor::move(int speed) {
 }
 
 void Motor::brake() {
-	// Instead of writing 0 and LOW - LOW, writing a very low value to the PWM Pin and HIGH to one of the IN pins causes the motor to brake instead of coasting.
-	analogWrite(pwmPin, 1);
 	digitalWrite(inOnePin, HIGH);
-	digitalWrite(inTwoPin, LOW);
+	digitalWrite(inTwoPin, HIGH);
+	digitalWrite(pwmPin, HIGH);
 }

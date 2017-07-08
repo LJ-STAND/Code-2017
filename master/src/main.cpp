@@ -163,7 +163,7 @@ void calculateLineAvoid() {
 }
 
 void centre() {
-    if (goalData.status != GoalStatus::invisible) {
+    if (goalData.status != GoalStatus::invisible && smallestAngleBetween(imu.heading, 0) < 10) {
         double relativeDistance = abs(CENTRE_GOAL_DISTANCE - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? CENTRE_GOAL_DISTANCE - goalData.distance : 0;
         double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
 
@@ -224,7 +224,6 @@ void calculateDefense() {
             if (angleIsInside(270, 90, ballData.angle)) {
                 if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle) && ballData.strength > DEFEND_CHARGE_STRENGTH) {
                     sidewaysMovement = 0;
-                    // distanceMovement = ORBIT_SPEED;
                 } else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                     sidewaysMovement = 0;
                 } else if (ballData.angle < 180) {
@@ -410,13 +409,10 @@ void updateLine(double angle, double size) {
         }
     }
 
-    if (lineData.onField) {
-        Serial.print("On");
-    } else {
-        Serial.print("Off");
-    }
-
-    Serial.println(", Robot: " + String(lineData.angle) + ", " + String(lineData.size) + ", Line: " + String(angle) + ", " + String(size));
+    #if DEBUG_LINE
+        Serial.print(lineData.onField ? "On" : "Off");
+        Serial.println(", Robot: " + String(lineData.angle) + ", " + String(lineData.size) + ", Line: " + String(angle) + ", " + String(size));
+    #endif
 }
 
 void updatePlayMode() {
@@ -446,7 +442,7 @@ void updatePlayMode() {
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
                     // Two situations to switch roles, note the ||.
-                    if ((angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360))) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH)) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
                         playMode = PlayMode::attack;
                         playModeSwitchComplete = false;
                         playModeSwitchTimer.update();

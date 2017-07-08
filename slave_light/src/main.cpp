@@ -38,7 +38,7 @@ void setup() {
 
 void debug() {
     for (int i = 0; i < 24; i++) {
-        Serial.print(lightSensorArray.data[i]);
+        Serial.print(lightSensorArray.sensors[i].getValue());
         Serial.print(", ");
     }
 
@@ -49,6 +49,10 @@ void loop() {
     lightSensorArray.read();
     lightSensorArray.calculateClusters();
     lightSensorArray.calculateLine();
+
+    #if DEBUG_LINE
+        debug();
+    #endif
 
     if (ledTimer.timeHasPassed()) {
         digitalWrite(LED_BUILTIN, ledOn);

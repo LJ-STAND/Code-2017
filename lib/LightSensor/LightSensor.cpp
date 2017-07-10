@@ -15,7 +15,7 @@ void LightSensor::init(bool isFront) {
         defaultValue += value;
     }
 
-    thresholdValue = round((int)((double)defaultValue / LS_CALIBRATION_COUNT) + (isFront ? LS_CALIBRATION_BUFFER_FRONT : LS_CALIBRATION_BUFFER));
+    thresholdValue = round((int)((double)defaultValue / LS_CALIBRATION_COUNT) - LS_CALIBRATION_BUFFER);
 }
 
 void LightSensor::read() {
@@ -24,7 +24,7 @@ void LightSensor::read() {
 
 bool LightSensor::isOnWhite() {
     read();
-    return (value > thresholdValue);
+    return (value < thresholdValue);
 }
 
 int LightSensor::getValue() {

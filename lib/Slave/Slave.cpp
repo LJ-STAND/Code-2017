@@ -47,10 +47,3 @@ int SlaveTSOP::getTSOPAngle() {
 int SlaveTSOP::getTSOPStrength() {
     return transaction(SlaveCommand::tsopStrength);
 }
-
-BallData SlaveTSOP::getBallData() {
-    int angle = getTSOPAngle();
-    int strength = getTSOPStrength();
-
-    return BallData(angle, strength, angle != TSOP_NO_BALL);
-}

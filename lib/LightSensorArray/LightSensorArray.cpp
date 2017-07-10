@@ -172,37 +172,9 @@ double LightSensorArray::getLineSize() {
 }
 
 uint16_t LightSensorArray::getFirst16Bit() {
-    BitsUnion bitsUnion;
-    bitsUnion.bits.b0 = data[0];
-    bitsUnion.bits.b1 = data[1];
-    bitsUnion.bits.b2 = data[2];
-    bitsUnion.bits.b3 = data[3];
-    bitsUnion.bits.b4 = data[4];
-    bitsUnion.bits.b5 = data[5];
-    bitsUnion.bits.b6 = data[6];
-    bitsUnion.bits.b7 = data[7];
-    bitsUnion.bits.b8 = data[8];
-    bitsUnion.bits.b9 = data[9];
-    bitsUnion.bits.b10 = data[10];
-    bitsUnion.bits.b11 = data[11];
-    bitsUnion.bits.b12 = data[12];
-    bitsUnion.bits.b13 = data[13];
-    bitsUnion.bits.b14 = data[14];
-    bitsUnion.bits.b15 = data[15];
-
-    return bitsUnion.bit16;
+return 0;
 }
 
 uint16_t LightSensorArray::getSecond16Bit() {
-    BitsUnion bitsUnion;
-    bitsUnion.bits.b0 = data[16];
-    bitsUnion.bits.b1 = data[17];
-    bitsUnion.bits.b2 = data[18];
-    bitsUnion.bits.b3 = data[19];
-    bitsUnion.bits.b4 = data[20];
-    bitsUnion.bits.b5 = data[21];
-    bitsUnion.bits.b6 = data[22];
-    bitsUnion.bits.b7 = data[23];
-
-    return bitsUnion.bit16;
+return 0;
 }

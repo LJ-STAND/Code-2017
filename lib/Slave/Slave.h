@@ -4,7 +4,6 @@
 #include <t3spi.h>
 #include <Pins.h>
 #include <Config.h>
-#include <BallData.h>
 
 enum SlaveCommand: int {
     lineAngle,
@@ -41,7 +40,6 @@ public:
     void init();
     int getTSOPAngle();
     int getTSOPStrength();
-    BallData getBallData();
 };
 
 #endif // SLAVE_H

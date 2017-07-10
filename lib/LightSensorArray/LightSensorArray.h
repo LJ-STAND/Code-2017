@@ -5,7 +5,6 @@
 #include <Pins.h>
 #include <LightSensor.h>
 #include <LightSensorCluster.h>
-#include <Bits.h>
 #include <Common.h>
 
 class LightSensorArray {

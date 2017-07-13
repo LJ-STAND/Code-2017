@@ -442,7 +442,7 @@ void updatePlayMode() {
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
                     // Two situations to switch roles, note the ||.
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360))/* || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH)*/)) {
                         playMode = PlayMode::attack;
                         playModeSwitchComplete = false;
                         playModeSwitchTimer.update();

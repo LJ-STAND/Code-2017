@@ -6,7 +6,6 @@
 
 #include <Arduino.h>
 #include <t3spi.h>
-#include <DebugController.h>
 #include <i2c_t3.h>
 #include <Config.h>
 #include <MotorArray.h>
@@ -17,6 +16,7 @@
 #include <Timer.h>
 #include <XBee.h>
 #include <Common.h>
+#include <LineData.h>
 
 T3SPI spi;
 MotorArray motors;
@@ -24,7 +24,8 @@ IMU imu;
 
 SlaveLightSensor slaveLightSensor;
 
-MoveData moveData(0, 150, 0);
+MoveData moveData(0, 0, 0);
+LineData lineData;
 
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
 
@@ -93,16 +94,65 @@ void updateCompass() {
     compassPreviousTime = currentTime;
 }
 
+void updateLine(double angle, double size) {
+    bool noLine = angle == NO_LINE_ANGLE || size == 3;
+
+    angle = noLine ? 0 : doubleMod(angle + imu.heading, 360);
+
+    if (lineData.onField) {
+        if (!noLine) {
+            lineData.angle = angle;
+            lineData.size = size;
+
+            lineData.onField = false;
+        }
+    } else {
+        if (lineData.size == 3) {
+            if (!noLine) {
+                lineData.angle = doubleMod(angle + 180, 360);
+                lineData.size = 2 - size;
+            }
+        } else {
+            if (noLine) {
+                if (lineData.size <= 1) {
+                    lineData.onField = true;
+                    lineData.size = 0;
+                    lineData.angle = 0;
+                } else {
+                    lineData.size = 3;
+                }
+            } else {
+                if (smallestAngleBetween(lineData.angle, angle) <= 90) {
+                    lineData.angle = angle;
+                    lineData.size = size;
+                } else {
+                    lineData.angle = doubleMod(angle + 180, 360);
+                    lineData.size = 2 - size;
+                }
+            }
+        }
+    }
+
+    #if DEBUG_LINE
+        Serial.print(lineData.onField ? "On" : "Off");
+        Serial.println(", Robot: " + String(lineData.angle) + ", " + String(lineData.size) + ", Line: " + String(angle) + ", " + String(size));
+    #endif
+}
+
 void loop() {
     updateCompass();
 
-    double lineAngle = slaveLightSensor.getLineAngle();
-    double lineSize = slaveLightSensor.getLineSize();
+    updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    if (lineSize < 0.5) {
-        moveData.angle = lineAngle;
+    facingDirection = lineData.angle - 90;
+    if (lineData.onField == false){
+        int forwardsMovement = 20;
+        int sidewaysMovement = lineData.size > 1 ? 20 : -20;
+        moveData.angle = atan2(forwardsMovement, sidewaysMovement);
+        moveData.speed = sqrt(forwardsMovement * forwardsMovement + sidewaysMovement * sidewaysMovement);
     } else {
-        moveData.angle = mod(lineAngle - 90, 360);
+        moveData.angle = 0;
+        moveData.speed = 0;
     }
 
     calculateRotationCorrection();

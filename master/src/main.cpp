@@ -48,6 +48,7 @@ GoalData goalData;
 
 PlayMode playMode = PlayMode::undecided;
 bool playModeSwitchComplete = true;
+bool attackingBackwards = false;
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
@@ -120,7 +121,7 @@ PlayMode currentPlayMode() {
 }
 
 double defaultDirection() {
-    return currentPlayMode() == PlayMode::attack ? 0 : 180;
+    return currentPlayMode() == PlayMode::attack && !attackingBackwards ? 0 : 180;
 }
 
 void calculateRotationCorrection() {
@@ -290,10 +291,19 @@ void calculateGoalTracking() {
 
 void calculateMovement() {
     if (currentPlayMode() == PlayMode::attack) {
-        if (ballData.visible) {
+        if (attackingBackwards) {
             calculateOrbit();
+            moveData.angle = mod(moveData.angle + 180, 360);
+
+            if (!ballData.visible || goalData.distance < ATTACK_BACKWARDS_MAX_DISTANCE) {
+                attackingBackwards = false;
+            }
         } else {
-            centre();
+            if (ballData.visible) {
+                calculateOrbit();
+            } else {
+                centre();
+            }
         }
     } else {
         calculateDefense();
@@ -318,7 +328,7 @@ void updatePixy() {
             for (int i = 0; i < blocks; i++) {
                 int blockArea = pixy.blocks[i].height * pixy.blocks[i].width;
 
-                if (blockArea > GOAL_MIN_AREA && pixy.blocks[i].signature == (currentPlayMode() == PlayMode::attack ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND) && smallestAngleBetween(imu.heading, defaultDirection()) < 90) {
+                if (blockArea > GOAL_MIN_AREA && pixy.blocks[i].signature == (currentPlayMode() == PlayMode::attack && !attackingBackwards ? COLOUR_SIG_ATTACK : COLOUR_SIG_DEFEND) && smallestAngleBetween(imu.heading, defaultDirection()) < 90) {
                     foundBlocks += 1;
 
                     if (blockArea > biggestArea) {
@@ -430,6 +440,8 @@ void updatePlayMode() {
         } else {
             playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
         }
+
+        attackingBackwards = false;
     } else if (xbee.otherPlayMode != PlayMode::undecided) {
         if (playModeSwitchComplete && playModeSwitchTimer.timeHasPassedNoUpdate()) {
             if (xbee.otherPlayMode == playMode) {
@@ -444,6 +456,7 @@ void updatePlayMode() {
                     // Two situations to switch roles, note the ||.
                     if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
                         playMode = PlayMode::attack;
+                        attackingBackwards = true;
                         playModeSwitchComplete = false;
                         playModeSwitchTimer.update();
                     }

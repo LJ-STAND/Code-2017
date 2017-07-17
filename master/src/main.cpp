@@ -295,7 +295,7 @@ void calculateMovement() {
             calculateOrbit();
             moveData.angle = mod(moveData.angle + 180, 360);
 
-            if (!ballData.visible || goalData.distance < ATTACK_BACKWARDS_MAX_DISTANCE) {
+            if (!ballData.visible || ballData.strength < ATTACK_BACKWARDS_MAX_DISTANCE) {
                 attackingBackwards = false;
             }
         } else {

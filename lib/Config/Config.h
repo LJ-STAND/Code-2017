@@ -109,6 +109,8 @@
 
 #define ORBIT_SPEED 230
 
+#define ATTACK_BACKWARDS_MAX_DISTANCE 120
+
 #define BALL_FRONT_BUFFER 10
 
 // Defence

@@ -353,7 +353,7 @@ void updatePixy() {
 
             lastSeenGoalTimer.update();
 
-            #if DEBUG_APP && DEBUG_APP_PIXY
+            #if DEBUG_APP
                 debug.appSendPixy(goalBlock.x, goalBlock.y, goalBlock.width, goalBlock.height);
             #endif
 
@@ -487,18 +487,17 @@ void updateXBee() {
 }
 
 void appDebug() {
-    #if DEBUG_APP_IMU
+    #if DEBUG_APP
+        //IMU
         debug.appSendIMU(imu.heading);
-    #endif
 
-    #if DEBUG_APP_LIGHTSENSORS
+        //Light Sensors
         uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
         uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
         debug.appSendLightSensors(first16Bit, second16Bit);
-    #endif
 
-    #if DEBUG_APP_TSOPS
+        //TSOPS
         debug.appSendTSOPs(ballData.angle);
         debug.appSendOrbitAngle(moveData.angle);
     #endif

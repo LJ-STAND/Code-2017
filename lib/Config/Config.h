@@ -187,11 +187,6 @@
 
 #define DEBUG_APP false
 
-#define DEBUG_APP_IMU false
-#define DEBUG_APP_LIGHTSENSORS false
-#define DEBUG_APP_TSOPS false
-#define DEBUG_APP_PIXY false
-
 #define DEBUG_LINE false
 
 #define LED_BLINK_TIME_MASTER 100000

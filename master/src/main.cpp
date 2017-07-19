@@ -488,13 +488,24 @@ void updateXBee() {
 
 void appDebug() {
     #if DEBUG_APP
+<<<<<<< HEAD
         debug.appSendIMU(imu.heading);
 
+=======
+        //IMU
+        debug.appSendIMU(imu.heading);
+
+        //Light Sensors
+>>>>>>> 5b1eba9074050697910b8620067d47995c0b165d
         uint16_t first16Bit = slaveLightSensor.getFirst16Bit();
         uint16_t second16Bit = slaveLightSensor.getSecond16Bit();
 
         debug.appSendLightSensors(first16Bit, second16Bit);
 
+<<<<<<< HEAD
+=======
+        //TSOPS
+>>>>>>> 5b1eba9074050697910b8620067d47995c0b165d
         debug.appSendTSOPs(ballData.angle);
         debug.appSendOrbitAngle(moveData.angle);
     #endif

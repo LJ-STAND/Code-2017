@@ -187,11 +187,14 @@
 
 #define DEBUG_APP true
 
+<<<<<<< HEAD
 // #define DEBUG_APP_IMU true
 // #define DEBUG_APP_LIGHTSENSORS true
 // #define DEBUG_APP_TSOPS true
 // #define DEBUG_APP_PIXY true
 
+=======
+>>>>>>> 5b1eba9074050697910b8620067d47995c0b165d
 #define DEBUG_LINE false
 
 #define LED_BLINK_TIME_MASTER 100000

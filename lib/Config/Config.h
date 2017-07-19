@@ -185,12 +185,12 @@
 
 // Debug
 
-#define DEBUG_APP false
+#define DEBUG_APP true
 
-#define DEBUG_APP_IMU false
-#define DEBUG_APP_LIGHTSENSORS false
-#define DEBUG_APP_TSOPS false
-#define DEBUG_APP_PIXY false
+// #define DEBUG_APP_IMU true
+// #define DEBUG_APP_LIGHTSENSORS true
+// #define DEBUG_APP_TSOPS true
+// #define DEBUG_APP_PIXY true
 
 #define DEBUG_LINE false
 

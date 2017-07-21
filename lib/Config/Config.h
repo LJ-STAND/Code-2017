@@ -18,7 +18,6 @@
 
 #define LS_CALIBRATION_COUNT 10
 #define LS_CALIBRATION_BUFFER 20
-#define LS_CALIBRATION_BUFFER_FRONT 60
 
 #define NO_LINE_ANGLE 400
 #define NO_LINE_SIZE 3
@@ -109,7 +108,7 @@
 
 #define ORBIT_SPEED 230
 
-#define ATTACK_BACKWARDS_MAX_DISTANCE 120
+#define ATTACK_BACKWARDS_MAX_DISTANCE 110
 
 #define BALL_FRONT_BUFFER 10
 
@@ -185,16 +184,8 @@
 
 // Debug
 
-#define DEBUG_APP true
+#define DEBUG_APP false
 
-<<<<<<< HEAD
-// #define DEBUG_APP_IMU true
-// #define DEBUG_APP_LIGHTSENSORS true
-// #define DEBUG_APP_TSOPS true
-// #define DEBUG_APP_PIXY true
-
-=======
->>>>>>> 5b1eba9074050697910b8620067d47995c0b165d
 #define DEBUG_LINE false
 
 #define LED_BLINK_TIME_MASTER 100000

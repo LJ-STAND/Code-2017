@@ -258,7 +258,7 @@ void calculateDefense() {
 }
 
 void calculateGoalTracking() {
-    if (goalData.status != GoalStatus::invisible) {
+    if (goalData.status != GoalStatus::invisible && !attackingBackwards) {
         int goalAngle = mod(imu.heading + goalData.angle + 180, 360) - 180;
 
         if (currentPlayMode() == PlayMode::defend) {
@@ -447,15 +447,17 @@ void updatePlayMode() {
         if (playModeSwitchComplete && playModeSwitchTimer.timeHasPassedNoUpdate()) {
             if (xbee.otherPlayMode == playMode) {
                 playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
+                attackingBackwards = false;
                 playModeSwitchTimer.update();
             } else if (playMode == PlayMode::defend) {
                 if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
                     playMode = PlayMode::attack;
+                    attackingBackwards = true;
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
                     // Two situations to switch roles, note the ||.
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + imu.heading, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360))/* || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH)*/)) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, ballData.angle) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) && ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength/* || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && ballData.strength > xbee.otherBallStrength && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH)*/)) {
                         playMode = PlayMode::attack;
                         attackingBackwards = true;
                         playModeSwitchComplete = false;
@@ -483,6 +485,7 @@ void updateXBee() {
             updatePlayMode();
         } else {
             playMode = PlayMode::undecided;
+            attackingBackwards = false;
         }
     }
 }

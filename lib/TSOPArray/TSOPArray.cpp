@@ -68,13 +68,22 @@ void TSOPArray::finishRead() {
     // Complete a reading of the TSOPs after a certain amount of individual readings, TSOP values are now stored in the values array until the next complete read
     tsopCounter = 0;
     for (int i = 0; i < TSOP_NUM; i++) {
+        #if DEBUG_TSOP
+            Serial.print(tempValues[i]);
+            if (i != TSOP_NUM - 1) {
+                Serial.print(", ");
+            } else {
+                Serial.println();
+            }
+        #endif
+
         values[i] = tempValues[i];
         tempValues[i] = 0;
         filteredValues[i] = 0;
         sortedFilteredValues[i] = 0;
         indexes[i] = 0;
     }
-
+    
     sortFilterValues();
     calculateAngleSimple();
     calculateAngle(TSOP_BEST_TSOP_NO_ANGLE);

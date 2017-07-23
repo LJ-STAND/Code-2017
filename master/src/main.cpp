@@ -306,13 +306,17 @@ void calculateMovement() {
             calculateOrbit();
             moveData.angle = mod(moveData.angle + 180, 360);
 
-            if (goalData.status != GoalStatus::invisible) {
-                if (!ballData.visible || (ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH && goalData.distance < DEFEND_LEFT_GOAL_DISTANCE)) {
-                    attackingBackwards = false;
-                }
+            if (!ballData.visible) {
+                attackingBackwards = false;
             } else {
-                if (!ballData.visible || ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH) {
-                    attackingBackwards = false;
+                if (goalData.status != GoalStatus::invisible) {
+                    if (ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH && goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
+                        attackingBackwards = false;
+                    }
+                } else {
+                    if (ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH) {
+                        attackingBackwards = false;
+                    }
                 }
             }
         } else {

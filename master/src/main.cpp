@@ -529,6 +529,8 @@ void appDebug() {
 
         debug.appSendLightSensors(first16Bit, second16Bit);
 
+        debug.appSendRobotPosition(lineData.angle, lineData.size);
+
         //TSOPS
         debug.appSendTSOPs(ballData.angle);
         debug.appSendOrbitAngle(moveData.angle);

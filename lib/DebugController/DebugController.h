@@ -43,6 +43,7 @@ public:
     void appSendString(String string);
     void appSendLightSensors(uint16_t first16Bit, uint16_t second16Bit);
     void appSendPixy(double x, double y, double width, double height);
+    void appSendRobotPosition(double lineAngle, double lineSize);
 };
 
 #endif

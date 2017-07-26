@@ -180,3 +180,8 @@ void DebugController::appSendPixy(double x, double y, double width, double heigh
     String sendString = String(x) + "," + String(y) + "," + String(width) + "," + String(height);
     Bluetooth::send(sendString, BluetoothDataType::goal);
 }
+
+void DebugController::appSendRobotPosition(double lineAngle, double lineSize) {
+    String sendString = String(lineAngle) + "," + String(lineSize);
+    Bluetooth::send(send)
+}

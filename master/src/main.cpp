@@ -460,7 +460,15 @@ void updatePlayMode() {
                 playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::attack : PlayMode::defend;
             }
         } else {
-            playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
+            if (angleIsInside(270, 90, ballData.angle) && angleIsInside(270, 90, xbee.otherBallAngle)) {
+                playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::attack : PlayMode::defend;
+            } else if (angleIsInside(270, 90, ballData.angle) && angleIsInside(90, 270, xbee.otherBallAngle)) {
+                playMode = PlayMode::defend;
+            } else if (angleIsInside(90, 270, ballData.angle) && angleIsInside(270, 90, xbee.otherBallAngle)) {
+                playMode = PlayMode::attack;
+            } else {
+                playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::defend : PlayMode::attack;
+            }
         }
 
         attackingBackwards = false;
@@ -477,7 +485,7 @@ void updatePlayMode() {
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) || (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) && (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
                         playMode = PlayMode::attack;
                         attackingBackwards = true;
                         playModeSwitchComplete = false;

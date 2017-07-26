@@ -183,5 +183,5 @@ void DebugController::appSendPixy(double x, double y, double width, double heigh
 
 void DebugController::appSendRobotPosition(double lineAngle, double lineSize) {
     String sendString = String(lineAngle) + "," + String(lineSize);
-    Bluetooth::send(send)
+    Bluetooth::send(sendString, BluetoothDataType::btRobotPosition);
 }

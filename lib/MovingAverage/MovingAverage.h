@@ -8,6 +8,10 @@ public:
     MovingAverage(int number) {
         n = number;
         samples = new int[number];
+
+        for (int i = 0; i < number; i++) {
+            samples[i] = 0;
+        }
     }
 
     void update(int value);

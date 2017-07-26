@@ -43,7 +43,6 @@ void XBee::receive() {
 
             for (int i = 0; i < XBEE_PACKET_SIZE - 2; i++) {
                 dataBuffer[i] = XBEESERIAL.read();
-                Serial.println(dataBuffer[i]);
             }
 
             otherBallAngle = (dataBuffer[0] << 8) | dataBuffer[1];

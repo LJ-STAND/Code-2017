@@ -52,7 +52,6 @@ bool playModeSwitchComplete = true;
 bool attackingBackwards = false;
 
 MovingAverage switchingStrengthAverage(25);
-MovingAverage otherSwitchingStrengthAverage(25);
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
@@ -314,11 +313,11 @@ void calculateMovement() {
                 attackingBackwards = false;
             } else {
                 if (goalData.status != GoalStatus::invisible) {
-                    if (ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH && goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
+                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
                         attackingBackwards = false;
                     }
                 } else {
-                    if (ballData.strength < ATTACK_BACKWARDS_MAX_STRENGTH) {
+                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH) {
                         attackingBackwards = false;
                     }
                 }
@@ -452,6 +451,8 @@ void updateLine(double angle, double size) {
 }
 
 void updatePlayMode() {
+    Serial.println(String(mod(ballData.angle + 180, 360)) + ", " + String(switchingStrengthAverage.average()) + ", " + String(xbee.otherBallStrength));
+
     PlayMode previousPlayMode = playMode;
 
     if (playMode == PlayMode::undecided) {
@@ -489,7 +490,7 @@ void updatePlayMode() {
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && otherSwitchingStrengthAverage.average() < PLAYMODE_SWITCH_ATTACKER_STRENGTH) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH) {
                         playMode = PlayMode::attack;
                         attackingBackwards = true;
                         playModeSwitchComplete = false;
@@ -503,20 +504,17 @@ void updatePlayMode() {
     }
 
     if (playMode != previousPlayMode) {
-        xbee.update(ballData.angle, ballData.strength, imu.heading, playMode, true);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, playMode, true);
     }
 }
 
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
-        xbee.update(ballData.angle, ballData.strength, imu.heading, playMode);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, playMode);
 
         debug.toggleGreen(xbee.isConnected);
 
         if (xbee.isConnected) {
-            switchingStrengthAverage.update(ballData.strength);
-            otherSwitchingStrengthAverage.update(xbee.otherBallStrength);
-
             updatePlayMode();
         } else {
             playMode = PlayMode::undecided;
@@ -546,6 +544,7 @@ void appDebug() {
 
 void loop() {
     ballData = slaveTSOP.getBallData();
+    switchingStrengthAverage.update(ballData.strength);
 
     debug.toggleOrange(ballData.visible);
 

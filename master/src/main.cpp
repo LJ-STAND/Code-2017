@@ -25,6 +25,7 @@
 #include <BallData.h>
 #include <LineData.h>
 #include <Common.h>
+#include <MovingAverage.h>
 
 XBee xbee;
 T3SPI spi;
@@ -49,6 +50,9 @@ GoalData goalData;
 PlayMode playMode = PlayMode::undecided;
 bool playModeSwitchComplete = true;
 bool attackingBackwards = false;
+
+MovingAverage switchingStrengthAverage(25);
+MovingAverage otherSwitchingStrengthAverage(25);
 
 Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
 Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
@@ -485,7 +489,7 @@ void updatePlayMode() {
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && (angleIsInside(PLAYMODE_SWITCH_ATTACKER_ANGLE, 360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, mod(xbee.otherBallAngle + xbee.otherHeading, 360)) && (ballData.strength > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH))) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && otherSwitchingStrengthAverage.average() < PLAYMODE_SWITCH_ATTACKER_STRENGTH) {
                         playMode = PlayMode::attack;
                         attackingBackwards = true;
                         playModeSwitchComplete = false;
@@ -510,6 +514,9 @@ void updateXBee() {
         debug.toggleGreen(xbee.isConnected);
 
         if (xbee.isConnected) {
+            switchingStrengthAverage.update(ballData.strength);
+            otherSwitchingStrengthAverage.update(xbee.otherBallStrength);
+
             updatePlayMode();
         } else {
             playMode = PlayMode::undecided;

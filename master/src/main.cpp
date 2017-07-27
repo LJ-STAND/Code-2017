@@ -132,10 +132,9 @@ double defaultDirection() {
 void calculateRotationCorrection() {
     double multiplierD = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
     double multiplierP = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
-    multiplierP = abs(imu.heading - facingDirection) < 15 && playMode == PlayMode::defend? 0.5 : multiplierP;
 
     int correctionRotation;
-    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP - compassDiff * multiplierD;
+    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
 
     if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
         correctionRotation = 0;
@@ -234,9 +233,9 @@ void calculateDefense() {
                 } else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                     sidewaysMovement = 0;
                 } else if (ballData.angle < 180) {
-                    sidewaysMovement = min(ballData.angle / 90.0 * (smallestAngleBetween(ballData.angle, 0) < 50 ? DEFEND_SIDEWAYS_MULTIPLIER_SMALL : DEFEND_SIDEWAYS_MULTIPLIER), DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = min(ballData.angle / 90.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
                 } else {
-                    sidewaysMovement = max(-(360 - ballData.angle) / 90.0 * (smallestAngleBetween(ballData.angle, 0) < 50 ? DEFEND_SIDEWAYS_MULTIPLIER_SMALL : DEFEND_SIDEWAYS_MULTIPLIER), -DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = max(-(360 - ballData.angle) / 90.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
                 }
             } else {
                 calculateOrbit();
@@ -249,9 +248,6 @@ void calculateDefense() {
             } else {
                 sidewaysMovement = min(-goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
             }
-        }
-        if ((mod(goalData.angle + imu.heading, 360) - 180) > 10) {
-            sidewaysMovement = min(sidewaysMovement, 0.1 * (10 - mod(goalData.angle + imu.heading, 360) - 180));
         }
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
@@ -414,12 +410,11 @@ void updateCompass() {
         compassDiff += 360;
     }
 
-    compassDiff /= (double)(currentTime - compassPreviousTime);
-
     compassPreviousAngle = imu.heading;
     compassPreviousTime = currentTime;
 }
 
+    compassDiff /= (double)(currentTime - compassPreviousTime);
 void updateLine(double angle, double size) {
     bool noLine = angle == NO_LINE_ANGLE || size == 3;
 

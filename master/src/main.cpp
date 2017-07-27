@@ -132,9 +132,10 @@ double defaultDirection() {
 void calculateRotationCorrection() {
     double multiplierD = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
     double multiplierP = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
+    multiplierP = abs(imu.heading - facingDirection) < 15 && playMode == PlayMode::defend? 0.5 : multiplierP;
 
     int correctionRotation;
-    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
+    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP - compassDiff * multiplierD;
 
     if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
         correctionRotation = 0;
@@ -233,9 +234,9 @@ void calculateDefense() {
                 } else if (angleIsInside(360 - DEFEND_SMALL_ANGLE, DEFEND_SMALL_ANGLE, ballData.angle)) {
                     sidewaysMovement = 0;
                 } else if (ballData.angle < 180) {
-                    sidewaysMovement = min(ballData.angle / 90.0 * DEFEND_SIDEWAYS_MULTIPLIER, DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = min(ballData.angle / 90.0 * (smallestAngleBetween(ballData.angle, 0) < 50 ? DEFEND_SIDEWAYS_MULTIPLIER_SMALL : DEFEND_SIDEWAYS_MULTIPLIER), DEFEND_SIDEWAYS_MAX_SPEED);
                 } else {
-                    sidewaysMovement = max(-(360 - ballData.angle) / 90.0 * DEFEND_SIDEWAYS_MULTIPLIER, -DEFEND_SIDEWAYS_MAX_SPEED);
+                    sidewaysMovement = max(-(360 - ballData.angle) / 90.0 * (smallestAngleBetween(ballData.angle, 0) < 50 ? DEFEND_SIDEWAYS_MULTIPLIER_SMALL : DEFEND_SIDEWAYS_MULTIPLIER), -DEFEND_SIDEWAYS_MAX_SPEED);
                 }
             } else {
                 calculateOrbit();
@@ -248,6 +249,9 @@ void calculateDefense() {
             } else {
                 sidewaysMovement = min(-goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
             }
+        }
+        if ((mod(goalData.angle + imu.heading, 360) - 180) > 10) {
+            sidewaysMovement = min(sidewaysMovement, 0.1 * (10 - mod(goalData.angle + imu.heading, 360) - 180));
         }
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
@@ -315,7 +319,7 @@ void calculateMovement() {
             } else {
                 if (smallestAngleBetween(imu.heading, 0) < 90) {
                     attackingBackwards = false;
-                } else if (smallestAngleBetween(lineData.angle, ballData.angle) < 90) {
+                } else if (!lineData.onField && smallestAngleBetween(lineData.angle, ballData.angle) < 90) {
                     attackingBackwards = false;
                 } else if (goalData.status != GoalStatus::invisible) {
                     if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE)) {
@@ -402,13 +406,15 @@ void updatePixy() {
 void updateCompass() {
     imu.update();
     long currentTime = micros();
-    compassDiff = (imu.heading - compassPreviousAngle) / (currentTime - compassPreviousTime);
+    compassDiff = (imu.heading - compassPreviousAngle);
 
     if (compassDiff > 180) {
         compassDiff -= 360;
     } else if (compassDiff < -180) {
         compassDiff += 360;
     }
+
+    compassDiff /= (double)(currentTime - compassPreviousTime);
 
     compassPreviousAngle = imu.heading;
     compassPreviousTime = currentTime;
@@ -491,18 +497,11 @@ void updatePlayMode() {
                 attackingBackwards = false;
                 playModeSwitchTimer.update();
             } else if (playMode == PlayMode::defend) {
-                if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR) && lineData.onField) {
                     playMode = PlayMode::attack;
                     attackingBackwards = true;
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
-                } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR) && lineData.onField) {
-                        playMode = PlayMode::attack;
-                        attackingBackwards = true;
-                        playModeSwitchComplete = false;
-                        playModeSwitchTimer.update();
-                    }
                 }
             }
         } else if (xbee.otherPlayMode != playMode) {

@@ -50,6 +50,7 @@ GoalData goalData;
 PlayMode playMode = PlayMode::undecided;
 bool playModeSwitchComplete = true;
 bool attackingBackwards = false;
+bool previouslyConnected = false;
 
 MovingAverage switchingStrengthAverage(25);
 
@@ -340,6 +341,10 @@ void calculateMovement() {
     calculateRotationCorrection();
 }
 
+double horizontalDistanceFromCentre() {
+    return goalData.distance * sin(degreesToRadians(smallestAngleBetween(0, goalData.angle)));
+}
+
 void updatePixy() {
     if (pixyTimer.timeHasPassed()) {
         uint16_t blocks = pixy.getBlocks();
@@ -514,8 +519,14 @@ void updateXBee() {
 
         if (xbee.isConnected) {
             updatePlayMode();
+            previouslyConnected = true;
         } else {
-            playMode = PlayMode::undecided;
+            if (previouslyConnected) {
+                playMode = PlayMode::defend;
+            } else {
+                playMode = PlayMode::undecided;
+            }
+
             attackingBackwards = false;
         }
     }

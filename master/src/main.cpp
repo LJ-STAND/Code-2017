@@ -313,8 +313,12 @@ void calculateMovement() {
             if (!ballData.visible) {
                 attackingBackwards = false;
             } else {
-                if (goalData.status != GoalStatus::invisible) {
-                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && goalData.distance < DEFEND_LEFT_GOAL_DISTANCE) {
+                if (smallestAngleBetween(imu.heading, 0) < 90) {
+                    attackingBackwards = false;
+                } else if (smallestAngleBetween(lineData.angle, ballData.angle) < 90) {
+                    attackingBackwards = false;
+                } else if (goalData.status != GoalStatus::invisible) {
+                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE)) {
                         attackingBackwards = false;
                     }
                 } else {
@@ -493,7 +497,7 @@ void updatePlayMode() {
                     playModeSwitchComplete = false;
                     playModeSwitchTimer.update();
                 } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR)) {
+                    if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR) && lineData.onField) {
                         playMode = PlayMode::attack;
                         attackingBackwards = true;
                         playModeSwitchComplete = false;

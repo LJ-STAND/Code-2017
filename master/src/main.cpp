@@ -304,36 +304,42 @@ void calculateGoalTracking() {
 
 void calculateMovement() {
     if (currentPlayMode() == PlayMode::attack) {
-        if (attackingBackwards) {
-            ballData.angle = mod(ballData.angle + 180, 360);
+        // if (xbee.otherBallIsOut) {
+        //     attackingBackwards = false;
+        //     centre();
+        //     Serial.println("Attack to centre");
+        // } else {
+            if (attackingBackwards) {
+                ballData.angle = mod(ballData.angle + 180, 360);
 
-            calculateOrbit();
-            moveData.angle = mod(moveData.angle + 180, 360);
+                calculateOrbit();
+                moveData.angle = mod(moveData.angle + 180, 360);
 
-            if (!ballData.visible) {
-                attackingBackwards = false;
-            } else {
-                if (smallestAngleBetween(imu.heading, 0) < 90) {
+                if (!ballData.visible) {
                     attackingBackwards = false;
-                } else if (!lineData.onField && smallestAngleBetween(lineData.angle, ballData.angle) < 90) {
-                    attackingBackwards = false;
-                } else if (goalData.status != GoalStatus::invisible) {
-                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE)) {
-                        attackingBackwards = false;
-                    }
                 } else {
-                    if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH) {
+                    if (smallestAngleBetween(imu.heading, 0) < 90) {
                         attackingBackwards = false;
+                    } else if (!lineData.onField && smallestAngleBetween(lineData.angle, ballData.angle) < 90) {
+                        attackingBackwards = false;
+                    } else if (goalData.status != GoalStatus::invisible) {
+                        if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH && (goalData.distance < DEFEND_LEFT_GOAL_DISTANCE)) {
+                            attackingBackwards = false;
+                        }
+                    } else {
+                        if (switchingStrengthAverage.average() < ATTACK_BACKWARDS_MAX_STRENGTH) {
+                            attackingBackwards = false;
+                        }
                     }
                 }
-            }
-        } else {
-            if (ballData.visible) {
-                calculateOrbit();
             } else {
-                centre();
+                if (ballData.visible) {
+                    calculateOrbit();
+                } else {
+                    centre();
+                }
             }
-        }
+        // }
     } else {
         calculateDefense();
     }
@@ -345,8 +351,8 @@ void calculateMovement() {
     calculateRotationCorrection();
 }
 
-double horizontalDistanceFromCentre() {
-    return goalData.distance * sin(degreesToRadians(smallestAngleBetween(0, goalData.angle)));
+bool ballIsOut() {
+    return !lineData.onField && smallestAngleBetween(ballData.angle, lineData.angle) < 90;
 }
 
 void updatePixy() {
@@ -409,12 +415,12 @@ void updateCompass() {
     } else if (compassDiff < -180) {
         compassDiff += 360;
     }
+    compassDiff /= (double)(currentTime - compassPreviousTime);
 
     compassPreviousAngle = imu.heading;
     compassPreviousTime = currentTime;
 }
 
-    compassDiff /= (double)(currentTime - compassPreviousTime);
 void updateLine(double angle, double size) {
     bool noLine = angle == NO_LINE_ANGLE || size == 3;
 
@@ -505,13 +511,13 @@ void updatePlayMode() {
     }
 
     if (playMode != previousPlayMode) {
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, playMode, true);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading/*, ballIsOut()*/, playMode, true);
     }
 }
 
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, playMode);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, /*ballIsOut(),*/ playMode);
 
         debug.toggleGreen(xbee.isConnected);
 

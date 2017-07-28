@@ -12,17 +12,19 @@ public:
     int otherBallAngle;
     int otherBallStrength;
     int otherHeading;
+    // bool otherBallIsOut;
     PlayMode otherPlayMode;
 
     bool isConnected;
 
     void init();
-    void update(int ballAngle, int ballStrength, int heading, PlayMode playMode, bool noRecieve = false);
+    void update(int ballAngle, int ballStrength, int heading, /*bool ballIsOut,*/ PlayMode playMode, bool noRecieve = false);
 
 private:
     int thisBallAngle;
     int thisBallStrength;
     int thisHeading;
+    // bool thisBallIsOut;
     PlayMode thisPlayMode;
 
     Timer connectedTimer = Timer(XBEE_LOST_COMMUNICATION_TIME);

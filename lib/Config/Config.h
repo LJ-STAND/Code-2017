@@ -106,7 +106,7 @@
 
 #define ORBIT_BALL_FORWARD_ANGLE_TIGHTENER 0.5
 
-#define ORBIT_SPEED 220
+#define ORBIT_SPEED 200
 
 #define ATTACK_BACKWARDS_MAX_STRENGTH 100
 
@@ -134,7 +134,7 @@
 
 // Play Mode
 
-#define PLAYMODE_DEFAULT PlayMode::defend
+#define PLAYMODE_DEFAULT PlayMode::attack
 
 #define PLAYMODE_SWITCH_DEFENDER_ANGLE 45
 #define PLAYMODE_SWITCH_ATTACKER_ANGLE 135
@@ -159,7 +159,7 @@
 
 #define PIXY_ENABLED true
 #define FACE_GOAL true
-#define ALWAYS_FACE_GOAL true
+#define ALWAYS_FACE_GOAL false
 
 #define FACE_GOAL_SHORT_STRENGTH 120
 #define FACE_GOAL_BIG_STRENGTH 110
@@ -174,8 +174,8 @@
 #define CENTRE_GOAL_ANGLE_BUFFER 2
 
 // Yellow = 1, Blue = 2
-#define COLOUR_SIG_ATTACK 2
-#define COLOUR_SIG_DEFEND 1
+#define COLOUR_SIG_ATTACK 1
+#define COLOUR_SIG_DEFEND 2
 
 // Sonars
 

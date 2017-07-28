@@ -351,9 +351,19 @@ void calculateMovement() {
     calculateRotationCorrection();
 }
 
-bool ballIsOut() {
-    return !lineData.onField && smallestAngleBetween(ballData.angle, lineData.angle) < 90;
-}
+// bool isOutsideLine(double angle) {
+//     if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
+//         if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(angle + imu.heading, 360))) {
+//             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
+//             moveData.speed = lineData.size / 2.0 * LINE_SPEED;
+//         }
+//     } else {
+//         if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360))) {
+//             moveData.angle = 0;
+//             moveData.speed = 0;
+//         }
+//     }
+// }
 
 void updatePixy() {
     if (pixyTimer.timeHasPassed()) {

@@ -147,30 +147,34 @@ void calculateRotationCorrection() {
     moveData.rotation = correctionRotation;
 }
 
+bool isOutsideLine(double angle) {
+    if (lineData.onField) {
+        return false;
+    }
+    if (mod(lineData.angle, 90) > LINE_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LINE_CORNER_ANGLE_THRESHOLD) {
+        return (angleIsInside(doubleMod(lineData.angle - 135 - LINE_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LINE_ANGLE_BUFFER_CORNER, 360), mod(angle + imu.heading, 360)));
+    } else {
+        return (angleIsInside(doubleMod(lineData.angle - 90 - LINE_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LINE_ANGLE_BUFFER, 360), mod(angle + imu.heading, 360)));
+    }
+}
+
 void calculateLineAvoid() {
     if (!lineData.onField) {
         if (lineData.size > LINE_BIG_SIZE) {
             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
             moveData.speed = lineData.size == 3 ? OVER_LINE_SPEED : min(lineData.size / 2.0 * LINE_SPEED * 5, LINE_SPEED);
         } else if (lineData.size > LINE_SMALL_SIZE) {
-            if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
-                if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(moveData.angle + imu.heading, 360))) {
-                    moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-                    moveData.speed = lineData.size / 2.0 * LINE_SPEED;
-                }
-            } else {
-                if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360))) {
-                    moveData.angle = 0;
-                    moveData.speed = 0;
-                }
+            if (isOutsideLine(moveData.angle)) {
+                moveData.angle = 0;
+                moveData.speed = 0;
             }
         }
     }
 }
 
-void centre() {
+void centre(int distance) {
     if (goalData.status != GoalStatus::invisible && smallestAngleBetween(imu.heading, 0) < 10) {
-        double relativeDistance = abs(CENTRE_GOAL_DISTANCE - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? CENTRE_GOAL_DISTANCE - goalData.distance : 0;
+        double relativeDistance = abs(distance - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? distance - goalData.distance : 0;
         double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
 
         double sidewaysMovement = 0;
@@ -304,11 +308,10 @@ void calculateGoalTracking() {
 
 void calculateMovement() {
     if (currentPlayMode() == PlayMode::attack) {
-        // if (xbee.otherBallIsOut) {
-        //     attackingBackwards = false;
-        //     centre();
-        //     Serial.println("Attack to centre");
-        // } else {
+        if (xbee.otherBallIsOut) {
+            attackingBackwards = false;
+            centre();
+        } else {
             if (attackingBackwards) {
                 ballData.angle = mod(ballData.angle + 180, 360);
 
@@ -336,10 +339,10 @@ void calculateMovement() {
                 if (ballData.visible) {
                     calculateOrbit();
                 } else {
-                    centre();
+                    centre(CENTRE_GOAL_DISTANCE);
                 }
             }
-        // }
+        }
     } else {
         calculateDefense();
     }
@@ -350,20 +353,6 @@ void calculateMovement() {
 
     calculateRotationCorrection();
 }
-
-// bool isOutsideLine(double angle) {
-//     if (mod(lineData.angle, 90) > LS_MOVEMENT_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LS_MOVEMENT_CORNER_ANGLE_THRESHOLD) {
-//         if (angleIsInside(doubleMod(lineData.angle - 135 - LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LS_MOVEMENT_ANGLE_BUFFER_CORNER, 360), mod(angle + imu.heading, 360))) {
-//             moveData.angle = mod(lineData.angle + 180 - imu.heading, 360);
-//             moveData.speed = lineData.size / 2.0 * LINE_SPEED;
-//         }
-//     } else {
-//         if (angleIsInside(doubleMod(lineData.angle - 90 - LS_MOVEMENT_ANGLE_BUFFER, 360), doubleMod(lineData.angle + 90 + LS_MOVEMENT_ANGLE_BUFFER, 360), mod(moveData.angle + imu.heading, 360))) {
-//             moveData.angle = 0;
-//             moveData.speed = 0;
-//         }
-//     }
-// }
 
 void updatePixy() {
     if (pixyTimer.timeHasPassed()) {
@@ -521,13 +510,13 @@ void updatePlayMode() {
     }
 
     if (playMode != previousPlayMode) {
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading/*, ballIsOut()*/, playMode, true);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, true);
     }
 }
 
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, /*ballIsOut(),*/ playMode);
+        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode);
 
         debug.toggleGreen(xbee.isConnected);
 

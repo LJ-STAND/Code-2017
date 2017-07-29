@@ -310,7 +310,7 @@ void calculateMovement() {
     if (currentPlayMode() == PlayMode::attack) {
         if (xbee.otherBallIsOut) {
             attackingBackwards = false;
-            centre();
+            centre(CENTRE_GOAL_DISTANCE_CLOSE);
         } else {
             if (attackingBackwards) {
                 ballData.angle = mod(ballData.angle + 180, 360);

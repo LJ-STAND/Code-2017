@@ -83,7 +83,7 @@ void TSOPArray::finishRead() {
         sortedFilteredValues[i] = 0;
         indexes[i] = 0;
     }
-    
+
     sortFilterValues();
     calculateAngleSimple();
     calculateAngle(TSOP_BEST_TSOP_NO_ANGLE);

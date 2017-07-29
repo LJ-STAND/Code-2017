@@ -17,7 +17,7 @@
 #define LS_NUM 24
 
 #define LS_CALIBRATION_COUNT 10
-#define LS_CALIBRATION_BUFFER 13
+#define LS_CALIBRATION_BUFFER 25
 
 #define NO_LINE_ANGLE 400
 #define NO_LINE_SIZE 3
@@ -174,8 +174,8 @@
 #define CENTRE_GOAL_ANGLE_BUFFER 2
 
 // Yellow = 1, Blue = 2
-#define COLOUR_SIG_ATTACK 1
-#define COLOUR_SIG_DEFEND 2
+#define COLOUR_SIG_ATTACK 2
+#define COLOUR_SIG_DEFEND 1
 
 // Sonars
 

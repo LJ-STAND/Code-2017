@@ -144,16 +144,27 @@ void loop() {
 
     updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    facingDirection = lineData.angle - 90;
-    if (lineData.onField == false){
-        int forwardsMovement = 20;
-        int sidewaysMovement = lineData.size > 1 ? 20 : -20;
-        moveData.angle = atan2(forwardsMovement, sidewaysMovement);
-        moveData.speed = sqrt(forwardsMovement * forwardsMovement + sidewaysMovement * sidewaysMovement);
-    } else {
-        moveData.angle = 0;
-        moveData.speed = 0;
+    // facingDirection = 0;
+    // moveData.speed = 50;
+    // if (!lineData.onField) {
+    //     moveData.angle = lineData.angle - 90;
+    // }
+    if (!lineData.onField || lineData.size == 3) {
+        facingDirection = mod(lineData.angle - 90, 360);
     }
+
+    int forwardsMovement = ORBIT_SPEED;
+    int sidewaysMovement;
+    if (lineData.onField) {
+        sidewaysMovement = ORBIT_SPEED;
+    } else if (lineData.size == 3) {
+        sidewaysMovement = -ORBIT_SPEED;
+    } else {
+        sidewaysMovement = (lineData.size - 1) * -ORBIT_SPEED;
+    }
+    moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, forwardsMovement)), 360);
+    moveData.speed = sqrt(forwardsMovement * forwardsMovement + sidewaysMovement * sidewaysMovement);
+
 
     calculateRotationCorrection();
 

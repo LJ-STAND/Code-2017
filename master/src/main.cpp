@@ -26,6 +26,7 @@
 #include <LineData.h>
 #include <Common.h>
 #include <MovingAverage.h>
+#include <EEPROM.h>
 
 XBee xbee;
 T3SPI spi;
@@ -71,6 +72,8 @@ bool ledOn;
 
 void setup() {
     // Onboard LED
+    // EEPROM.write(0, PlayMode::attack);
+
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
 
@@ -122,7 +125,7 @@ void setup() {
 }
 
 PlayMode currentPlayMode() {
-    return playMode == PlayMode::undecided ? PLAYMODE_DEFAULT : playMode;
+    return playMode == PlayMode::undecided ? static_cast<PlayMode>(EEPROM.read(0)) : playMode;
 }
 
 double defaultDirection() {

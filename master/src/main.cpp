@@ -470,48 +470,54 @@ void updateLine(double angle, double size) {
 void updatePlayMode() {
     PlayMode previousPlayMode = playMode;
 
-    if (playMode == PlayMode::undecided) {
-        if (xbee.otherPlayMode == PlayMode::undecided) {
-            if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                playMode = PlayMode::attack;
-            } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle == TSOP_NO_BALL) {
+    // The defender is the master.
+    if (robotId == 1) {
+        if (playMode == PlayMode::undecided) {
+            if (xbee.otherPlayMode == PlayMode::undecided) {
                 playMode = PlayMode::defend;
-            } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
-                if (angleIsInside(270, 90, ballData.angle) && angleIsInside(270, 90, xbee.otherBallAngle)) {
-                    playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::attack : PlayMode::defend;
-                } else if (angleIsInside(270, 90, ballData.angle) && angleIsInside(90, 270, xbee.otherBallAngle)) {
-                    playMode = PlayMode::defend;
-                } else if (angleIsInside(90, 270, ballData.angle) && angleIsInside(270, 90, xbee.otherBallAngle)) {
+            } else {
+                if (xbee.otherBallAngle == TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
                     playMode = PlayMode::attack;
-                } else {
-                    playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::defend : PlayMode::attack;
+                } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle == TSOP_NO_BALL) {
+                    playMode = PlayMode::defend;
+                } else if (xbee.otherBallAngle != TSOP_NO_BALL && ballData.angle != TSOP_NO_BALL) {
+                    if (angleIsInside(90, 270, ballData.angle) && angleIsInside(90, 270, xbee.otherBallAngle)) {
+                        playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::attack : PlayMode::defend;
+                    } else if (angleIsInside(270, 90, ballData.angle) && angleIsInside(90, 270, xbee.otherBallAngle)) {
+                        playMode = PlayMode::attack;
+                    } else if (angleIsInside(90, 270, ballData.angle) && angleIsInside(270, 90, xbee.otherBallAngle)) {
+                        playMode = PlayMode::defend;
+                    } else {
+                        playMode = ballData.strength > xbee.otherBallStrength ? PlayMode::defend : PlayMode::attack;
+                    }
                 }
             }
         } else {
-            playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
-        }
-
-        attackingBackwards = false;
-    } else if (xbee.otherPlayMode != PlayMode::undecided) {
-        if (playModeSwitchComplete && playModeSwitchTimer.timeHasPassedNoUpdate()) {
-            if (xbee.otherPlayMode == playMode) {
-                playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
-                attackingBackwards = false;
-                playModeSwitchTimer.update();
-            } else if (playMode == PlayMode::defend) {
-                if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR) && lineData.onField) {
-                    playMode = PlayMode::attack;
-                    attackingBackwards = true;
-                    playModeSwitchComplete = false;
-                    playModeSwitchTimer.update();
+            if (xbee.otherPlayMode == PlayMode::undecided) {
+                playMode = PlayMode::defend;
+            } else {
+                if (playModeSwitchTimer.timeHasPassedNoUpdate()) {
+                    if (playMode == PlayMode::defend) {
+                        if (angleIsInside(360 - PLAYMODE_SWITCH_DEFENDER_ANGLE, PLAYMODE_SWITCH_DEFENDER_ANGLE, mod(ballData.angle + 180, 360)) && switchingStrengthAverage.average() > PLAYMODE_SWITCH_DEFENDER_STRENGTH && xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH && (angleIsInside(360 - PLAYMODE_SWITCH_ATTACKER_ANGLE, PLAYMODE_SWITCH_ATTACKER_ANGLE, xbee.otherBallAngle) || xbee.otherBallStrength < PLAYMODE_SWITCH_ATTACKER_STRENGTH_FAR) && lineData.onField) {
+                            playMode = PlayMode::attack;
+                            playModeSwitchTimer.update();
+                        }
+                    } else {
+                        // reverse the other one
+                    }
                 }
             }
-        } else if (xbee.otherPlayMode != playMode) {
-            playModeSwitchComplete = true;
         }
+    } else {
+        playMode = xbee.otherPlayMode == PlayMode::attack ? PlayMode::defend : PlayMode::attack;
     }
 
     if (playMode != previousPlayMode) {
+        if (playMode == PlayMode::attack && (previousPlayMode == PlayMode::defend || (previousPlayMode == PlayMode::undecided && robotId == 1)) {
+            attackingBackwards = true;
+        } else if (playMode == PlayMode::defend) {
+            attackingBackwards = false;
+        }
         xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, true);
     }
 }

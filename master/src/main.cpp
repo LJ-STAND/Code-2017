@@ -27,6 +27,7 @@
 #include <Common.h>
 #include <MovingAverage.h>
 #include <EEPROM.h>
+#include <PID.h>
 
 XBee xbee;
 T3SPI spi;
@@ -55,20 +56,24 @@ bool previouslyConnected = false;
 
 MovingAverage switchingStrengthAverage(25);
 
-Timer pixyTimer = Timer(PIXY_UPDATE_TIME);
-Timer ledTimer = Timer(LED_BLINK_TIME_MASTER);
-Timer lastSeenGoalTimer = Timer(LAST_SEEN_GOAL_TIME);
-Timer xbeeTimer = Timer(XBEE_UPDATE_TIME);
-Timer playModeSwitchTimer = Timer(PLAYMODE_SWITCH_TIME);
+Timer pixyTimer(PIXY_UPDATE_TIME);
+Timer ledTimer(LED_BLINK_TIME_MASTER);
+Timer lastSeenGoalTimer(LAST_SEEN_GOAL_TIME);
+Timer xbeeTimer(XBEE_UPDATE_TIME);
+Timer playModeSwitchTimer(PLAYMODE_SWITCH_TIME);
 
-double compassPreviousAngle = 0;
-long compassPreviousTime;
-double compassDiff = 0;
+// double compassPreviousAngle = 0;
+// long compassPreviousTime;
+// double compassDiff = 0;
+
+PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD);
 
 double facingDirection = 0;
 bool facingGoal = false;
 
 bool ledOn;
+
+int robotId;
 
 void setup() {
     // Onboard LED
@@ -107,7 +112,6 @@ void setup() {
     // IMU
     imu.init();
     imu.calibrate();
-    compassPreviousTime = micros();
 
     debug.toggleBlue(true);
 
@@ -122,10 +126,12 @@ void setup() {
     debug.toggleAllLEDs(true);
     delay(100);
     debug.toggleAllLEDs(false);
+
+    robotId = EEPROM.read(0);
 }
 
 PlayMode currentPlayMode() {
-    return playMode == PlayMode::undecided ? static_cast<PlayMode>(EEPROM.read(0)) : playMode;
+    return playMode == PlayMode::undecided ? static_cast<PlayMode>(robotId) : playMode;
 }
 
 double defaultDirection() {
@@ -133,27 +139,30 @@ double defaultDirection() {
 }
 
 void calculateRotationCorrection() {
-    double multiplierD = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
-    double multiplierP = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
+    // double multiplierD = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
+    // double multiplierP = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
+    //
+    // int correctionRotation;
+    // int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
+    //
+    // if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
+    //     correctionRotation = 0;
+    // } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM) {
+    //     correctionRotation = rotation;
+    // } else {
+    //     correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
+    // }
+    //
+    // moveData.rotation = correctionRotation;
 
-    int correctionRotation;
-    int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
-
-    if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
-        correctionRotation = 0;
-    } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM) {
-        correctionRotation = rotation;
-    } else {
-        correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
-    }
-
-    moveData.rotation = correctionRotation;
+    moveData.rotation = (int)round(headingPID.update(doubleMod(goalData.angle + 180, 360) - 180, doubleMod(facingDirection + 180, 360) - 180));
 }
 
 bool isOutsideLine(double angle) {
     if (lineData.onField) {
         return false;
     }
+
     if (mod(lineData.angle, 90) > LINE_CORNER_ANGLE_THRESHOLD && mod(lineData.angle, 90) < 90 - LINE_CORNER_ANGLE_THRESHOLD) {
         return (angleIsInside(doubleMod(lineData.angle - 135 - LINE_ANGLE_BUFFER_CORNER, 360), doubleMod(lineData.angle + 135 + LINE_ANGLE_BUFFER_CORNER, 360), mod(angle + imu.heading, 360)));
     } else {
@@ -199,8 +208,14 @@ void centre(int distance) {
 }
 
 void calculateOrbit() {
+    moveData.speed = ORBIT_SPEED;
+
     if (angleIsInside(360 - ORBIT_SMALL_ANGLE, ORBIT_SMALL_ANGLE, ballData.angle)) {
         moveData.angle = (int)round(ballData.angle < 180 ? (ballData.angle * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER) : (360 - (360 - ballData.angle) * ORBIT_BALL_FORWARD_ANGLE_TIGHTENER));
+
+        if (abs(goalData.angle) < 5) {
+            moveData.speed = 255;
+        }
     } else if (angleIsInside(360 - ORBIT_BIG_ANGLE, ORBIT_BIG_ANGLE, ballData.angle)) {
         if (ballData.angle < 180) {
             double nearFactor = (double)(ballData.angle - ORBIT_SMALL_ANGLE) / (double)(ORBIT_BIG_ANGLE - ORBIT_SMALL_ANGLE);
@@ -220,8 +235,6 @@ void calculateOrbit() {
             moveData.angle = ballData.angle;
         }
     }
-
-    moveData.speed = ORBIT_SPEED;
 }
 
 void calculateDefense() {
@@ -399,28 +412,14 @@ void updatePixy() {
                 debug.appSendPixy(goalBlock.x, goalBlock.y, goalBlock.width, goalBlock.height);
             #endif
 
-            goalData.distance = (double)goalBlock.height / (double)PIXY_FRAME_HEIGHT * GOAL_DISTANCE_MULTIPLIER;
+            // goalData.distance = (double)goalBlock.height / (double)PIXY_FRAME_HEIGHT * GOAL_DISTANCE_MULTIPLIER;
+
+            goalData.distance = GOAL_HEIGHT / atan((goalBlock.height / PIXY_FRAME_HEIGHT) * PIXY_VERTICAL_FOV);
             goalData.angle = (int)((double)(goalBlock.x - (PIXY_FRAME_WIDTH / 2.0)) / (PIXY_FRAME_WIDTH / 2.0) * 37.5);
         }
 
         debug.toggleRed(goalData.status != GoalStatus::invisible);
     }
-}
-
-void updateCompass() {
-    imu.update();
-    long currentTime = micros();
-    compassDiff = (imu.heading - compassPreviousAngle);
-
-    if (compassDiff > 180) {
-        compassDiff -= 360;
-    } else if (compassDiff < -180) {
-        compassDiff += 360;
-    }
-    compassDiff /= (double)(currentTime - compassPreviousTime);
-
-    compassPreviousAngle = imu.heading;
-    compassPreviousTime = currentTime;
 }
 
 void updateLine(double angle, double size) {
@@ -565,7 +564,7 @@ void loop() {
 
     updateLine(slaveLightSensor.getLineAngle(), slaveLightSensor.getLineSize());
 
-    updateCompass();
+    imu.update();
 
     #if PIXY_ENABLED
         updatePixy();

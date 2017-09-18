@@ -1,9 +1,11 @@
 #include "PID.h"
 
-PID::PID(double p, double i, double d) {
+PID::PID(double p, double i, double d, double absoluteMax) {
     kp = p;
     ki = i;
     kd = d;
+
+    absMax = absoluteMax;
 
     lastTime = micros();
 }
@@ -18,7 +20,7 @@ double PID::update(double input, double setpoint, double modulus) {
 
     integral += elapsedTime * error;
 
-    if(modulus != 0.0) {
+    if (modulus != 0.0) {
         double difference = (input - lastInput);
 
         if (difference < -modulus) {
@@ -31,6 +33,12 @@ double PID::update(double input, double setpoint, double modulus) {
     } else {
         derivative = (input - lastInput) / elapsedTime;
     }
+
+    Serial.println("Derivative: " + String(derivative));
+
     lastInput = input;
-    return kp * error + ki * integral + kd * derivative;
+
+    double correction = kp * error + ki * integral - kd * derivative;
+
+    return absMax == 0 ? correction : constrain(correction, -absMax, absMax);
 }

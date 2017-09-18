@@ -67,6 +67,8 @@ Timer playModeSwitchTimer(PLAYMODE_SWITCH_TIME);
 // double compassDiff = 0;
 
 PID headingPID(HEADING_KP, HEADING_KI, HEADING_KD);
+PID centreDistancePID(CENTRE_DISTANCE_KP, CENTRE_DISTANCE_KI, CENTRE_DISTANCE_KD);
+PID centreSidewaysPID(CENTRE_SIDEWAYS_KP, CENTRE_SIDEWAYS_KI, CENTRE_SIDEWAYS_KD);
 
 double facingDirection = 0;
 bool facingGoal = false;
@@ -138,26 +140,6 @@ double defaultDirection() {
     return currentPlayMode() == PlayMode::attack && !attackingBackwards ? 0 : 180;
 }
 
-void calculateRotationCorrection() {
-    // double multiplierD = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_D_GOAL : CORRECTION_ROTATION_MULTIPLIER_D;
-    // double multiplierP = facingGoal ? CORRECTION_ROTATION_MULTIPLIER_P_GOAL : CORRECTION_ROTATION_MULTIPLIER_P;
-    //
-    // int correctionRotation;
-    // int rotation = ((mod(imu.heading - facingDirection, 360) > 180 ? 360 : 0) - mod(imu.heading - facingDirection, 360)) * multiplierP + compassDiff * multiplierD;
-    //
-    // if (abs(rotation) < CORRECTION_ROTATION_MINIMUM) {
-    //     correctionRotation = 0;
-    // } else if (abs(rotation) < CORRECTION_ROTATION_MAXIMUM) {
-    //     correctionRotation = rotation;
-    // } else {
-    //     correctionRotation = (rotation > 0 ? CORRECTION_ROTATION_MAXIMUM : -CORRECTION_ROTATION_MAXIMUM);
-    // }
-    //
-    // moveData.rotation = correctionRotation;
-
-    moveData.rotation = (int)round(headingPID.update(doubleMod(goalData.angle + 180, 360) - 180, doubleMod(facingDirection + 180, 360) - 180));
-}
-
 bool isOutsideLine(double angle) {
     if (lineData.onField) {
         return false;
@@ -184,20 +166,27 @@ void calculateLineAvoid() {
     }
 }
 
-void centre(int distance) {
+void centre(double distance) {
     if (goalData.status != GoalStatus::invisible && smallestAngleBetween(imu.heading, 0) < 10) {
-        double relativeDistance = abs(distance - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? distance - goalData.distance : 0;
-        double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
+        // double relativeDistance = abs(distance - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? distance - goalData.distance : 0;
+        // double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
 
-        double sidewaysMovement = 0;
+        double verticalDistance = goalData.distance * cos(degreesToRadians(goalData.angle));
+        double horizontalDistance = goalData.distance * sin(degreesToRadians(goalData.angle));
 
-        if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
-            if (goalData.angle > 0) {
-                sidewaysMovement = min(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
-            } else {
-                sidewaysMovement = max(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, -CENTRE_SIDEWAYS_MAX_SPEED);
-            }
-        }
+        double distanceMovement = centreDistancePID.update(verticalDistance, distance);
+
+        // Serial.println(distanceMovement);
+
+        double sidewaysMovement = 0;//centreSidewaysPID.update(-horizontalDistance, 0);
+
+        // if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
+        //     if (goalData.angle > 0) {
+        //         sidewaysMovement = min(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
+        //     } else {
+        //         sidewaysMovement = max(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, -CENTRE_SIDEWAYS_MAX_SPEED);
+        //     }
+        // }
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
         moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
@@ -363,7 +352,7 @@ void calculateMovement() {
         calculateLineAvoid();
     #endif
 
-    calculateRotationCorrection();
+    // moveData.rotation = (int)round(headingPID.update(doubleMod(imu.heading + 180, 360) - 180, doubleMod(facingDirection + 180, 360) - 180, 360.0));
 }
 
 void updatePixy() {
@@ -563,6 +552,7 @@ void appDebug() {
 
 void loop() {
     ballData = slaveTSOP.getBallData();
+    ballData.visible = false;
     switchingStrengthAverage.update(ballData.strength);
 
     debug.toggleOrange(ballData.visible);

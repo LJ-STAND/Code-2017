@@ -1,6 +1,8 @@
 #ifndef PID_H
 #define PID_H
 
+#include <Arduino.h>
+
 class PID {
 public:
     double kp;
@@ -15,6 +17,6 @@ private:
 
     double integral;
     double lastInput;
-}
+};
 
 #endif

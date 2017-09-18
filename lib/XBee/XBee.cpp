@@ -5,12 +5,13 @@ void XBee::init() {
     resetOtherData();
 }
 
-void XBee::update(int ballAngle, int ballStrength, int heading, bool ballIsOut, PlayMode playMode, bool noRecieve) {
+void XBee::update(int ballAngle, int ballStrength, int heading, bool ballIsOut, PlayMode playMode, bool isOnField, bool noRecieve) {
     thisBallAngle = ballAngle;
     thisBallStrength = ballStrength;
     thisHeading = heading;
     thisBallIsOut = ballIsOut;
     thisPlayMode = playMode;
+    thisIsOnField = isOnField;
 
     send();
 
@@ -29,6 +30,7 @@ void XBee::send() {
     XBEESERIAL.write(thisHeading & 0xFF);
     XBEESERIAL.write(thisBallIsOut);
     XBEESERIAL.write(thisPlayMode);
+    XBEESERIAL.write(thisIsOnField);
 }
 
 void XBee::receive() {
@@ -52,6 +54,7 @@ void XBee::receive() {
             otherHeading = (dataBuffer[3] << 8) | dataBuffer[4];
             otherBallIsOut = (bool) dataBuffer[5];
             otherPlayMode = static_cast<PlayMode>(dataBuffer[6]);
+            otherIsOnField = (bool) dataBuffer[7];
 
             nothingRecieved = false;
             connectedTimer.update();
@@ -71,4 +74,5 @@ void XBee::resetOtherData() {
     otherPlayMode = PlayMode::undecided;
     otherBallIsOut = false;
     otherHeading = 0;
+    otherIsOnField = true;
 }

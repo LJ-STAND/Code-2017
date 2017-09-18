@@ -9,6 +9,7 @@ PID::PID(double p, double i, double d) {
 }
 
 double PID::update(double input, double setpoint, double modulus) {
+    double derivative;
     double error = setpoint - input;
 
     unsigned long currentTime = micros();
@@ -28,7 +29,7 @@ double PID::update(double input, double setpoint, double modulus) {
 
         derivative = difference / elapsedTime;
     } else {
-        double derivative = (input - lastInput) / elapsedTime;
+        derivative = (input - lastInput) / elapsedTime;
     }
     lastInput = input;
     return kp * error + ki * integral + kd * derivative;

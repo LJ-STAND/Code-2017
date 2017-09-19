@@ -34,11 +34,9 @@ double PID::update(double input, double setpoint, double modulus) {
         derivative = (input - lastInput) / elapsedTime;
     }
 
-    Serial.println("Derivative: " + String(derivative));
-
     lastInput = input;
 
     double correction = kp * error + ki * integral - kd * derivative;
-
+    
     return absMax == 0 ? correction : constrain(correction, -absMax, absMax);
 }

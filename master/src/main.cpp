@@ -168,25 +168,11 @@ void calculateLineAvoid() {
 
 void centre(double distance) {
     if (goalData.status != GoalStatus::invisible && smallestAngleBetween(imu.heading, 0) < 10) {
-        // double relativeDistance = abs(distance - goalData.distance) > CENTRE_GOAL_DISTANCE_BUFFER ? distance - goalData.distance : 0;
-        // double distanceMovement = relativeDistance > 0 ? min(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, CENTRE_DISTANCE_MAX_SPEED) : max(relativeDistance * CENTRE_DISTANCE_MULTIPLIER, -CENTRE_DISTANCE_MAX_SPEED);
-
         double verticalDistance = goalData.distance * cos(degreesToRadians(goalData.angle));
         double horizontalDistance = goalData.distance * sin(degreesToRadians(goalData.angle));
 
         double distanceMovement = centreDistancePID.update(verticalDistance, distance);
-
-        // Serial.println(distanceMovement);
-
-        double sidewaysMovement = 0;//centreSidewaysPID.update(-horizontalDistance, 0);
-
-        // if (abs(goalData.angle) > CENTRE_GOAL_ANGLE_BUFFER) {
-        //     if (goalData.angle > 0) {
-        //         sidewaysMovement = min(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, CENTRE_SIDEWAYS_MAX_SPEED);
-        //     } else {
-        //         sidewaysMovement = max(goalData.angle / (PIXY_HORIZONTAL_FOV / 2.0) * CENTRE_SIDEWAYS_MULTIPLIER, -CENTRE_SIDEWAYS_MAX_SPEED);
-        //     }
-        // }
+        double sidewaysMovement = centreSidewaysPID.update(horizontalDistance, 0);
 
         moveData.angle = mod(radiansToDegrees(atan2(sidewaysMovement, distanceMovement)), 360);
         moveData.speed = sqrt(distanceMovement * distanceMovement + sidewaysMovement * sidewaysMovement);
@@ -352,7 +338,7 @@ void calculateMovement() {
         calculateLineAvoid();
     #endif
 
-    // moveData.rotation = (int)round(headingPID.update(doubleMod(imu.heading + 180, 360) - 180, doubleMod(facingDirection + 180, 360) - 180, 360.0));
+    moveData.rotation = (int)round(headingPID.update(doubleMod(imu.heading + 180, 360) - 180, doubleMod(facingDirection + 180, 360) - 180, 360.0));
 }
 
 void updatePixy() {

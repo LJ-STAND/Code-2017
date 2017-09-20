@@ -69,10 +69,14 @@ bool facingGoal = false;
 bool ledOn;
 
 int robotId;
+// B for B-attacker, robotId 0
+// A for A-fender, robotId 1
 
 void setup() {
     // Onboard LED
-    // EEPROM.write(0, PlayMode::attack);
+
+    // Write robotId if necessary
+    // EEPROM.write(ROBOT_ID_EEPROM, PlayMode::attack);
 
     pinMode(13, OUTPUT);
     digitalWrite(13, HIGH);
@@ -122,7 +126,7 @@ void setup() {
     delay(100);
     debug.toggleAllLEDs(false);
 
-    robotId = EEPROM.read(0);
+    robotId = EEPROM.read(ROBOT_ID_EEPROM);
 }
 
 PlayMode currentPlayMode() {
@@ -471,13 +475,14 @@ void updatePlayMode() {
         } else if (playMode == PlayMode::defend) {
             attackingBackwards = false;
         }
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, lineData.onField, true);
+
+        xbee.update(((attackingBackwards && currentPlayMode() == PlayMode::attack) ? mod(ballData.angle + 180, 360) : ballData.angle), switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, lineData.onField, true);
     }
 }
 
 void updateXBee() {
     if (xbeeTimer.timeHasPassed()) {
-        xbee.update(ballData.angle, switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, lineData.onField);
+        xbee.update(((attackingBackwards && currentPlayMode() == PlayMode::attack) ? mod(ballData.angle + 180, 360) : ballData.angle), switchingStrengthAverage.average(), imu.heading, isOutsideLine(ballData.angle), playMode, lineData.onField);
 
         debug.toggleGreen(xbee.isConnected);
 

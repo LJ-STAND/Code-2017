@@ -17,7 +17,7 @@
 #define LS_NUM 24
 
 #define LS_CALIBRATION_COUNT 10
-#define LS_CALIBRATION_BUFFER 30
+#define LS_CALIBRATION_BUFFER 35
 
 #define NO_LINE_ANGLE 400
 #define NO_LINE_SIZE 3
@@ -33,7 +33,7 @@
 #define LINE_SMALL_SIZE 0.4
 #define LINE_BIG_SIZE 0.7
 
-#define AVOID_LINE false
+#define AVOID_LINE true
 
 // Light Gate
 
@@ -73,7 +73,7 @@
 #define HEADING_KP 4.0
 #define HEADING_KI 0.0
 #define HEADING_KD 0.3
-#define HEADING_MAX_CORRECTION 200
+#define HEADING_MAX_CORRECTION 180
 
 #define IMU_CALIBRATION_COUNT 20
 #define IMU_CALIBRATION_TIME 50
@@ -145,7 +145,7 @@
 // Pixy
 
 #define GOAL_MIN_AREA 100
-#define GOAL_HEIGHT 0.12
+#define GOAL_HEIGHT 0.14
 
 #define PIXY_FRAME_WIDTH 320
 #define PIXY_FRAME_HEIGHT 200
@@ -174,8 +174,8 @@
 #define CENTRE_SIDEWAYS_KD -5.0
 
 // Yellow = 1, Blue = 2
-#define COLOUR_SIG_ATTACK 1
-#define COLOUR_SIG_DEFEND 2
+#define COLOUR_SIG_ATTACK 2
+#define COLOUR_SIG_DEFEND 1
 
 // Sonars
 

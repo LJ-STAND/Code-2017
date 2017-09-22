@@ -166,7 +166,6 @@ void calculateLineAvoid() {
 void centre(double distance) {
     if (goalData.status != GoalStatus::invisible) {
         double goalAngle = doubleMod(goalData.angle + imu.heading - defaultDirection(), 360.0);
-        Serial.println(goalAngle);
 
         double verticalDistance = goalData.distance * cos(degreesToRadians(goalAngle));
         double horizontalDistance = goalData.distance * sin(degreesToRadians(goalAngle));
